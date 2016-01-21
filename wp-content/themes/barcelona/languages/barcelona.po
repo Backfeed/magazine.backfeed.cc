@@ -1,0 +1,933 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Barcelona.\n"
+"POT-Creation-Date: 2016-01-13 19:04+0200\n"
+"PO-Revision-Date: 2016-01-13 19:04+0200\n"
+"Last-Translator: \n"
+"Language-Team: Aggressive Motions <contact@aggressivemotions.com>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.6\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: bbpress\n"
+"X-Poedit-SearchPathExcluded-1: buddypress\n"
+"X-Poedit-SearchPathExcluded-2: option-tree\n"
+"X-Poedit-SearchPathExcluded-3: includes/plugins\n"
+"X-Poedit-SearchPathExcluded-4: includes/admin\n"
+"X-Poedit-SearchPathExcluded-5: includes/classes\n"
+
+#: 404.php:9
+msgid "404"
+msgstr ""
+
+#: 404.php:10 includes/modules/module-none.php:15
+msgid "Nothing Found"
+msgstr ""
+
+#: 404.php:11
+msgid ""
+"It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps "
+"searching can help."
+msgstr ""
+
+#: comments.php:25
+msgid "No Comments"
+msgstr ""
+
+#: comments.php:25
+msgid "One Comment"
+msgstr ""
+
+#: comments.php:25
+msgid "% Comment"
+msgid_plural "% Comments"
+msgstr[0] ""
+msgstr[1] ""
+
+#: comments.php:63
+msgid "Leave a Reply"
+msgstr ""
+
+#: comments.php:64
+#, php-format
+msgid "Leave a Reply to %s"
+msgstr ""
+
+#: comments.php:65
+#, php-format
+msgid ""
+"Logged in as <a href=\"%1$s\">%2$s</a>. <a href=\"%3$s\" title=\"Log out of "
+"this account\">Log out?</a>"
+msgstr ""
+
+#: comments.php:66
+msgid "Cancel Reply"
+msgstr ""
+
+#: comments.php:67
+msgid "Post Comment"
+msgstr ""
+
+#: comments.php:71
+#, php-format
+msgid "You must be <a href=\"%s\">logged in</a> to post a comment."
+msgstr ""
+
+#: comments.php:72
+msgctxt "noun"
+msgid "Comment"
+msgstr ""
+
+#: comments.php:77
+msgid "Name"
+msgstr ""
+
+#: comments.php:78
+msgid "Email"
+msgstr ""
+
+#: comments.php:79
+msgid "Website"
+msgstr ""
+
+#: functions.php:4
+msgctxt "Theme Name"
+msgid "Barcelona."
+msgstr ""
+
+#: includes/core/filters.php:23
+msgid "Sidebar Name"
+msgstr ""
+
+#: includes/core/filters.php:26
+msgid "Module Title"
+msgstr ""
+
+#: includes/core/filters.php:48
+#, php-format
+msgctxt "Theme Options v{version}"
+msgid "Theme Options v%s"
+msgstr ""
+
+#: includes/core/filters.php:62
+msgid "Insert"
+msgstr ""
+
+#: includes/core/filters.php:70
+msgid "Job Title"
+msgstr ""
+
+#: includes/core/filters.php:71
+msgid "Facebook URL"
+msgstr ""
+
+#: includes/core/filters.php:72
+msgid "Twitter URL"
+msgstr ""
+
+#: includes/core/filters.php:73
+msgid "Instagram URL"
+msgstr ""
+
+#: includes/core/filters.php:74
+msgid "Google+ URL"
+msgstr ""
+
+#: includes/core/filters.php:75
+msgid "Linkedin URL"
+msgstr ""
+
+#: includes/core/filters.php:177
+msgid "Close"
+msgstr ""
+
+#: includes/core/filters.php:180
+msgctxt "placeholder"
+msgid "Search&hellip;"
+msgstr ""
+
+#: includes/core/filters.php:180
+msgctxt "label"
+msgid "Search for:"
+msgstr ""
+
+#: includes/core/filters.php:182
+msgctxt "submit button"
+msgid "Search"
+msgstr ""
+
+#: includes/core/filters.php:199
+#, php-format
+msgctxt "Category archives title"
+msgid "%s"
+msgstr ""
+
+#: includes/core/filters.php:203
+#, php-format
+msgid "Tag: %s"
+msgstr ""
+
+#: includes/core/filters.php:207
+#, php-format
+msgid "Author: %s"
+msgstr ""
+
+#: includes/core/filters.php:211
+#, php-format
+msgctxt "Yearly archives title"
+msgid "Archive: %s"
+msgstr ""
+
+#: includes/core/filters.php:215
+#, php-format
+msgctxt "Monthly archives title"
+msgid "Archive: %s"
+msgstr ""
+
+#: includes/core/filters.php:219
+#, php-format
+msgctxt "Daily archives title"
+msgid "Archive: %s"
+msgstr ""
+
+#: includes/core/filters.php:225
+msgctxt "post format archive title"
+msgid "Asides"
+msgstr ""
+
+#: includes/core/filters.php:229
+msgctxt "post format archive title"
+msgid "Galleries"
+msgstr ""
+
+#: includes/core/filters.php:233
+msgctxt "post format archive title"
+msgid "Images"
+msgstr ""
+
+#: includes/core/filters.php:237
+msgctxt "post format archive title"
+msgid "Videos"
+msgstr ""
+
+#: includes/core/filters.php:241
+msgctxt "post format archive title"
+msgid "Quotes"
+msgstr ""
+
+#: includes/core/filters.php:245
+msgctxt "post format archive title"
+msgid "Links"
+msgstr ""
+
+#: includes/core/filters.php:249
+msgctxt "post format archive title"
+msgid "Statuses"
+msgstr ""
+
+#: includes/core/filters.php:253
+msgctxt "post format archive title"
+msgid "Audio"
+msgstr ""
+
+#: includes/core/filters.php:257
+msgctxt "post format archive title"
+msgid "Chats"
+msgstr ""
+
+#: includes/core/filters.php:263
+#, php-format
+msgid "Archives: %s"
+msgstr ""
+
+#: includes/core/filters.php:269
+#, php-format
+msgid "%1$s: %2$s"
+msgstr ""
+
+#: includes/core/filters.php:273
+msgid "Archives"
+msgstr ""
+
+#: includes/core/filters.php:302
+msgid "Post Format Options: Video"
+msgstr ""
+
+#: includes/core/filters.php:309
+msgid "Video Embed Code"
+msgstr ""
+
+#: includes/core/filters.php:310
+msgid "Add the embed code of video from services like Youtube, Vimeo, or Hulu."
+msgstr ""
+
+#: includes/core/filters.php:325
+msgid "Post Format Options: Audio"
+msgstr ""
+
+#: includes/core/filters.php:332
+msgid "Audio Embed Code"
+msgstr ""
+
+#: includes/core/filters.php:333
+msgid "Add the embed code of audio from services like SoundCloud or Rdio."
+msgstr ""
+
+#: includes/core/filters.php:348
+msgid "Post Format Options: Gallery"
+msgstr ""
+
+#: includes/core/filters.php:408
+msgid ""
+"This content is password protected. To view it please enter your password "
+"below:"
+msgstr ""
+
+#: includes/core/filters.php:409
+msgid "Type password..."
+msgstr ""
+
+#: includes/core/filters.php:409
+msgid "Submit"
+msgstr ""
+
+#: includes/core/filters.php:600
+msgid "Forums Archive"
+msgstr ""
+
+#: includes/core/filters.php:626 includes/core/filters.php:641
+msgid "Post Views"
+msgstr ""
+
+#: includes/core/helpers.php:56
+msgid "RSS Feed"
+msgstr ""
+
+#: includes/core/helpers.php:456
+msgid "There is no excerpt because this is a protected post."
+msgstr ""
+
+#: includes/core/helpers.php:1089
+msgid "just now"
+msgstr ""
+
+#: includes/core/helpers.php:1093
+#, php-format
+msgid "%s seconds ago"
+msgstr ""
+
+#: includes/core/helpers.php:1097
+msgid "about a minute ago"
+msgstr ""
+
+#: includes/core/helpers.php:1101
+#, php-format
+msgid "about %s minutes ago"
+msgstr ""
+
+#: includes/core/helpers.php:1105 includes/core/helpers.php:1110
+#, php-format
+msgid "about an hour ago"
+msgid_plural "about %s hours ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/core/helpers.php:1114 includes/core/helpers.php:1119
+#, php-format
+msgid "about a day ago"
+msgid_plural "about %s days ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/core/helpers.php:1124
+#, php-format
+msgid "about a month ago"
+msgid_plural "about %s months ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/core/helpers.php:1129
+#, php-format
+msgid "about a year ago"
+msgid_plural "about %s years ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/core/nav-menu.php:82
+#, php-format
+msgid "%s (Invalid)"
+msgstr ""
+
+#: includes/core/nav-menu.php:86
+#, php-format
+msgid "%s (Pending)"
+msgstr ""
+
+#: includes/core/nav-menu.php:95
+msgid "sub item"
+msgstr ""
+
+#: includes/core/nav-menu.php:110
+msgid "Move up"
+msgstr ""
+
+#: includes/core/nav-menu.php:123
+msgid "Move down"
+msgstr ""
+
+#: includes/core/nav-menu.php:125 includes/core/nav-menu.php:127
+msgid "Edit Menu Item"
+msgstr ""
+
+#: includes/core/nav-menu.php:136
+msgid "URL"
+msgstr ""
+
+#: includes/core/nav-menu.php:143
+msgid "Navigation Label"
+msgstr ""
+
+#: includes/core/nav-menu.php:149
+msgid "Title Attribute"
+msgstr ""
+
+#: includes/core/nav-menu.php:156
+msgid "Open link in a new window/tab"
+msgstr ""
+
+#: includes/core/nav-menu.php:161
+msgid "CSS Classes (optional)"
+msgstr ""
+
+#: includes/core/nav-menu.php:167
+msgid "Link Relationship (XFN)"
+msgstr ""
+
+#: includes/core/nav-menu.php:175
+msgid "Show Mega Menu"
+msgstr ""
+
+#: includes/core/nav-menu.php:181
+msgid "Description"
+msgstr ""
+
+#: includes/core/nav-menu.php:183
+msgid ""
+"The description will be displayed in the menu if the current theme supports "
+"it."
+msgstr ""
+
+#: includes/core/nav-menu.php:189
+msgid "Move"
+msgstr ""
+
+#: includes/core/nav-menu.php:190
+msgid "Up one"
+msgstr ""
+
+#: includes/core/nav-menu.php:191
+msgid "Down one"
+msgstr ""
+
+#: includes/core/nav-menu.php:194
+msgid "To the top"
+msgstr ""
+
+#: includes/core/nav-menu.php:201
+#, php-format
+msgid "Original: %s"
+msgstr ""
+
+#: includes/core/nav-menu.php:214
+msgid "Remove"
+msgstr ""
+
+#: includes/core/nav-menu.php:215
+msgid "Cancel"
+msgstr ""
+
+#: includes/core/nav-menu.php:487
+msgid "Popular Tags:"
+msgstr ""
+
+#: includes/core/nav-menu.php:500
+msgid "See All"
+msgstr ""
+
+#: includes/core/scripts.php:87
+msgid "Please login to vote!"
+msgstr ""
+
+#: includes/core/scripts.php:208
+msgid "Visit the post for more."
+msgstr ""
+
+#: includes/core/scripts.php:223
+msgid "(no title)"
+msgstr ""
+
+#: includes/core/template-tags.php:20
+msgid "Edit"
+msgstr ""
+
+#: includes/core/template-tags.php:25
+msgid "Your comment is awaiting moderation."
+msgstr ""
+
+#: includes/core/template-tags.php:68
+msgid "&laquo; Older Comments"
+msgstr ""
+
+#: includes/core/template-tags.php:72
+msgid "Newer Comments &raquo;"
+msgstr ""
+
+#: includes/core/template-tags.php:211
+msgid "Search Results"
+msgstr ""
+
+#: includes/core/template-tags.php:215
+msgid "Author Archive"
+msgstr ""
+
+#: includes/core/template-tags.php:219
+msgid "Yearly Archive"
+msgstr ""
+
+#: includes/core/template-tags.php:223
+msgid "Monthly Archive"
+msgstr ""
+
+#: includes/core/template-tags.php:227
+msgid "Daily Archive"
+msgstr ""
+
+#: includes/core/template-tags.php:231
+msgid "Tag Archive"
+msgstr ""
+
+#: includes/core/template-tags.php:239
+msgid "Home"
+msgstr ""
+
+#: includes/core/template-tags.php:554
+msgid "&laquo; Prev"
+msgstr ""
+
+#: includes/core/template-tags.php:555
+msgid "Next &raquo;"
+msgstr ""
+
+#: includes/core/template-tags.php:878
+msgid "Related Posts"
+msgstr ""
+
+#: includes/core/theme-support.php:70
+msgid "Main Navigation Menu"
+msgstr ""
+
+#: includes/core/theme-support.php:71
+msgid "Top Bar Menu"
+msgstr ""
+
+#: includes/core/theme-support.php:72
+msgid "Footer Menu"
+msgstr ""
+
+#: includes/core/widgets.php:9
+msgid "Default Sidebar"
+msgstr ""
+
+#: includes/core/widgets.php:11
+msgid "This is default sidebar."
+msgstr ""
+
+#: includes/core/widgets.php:46
+#, php-format
+msgid "Footer Sidebar %d"
+msgstr ""
+
+#: includes/core/widgets.php:62
+msgid "BuddyPress Sidebar"
+msgstr ""
+
+#: includes/core/widgets.php:76
+msgid "bbPress Sidebar"
+msgstr ""
+
+#: includes/modules/module-none.php:19
+msgid ""
+"Sorry, but nothing matched your search terms. Please try again with some "
+"different keywords."
+msgstr ""
+
+#: includes/modules/module-none.php:21
+msgid "Sorry, It seems there is no posts to show."
+msgstr ""
+
+#: includes/widgets/barcelona-about-me.php:12
+msgctxt "About Me widget description"
+msgid "A short description about you."
+msgstr ""
+
+#: includes/widgets/barcelona-about-me.php:15
+#, php-format
+msgctxt "About Me widget name"
+msgid "%s About Me"
+msgstr ""
+
+#: includes/widgets/barcelona-about-me.php:86
+#: includes/widgets/barcelona-facebook-box.php:77
+#: includes/widgets/barcelona-google-plus-box.php:77
+#: includes/widgets/barcelona-instagram-feed.php:115
+#: includes/widgets/barcelona-posts.php:204
+#: includes/widgets/barcelona-slider-posts.php:255
+#: includes/widgets/barcelona-social-media-icons.php:80
+msgid "Title:"
+msgstr ""
+
+#: includes/widgets/barcelona-about-me.php:91
+msgid "Name:"
+msgstr ""
+
+#: includes/widgets/barcelona-about-me.php:96
+msgid "Job Title:"
+msgstr ""
+
+#: includes/widgets/barcelona-about-me.php:101
+msgid "Profile Picture:"
+msgstr ""
+
+#: includes/widgets/barcelona-about-me.php:106
+msgid "Select Image"
+msgstr ""
+
+#: includes/widgets/barcelona-about-me.php:107
+msgid "Remove Image"
+msgstr ""
+
+#: includes/widgets/barcelona-about-me.php:111
+msgid "About Text:"
+msgstr ""
+
+#: includes/widgets/barcelona-facebook-box.php:12
+msgctxt "Facebook Box widget description"
+msgid "Facebook Page Box"
+msgstr ""
+
+#: includes/widgets/barcelona-facebook-box.php:15
+#, php-format
+msgctxt "Facebook Box widget name"
+msgid "%s Facebook Box"
+msgstr ""
+
+#: includes/widgets/barcelona-facebook-box.php:82
+msgid "Facebook Page URL:"
+msgstr ""
+
+#: includes/widgets/barcelona-facebook-box.php:88
+msgid "Use Small Header"
+msgstr ""
+
+#: includes/widgets/barcelona-facebook-box.php:93
+msgid "Hide Cover Photo"
+msgstr ""
+
+#: includes/widgets/barcelona-facebook-box.php:98
+msgid "Show Page Posts"
+msgstr ""
+
+#: includes/widgets/barcelona-facebook-box.php:103
+msgid "Show Friend's Faces"
+msgstr ""
+
+#: includes/widgets/barcelona-google-plus-box.php:12
+msgctxt "Google+ Box widget description"
+msgid "Google Plus Follow Box"
+msgstr ""
+
+#: includes/widgets/barcelona-google-plus-box.php:15
+#, php-format
+msgctxt "Google+ Box widget name"
+msgid "%s Google+ Box"
+msgstr ""
+
+#: includes/widgets/barcelona-google-plus-box.php:82
+msgid "Google+ Page URL:"
+msgstr ""
+
+#: includes/widgets/barcelona-google-plus-box.php:87
+msgid "Layout:"
+msgstr ""
+
+#: includes/widgets/barcelona-google-plus-box.php:89
+msgid "Landscape"
+msgstr ""
+
+#: includes/widgets/barcelona-google-plus-box.php:90
+msgid "Portrait"
+msgstr ""
+
+#: includes/widgets/barcelona-google-plus-box.php:95
+msgid "Theme:"
+msgstr ""
+
+#: includes/widgets/barcelona-google-plus-box.php:97
+msgid "Light"
+msgstr ""
+
+#: includes/widgets/barcelona-google-plus-box.php:98
+msgid "Dark"
+msgstr ""
+
+#: includes/widgets/barcelona-google-plus-box.php:104
+msgid "Show Cover Photo"
+msgstr ""
+
+#: includes/widgets/barcelona-google-plus-box.php:109
+msgid "Show Tagline"
+msgstr ""
+
+#: includes/widgets/barcelona-instagram-feed.php:12
+msgctxt "Instagram Feed widget description"
+msgid "Displays the instagram images"
+msgstr ""
+
+#: includes/widgets/barcelona-instagram-feed.php:15
+#, php-format
+msgctxt "Instagram Feed widget name"
+msgid "%s Instagram Feed"
+msgstr ""
+
+#: includes/widgets/barcelona-instagram-feed.php:66
+msgid "Unable to communicate with Instagram."
+msgstr ""
+
+#: includes/widgets/barcelona-instagram-feed.php:88
+msgid "Instagram did not return any images."
+msgstr ""
+
+#: includes/widgets/barcelona-instagram-feed.php:120
+msgid "Username:"
+msgstr ""
+
+#: includes/widgets/barcelona-instagram-feed.php:125
+msgid "Number of items:"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:12
+msgctxt "Posts widget description"
+msgid "Displays the posts with more stylish way"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:15
+#, php-format
+msgctxt "Posts widget name"
+msgid "%s Posts"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:209
+#: includes/widgets/barcelona-slider-posts.php:273
+msgid "Number of posts:"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:214
+#: includes/widgets/barcelona-slider-posts.php:278
+msgid "Posts Offset:"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:219
+#: includes/widgets/barcelona-slider-posts.php:283
+msgid "Choose category:"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:221
+#: includes/widgets/barcelona-slider-posts.php:285
+msgid "- All -"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:229
+#: includes/widgets/barcelona-slider-posts.php:293
+msgid "Filter by Post Manually:"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:231
+#: includes/widgets/barcelona-slider-posts.php:295
+msgid "Specify post ids separated by comma. i.e. 45,73,132,19"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:235
+#: includes/widgets/barcelona-slider-posts.php:299
+msgid "Order Posts by"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:237
+#: includes/widgets/barcelona-slider-posts.php:301
+msgid "Date"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:238
+#: includes/widgets/barcelona-slider-posts.php:302
+msgid "Number of Views"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:239
+#: includes/widgets/barcelona-slider-posts.php:303
+msgid "Number of Comments"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:240
+#: includes/widgets/barcelona-slider-posts.php:304
+msgid "Number of Votes"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:241
+#: includes/widgets/barcelona-slider-posts.php:305
+msgid "Random"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:242
+#: includes/widgets/barcelona-slider-posts.php:306
+msgid "Manual Post IDs"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:247
+#: includes/widgets/barcelona-slider-posts.php:311
+msgid "Order Type"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:249
+#: includes/widgets/barcelona-slider-posts.php:313
+msgid "Descending"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:250
+#: includes/widgets/barcelona-slider-posts.php:314
+msgid "Ascending"
+msgstr ""
+
+#: includes/widgets/barcelona-slider-posts.php:12
+msgctxt "Slider Posts widget description"
+msgid "Displays the specified posts as a slider"
+msgstr ""
+
+#: includes/widgets/barcelona-slider-posts.php:15
+#, php-format
+msgctxt "Slider Posts widget name"
+msgid "%s Slider Posts"
+msgstr ""
+
+#: includes/widgets/barcelona-slider-posts.php:260
+msgid "Display Title:"
+msgstr ""
+
+#: includes/widgets/barcelona-slider-posts.php:262
+msgid "On Mouseover"
+msgstr ""
+
+#: includes/widgets/barcelona-slider-posts.php:263
+msgid "Always"
+msgstr ""
+
+#: includes/widgets/barcelona-slider-posts.php:269
+msgid "Enable Autoplay"
+msgstr ""
+
+#: includes/widgets/barcelona-social-media-icons.php:12
+msgctxt "Social Media Icons widget description"
+msgid "Displays the social media icons"
+msgstr ""
+
+#: includes/widgets/barcelona-social-media-icons.php:15
+#, php-format
+msgctxt "Social Media Icons widget name"
+msgid "%s Social Media Icons"
+msgstr ""
+
+#: includes/widgets/barcelona-social-media-icons.php:85
+msgid "Icon Type:"
+msgstr ""
+
+#: includes/widgets/barcelona-social-media-icons.php:87
+msgid "Square"
+msgstr ""
+
+#: includes/widgets/barcelona-social-media-icons.php:87
+msgid "Circle"
+msgstr ""
+
+#: includes/widgets/barcelona-social-media-icons.php:94
+msgid "Social Icons"
+msgstr ""
+
+#: includes/widgets/barcelona-social-media-icons.php:106
+msgid "Add Icon"
+msgstr ""
+
+#: includes/widgets/barcelona-social-media-icons.php:123
+msgid "Icon"
+msgstr ""
+
+#: includes/widgets/barcelona-social-media-icons.php:132
+msgid "Url:"
+msgstr ""
+
+#: page-modules.php:84
+msgid "Most Recent"
+msgstr ""
+
+#: page-modules.php:85
+msgid "Most Commented"
+msgstr ""
+
+#: page-modules.php:86
+msgid "Most Viewed"
+msgstr ""
+
+#: page.php:30 single.php:31
+msgid "Pages:"
+msgstr ""
+
+#: search.php:18
+#, php-format
+msgid "Search Results for: %s"
+msgstr ""
+
+#: search.php:25
+msgid "Search&hellip;"
+msgstr ""
+
+#: single.php:45
+msgid "Tags:"
+msgstr ""
+
+#: single.php:54
+msgid "Vote Up"
+msgstr ""
+
+#: single.php:60
+msgid "Vote Down"
+msgstr ""
+
+#: single.php:71 single.php:72 single.php:73 single.php:74 single.php:75
+#, php-format
+msgid "Share on %s"
+msgstr ""
+
+#, fuzzy
+#~ msgid "The following plugin was activated successfully:"
+#~ msgid_plural "The following plugins were activated successfully:"
+#~ msgstr[0] ""
+#~ "#-#-#-#-#  0extracted.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  1extracted.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+#~ msgstr[1] ""
+#~ "#-#-#-#-#  0extracted.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+#~ "#-#-#-#-#  1extracted.pot (PACKAGE VERSION)  #-#-#-#-#\n"
