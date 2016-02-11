@@ -1,0 +1,13 @@
+.login h1 a {
+    background-image: url('login-logo.svg');
+    height: 90px;
+}
+
+.login #nav {
+    display: flex;
+    align-items: baseline;
+}
+
+.login #nav a[href$="wp-login.php"] {
+    font-size: 22px;
+}
