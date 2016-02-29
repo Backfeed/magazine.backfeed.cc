@@ -438,11 +438,7 @@ class barcelona_megamenu_walker extends Walker_Nav_Menu {
 													<h2 class="post-title">
 														<a href="'. esc_url( get_the_permalink() ) .'">'. esc_html( get_the_title() ) .'</a>
 													</h2>
-													<ul class="post-meta no-sep">
-														<li class="post-date">
-															<span class="fa fa-clock-o"></span>'. get_the_time( BARCELONA_DATE_FORMAT ) .'
-														</li>
-													</ul>
+													'. barcelona_post_meta( barcelona_get_option( 'mm_post_meta_choices' ), false, false ) .'
 												</div>
 											</div>
 										</div>';
@@ -533,7 +529,7 @@ class barcelona_megamenu_walker extends Walker_Nav_Menu {
  */
 function barcelona_add_search_button_menu( $items, $args ) {
 
-	if ( $args->theme_location == 'main' ) {
+	if ( $args->theme_location == 'main' && barcelona_get_option( 'show_search_button' ) == 'on' ) {
 
 		$items .= '<li class="search"><button class="btn btn-search"><span class="fa fa-search"></span></button></li>';
 

@@ -4,6 +4,8 @@ $barcelona_is_pw_req = post_password_required();
 
 get_header();
 
+barcelona_breadcrumb();
+
 barcelona_featured_img();
 
 ?>
@@ -19,12 +21,13 @@ barcelona_featured_img();
 
 					<?php barcelona_featured_img(); ?>
 
+					<?php if ( barcelona_get_option( 'show_content' ) == 'on' ): ?>
 					<section class="post-content">
 					<?php
 
 						the_content();
 
-						if ( ! $barcelona_is_pw_req ) {
+						if ( ! $barcelona_is_pw_req && ! barcelona_is_woocommerce() ) {
 
 							wp_link_pages( array(
 								'before'   => '<div class="pagination"><span class="page-numbers title">' . esc_html__( 'Pages:', 'barcelona' ) . '</span>',
@@ -36,12 +39,27 @@ barcelona_featured_img();
 
 					?>
 					</section><!-- .post-content -->
+					<?php endif; ?>
 
+					<?php if ( ! $barcelona_is_pw_req && ! barcelona_is_woocommerce() ): ?>
 					<footer class="post-footer">
 
-						<?php comments_template(); ?>
+						<?php
+
+						barcelona_post_voting();
+
+						barcelona_social_sharing();
+
+						barcelona_author_box();
+
+						barcelona_post_ad();
+
+						comments_template();
+
+						?>
 
 					</footer><!-- .post-footer -->
+					<?php endif; ?>
 
 				</article>
 

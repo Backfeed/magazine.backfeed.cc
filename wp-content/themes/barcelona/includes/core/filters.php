@@ -127,11 +127,16 @@ function barcelona_body_class( $classes ) {
 
 	}
 
-	if ( is_singular() && ! is_page_template( 'page-modules.php' ) ) {
+	if ( is_singular() ) {
 
 		$barcelona_fimg_id = barcelona_get_option( 'featured_image_style' );
 		$barcelona_post_format = barcelona_get_post_format();
 		$barcelona_is_media = in_array( $barcelona_post_format, array( 'audio', 'gallery', 'video' ), true );
+
+		if ( $barcelona_fimg_id == 'none' ) {
+			$barcelona_fimg_id = 'cl';
+			$classes[] = 'barcelona-fimg-none';
+		}
 
 		if ( $barcelona_is_media && in_array( $barcelona_fimg_id, array( 'sp', 'fp', 'fs' ), true ) ) {
 			$barcelona_fimg_id = 'sw';
@@ -145,10 +150,10 @@ function barcelona_body_class( $classes ) {
 
 	}
 
-	if ( is_single() || is_category() ) {
+	$classes[] = ( barcelona_get_option( 'show_breadcrumb' ) != 'on' ) ? 'no-breadcrumb' : 'has-breadcrumb';
 
-		$classes[] = ( barcelona_get_option( 'show_breadcrumb' ) != 'on' ) ? 'no-breadcrumb' : 'has-breadcrumb';
-
+	if ( barcelona_get_option( 'zoom_in_post_on_hover' ) == 'on' ) {
+		$classes[] = 'zoom-enabled';
 	}
 
 	return $classes;
@@ -305,12 +310,37 @@ function barcelona_meta_box_post_format_video() {
 		'priority'  => 'low',
 		'fields'    => array(
 			array(
+				'id'        => 'barcelona_format_video_type',
+				'label'     => '',
+				'desc'      => '',
+				'type'      => 'select',
+				'std'       => 'external',
+				'choices'   => array(
+					array(
+						'value' => 'external',
+						'label' => esc_html__( 'External', 'barcelona' )
+					),
+					array(
+						'value' => 'internal',
+						'label' => esc_html__( 'Self-Hosted', 'barcelona' )
+					)
+				)
+			),
+			array(
 				'id'    => 'barcelona_format_video_embed',
 				'label' => esc_html__( 'Video Embed Code', 'barcelona' ),
 				'desc'  => esc_html__( 'Add the embed code of video from services like Youtube, Vimeo, or Hulu.', 'barcelona' ),
 				'type'  => 'textarea',
 				'rows'  => 3,
-				'class' => 'barcelona-textarea-code'
+				'class' => 'barcelona-textarea-code',
+				'condition' => 'barcelona_format_video_type:is(external)'
+			),
+			array(
+				'id'          => 'barcelona_format_video_url',
+				'label'       => esc_html__( 'Video Url', 'barcelona' ),
+				'desc'        => esc_html__( 'Put the url of the video or choose from library', 'barcelona' ),
+				'type'        => 'upload',
+				'condition'   => 'barcelona_format_video_type:is(internal)'
 			)
 		)
 	);
@@ -328,12 +358,37 @@ function barcelona_meta_box_post_format_audio() {
 		'priority'  => 'low',
 		'fields'    => array(
 			array(
+				'id'        => 'barcelona_format_audio_type',
+				'label'     => '',
+				'desc'      => '',
+				'type'      => 'select',
+				'std'       => 'external',
+				'choices'   => array(
+					array(
+						'value' => 'external',
+						'label' => esc_html__( 'External', 'barcelona' )
+					),
+					array(
+						'value' => 'internal',
+						'label' => esc_html__( 'Self-Hosted', 'barcelona' )
+					)
+				)
+			),
+			array(
 				'id'    => 'barcelona_format_audio_embed',
 				'label' => esc_html__( 'Audio Embed Code', 'barcelona' ),
 				'desc'  => esc_html__( 'Add the embed code of audio from services like SoundCloud or Rdio.', 'barcelona' ),
 				'type'  => 'textarea',
 				'rows'  => 3,
-				'class' => 'barcelona-textarea-code'
+				'class' => 'barcelona-textarea-code',
+				'condition' => 'barcelona_format_audio_type:is(external)'
+			),
+			array(
+				'id'          => 'barcelona_format_audio_url',
+				'label'       => esc_html__( 'Audio Url', 'barcelona' ),
+				'desc'        => esc_html__( 'Put the url of the video or choose from library', 'barcelona' ),
+				'type'        => 'upload',
+				'condition'   => 'barcelona_format_audio_type:is(internal)'
 			)
 		)
 	);
@@ -686,7 +741,121 @@ function barcelona_nav_menu_items( $items ) {
 add_filter( 'wp_nav_menu_items', 'barcelona_nav_menu_items' );
 
 /*
- * Unhook WooCommerce wrappers
+ * Convert URLs into the hyperlinks in the comments
  */
-remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10);
-remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10);
+function barcelona_convert_comment_links( $comment_content ) {
+
+	$barcelona_pattern = '/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/';
+	$barcelona_output = preg_replace( $barcelona_pattern, '<a href="$0" target="_blank" title="$0">$0</a>', $comment_content );
+
+	return $barcelona_output;
+
+}
+add_filter( 'get_comment_text', 'barcelona_convert_comment_links' );
+
+/*
+ * Allow category description to have custom html
+ */
+remove_filter( 'pre_term_description', 'wp_filter_kses' );
+
+/*
+ * Add custom class into the next/prev pagination links
+ */
+function barcelona_posts_link_attributes() {
+
+	return 'class="page-numbers"';
+
+}
+
+add_filter( 'next_posts_link_attributes', 'barcelona_posts_link_attributes' );
+add_filter( 'previous_posts_link_attributes', 'barcelona_posts_link_attributes' );
+
+
+remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10 );
+remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10 );
+remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
+add_filter( 'woocommerce_show_page_title', '__return_false' );
+
+function barcelona_woo_start_wrap() {
+
+	if ( barcelona_get_option( 'show_breadcrumb' ) == 'on' ) {
+		woocommerce_breadcrumb();
+	}
+
+	echo '<div class="container"><div class="'. esc_attr( barcelona_row_class() ) .'"><main id="main" class="'. esc_attr( barcelona_main_class() ) .'">';
+
+	if ( ! is_product() ) {
+
+		echo '<div class="box-header archive-header has-title"><h2 class="title">';
+
+		if ( is_shop() ) {
+
+			woocommerce_page_title();
+
+		} elseif ( ( is_product_category() ) || ( is_product_tag() ) ) {
+
+			global $wp_query;
+			$barcelona_obj = $wp_query->get_queried_object();
+
+			echo $barcelona_obj->name;
+
+		} else {
+
+			the_title();
+
+		}
+
+		echo '</h2></div>';
+
+	}
+
+}
+add_action( 'woocommerce_before_main_content', 'barcelona_woo_start_wrap' );
+
+function barcelona_woo_end_wrap() {
+
+	echo '</main>';
+
+	get_sidebar();
+
+	echo '</div><!-- .row --></div><!-- .container -->';
+
+}
+add_action( 'woocommerce_after_main_content', 'barcelona_woo_end_wrap' );
+
+function barcelona_woo_breadcrumbs() {
+
+	// <ol itemscope itemtype="http://schema.org/BreadcrumbList" class="breadcrumb">
+
+	return array(
+		'delimiter'   =>  '',
+		'wrap_before' => '<div class="breadcrumb-wrapper"><div class="container"><ol itemscope itemtype="http://schema.org/BreadcrumbList" class="breadcrumb">',
+		'wrap_after'  => '</ol></div></div>',
+		'before'      => '<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">',
+		'after'       => '</li>',
+		'home'        => esc_html_x( 'Home', 'breadcrumb', 'barcelona' ),
+	);
+
+}
+add_filter( 'woocommerce_breadcrumb_defaults', 'barcelona_woo_breadcrumbs' );
+
+function barcelona_woo_loop_columns() {
+
+	if ( barcelona_get_option( 'sidebar_position' ) == 'none' ) {
+		return 4;
+	} else {
+		return 3;
+	}
+
+}
+add_filter( 'loop_shop_columns', 'barcelona_woo_loop_columns' );
+
+function barcelona_woo_pagination() {
+
+	return array(
+		'prev_text' => esc_html__( '&laquo; Prev', 'barcelona' ),
+		'next_text' => esc_html__( 'Next &raquo;', 'barcelona' )
+	);
+
+}
+add_filter( 'woocommerce_pagination_args', 'barcelona_woo_pagination' );

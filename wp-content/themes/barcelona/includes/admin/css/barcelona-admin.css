@@ -87,7 +87,12 @@ tr.form-field .barcelona-toggle-area .form-field {
     margin: 15px 1% 10px;
 }
 
-tr.form-field .barcelona-toggle-area .form-field label {
+.form-wrap label {
+    display: inline-block;
+}
+
+tr.form-field .barcelona-toggle-area .form-field label:first-child,
+.form-wrap label:first-child {
     display: block;
     margin: 0 0 8px;
     font-weight: bold;
@@ -126,4 +131,8 @@ tr.form-field .barcelona-toggle-area .form-field label {
 .barcelona-widget-description {
     display: block;
     font-size: 11px;
+}
+
+.barcelona-notice.notice {
+    border-left-color: #f1831e;
 }

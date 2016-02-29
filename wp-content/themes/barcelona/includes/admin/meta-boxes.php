@@ -14,6 +14,11 @@ function barcelona_meta_boxes() {
 		'type'        => 'radio-image',
 		'choices'     => array(
 			array(
+				'value'     => 'none',
+				'label'     => esc_html__( 'None', 'barcelona' ),
+				'src'       => BARCELONA_THEME_PATH .'includes/admin/images/fpstyle-none.png'
+			),
+			array(
 				'value'     => 'cl',
 				'label'     => esc_html__( 'Classic Featured Image', 'barcelona' ),
 				'src'       => BARCELONA_THEME_PATH .'includes/admin/images/fimg-cl.jpg'
@@ -73,37 +78,6 @@ function barcelona_meta_boxes() {
 	);
 
 	/*
-	 * Post Meta Info Options
-	 */
-	$barcelona_post_meta_choices = array(
-		'date' => array(
-			'value'       => 'date',
-			'label'       => esc_html__( 'Post Date', 'barcelona' )
-		),
-		'author' => array(
-			'value'       => 'author',
-			'label'       => esc_html__( 'Post Author', 'barcelona' )
-		),
-		'views' => array(
-			'value'       => 'views',
-			'label'       => esc_html__( 'Post Views', 'barcelona' )
-		),
-		'likes' => array(
-			'value'       => 'likes',
-			'label'       => esc_html__( 'Post Votes', 'barcelona' )
-		),
-		'comments' => array(
-			'value'       => 'comments',
-			'label'       => esc_html__( 'Post Comments', 'barcelona' )
-		),
-		'categories' => array(
-			'value'       => 'categories',
-			'label'       => esc_html__( 'Post Categories', 'barcelona' )
-		)
-	);
-
-
-	/*
 	 * Meta box for post options
 	 */
 	$barcelona_po = array(
@@ -119,6 +93,11 @@ function barcelona_meta_boxes() {
 				'type'        => 'tab'
 			),
 			$barcelona_field_fimg,
+			array(
+				'id'            => 'barcelona_featured_image_credit',
+				'label'         => esc_html__( 'Featured Image Credit Line (Optional)', 'barcelona' ),
+				'type'          => 'text'
+			),
 			array(
 				'id'          => 'barcelona_po_tab_sidebar',
 				'label'       => esc_html__( 'Sidebar', 'barcelona' ),
@@ -136,14 +115,39 @@ function barcelona_meta_boxes() {
 				'type'        => 'tab'
 			),
 			array(
+				'id'          => 'barcelona_show_title',
+				'label'       => esc_html__( 'Display Title', 'barcelona' ),
+				'type'        => 'on-off'
+			),
+			array(
+				'id'          => 'barcelona_show_content',
+				'label'       => esc_html__( 'Display Content', 'barcelona' ),
+				'type'        => 'on-off'
+			),
+			array(
 				'id'          => 'barcelona_show_breadcrumb',
-				'label'       => esc_html__( 'Show Breadcrumb', 'barcelona' ),
+				'label'       => esc_html__( 'Display Breadcrumb', 'barcelona' ),
 				'type'        => 'on-off'
 			),
 			array(
 				'id'          => 'barcelona_show_comments',
 				'label'       => esc_html__( 'Display Comments', 'barcelona' ),
 				'type'        => 'on-off'
+			),
+			array(
+				'id'          => 'barcelona_show_comment_voting',
+				'label'       => esc_html__( 'Display Comment Voting Buttons', 'barcelona' ),
+				'type'        => 'on-off',
+				'class'       => 'barcelona-setting-indent',
+				'condition'   => 'barcelona_show_comments:is(on)'
+			),
+			array(
+				'id'          => 'barcelona_comment_voting_login_req',
+				'label'       => esc_html__( 'Only logged-in users can vote comments', 'barcelona' ),
+				'type'        => 'on-off',
+				'class'       => 'barcelona-setting-indent',
+				'condition'   => 'barcelona_show_comments:is(on),barcelona_show_comment_voting:is(on)',
+				'operator'    => 'and'
 			),
 			array(
 				'id'          => 'barcelona_show_tags',
@@ -162,12 +166,12 @@ function barcelona_meta_boxes() {
 			),
 			array(
 				'id'          => 'barcelona_show_voting',
-				'label'       => esc_html__( 'Display Voting Buttons', 'barcelona' ),
+				'label'       => esc_html__( 'Display Post Voting Buttons', 'barcelona' ),
 				'type'        => 'on-off'
 			),
 			array(
-				'id'          => 'barcelona_voting_login_req',
-				'label'       => esc_html__( 'Only logged-in users can vote', 'barcelona' ),
+				'id'          => 'barcelona_post_voting_login_req',
+				'label'       => esc_html__( 'Only logged-in users can vote this post', 'barcelona' ),
 				'type'        => 'on-off',
 				'class'       => 'barcelona-setting-indent',
 				'condition'   => 'barcelona_show_voting:is(on)'
@@ -188,7 +192,32 @@ function barcelona_meta_boxes() {
 				'desc'        => esc_html__( 'Check which meta data to show for this post', 'barcelona' ),
 				'std'         => '',
 				'type'        => 'checkbox',
-				'choices'     => array_values( $barcelona_post_meta_choices ),
+				'choices'     => array(
+					array(
+						'value'       => 'date',
+						'label'       => esc_html__( 'Post Date', 'barcelona' )
+					),
+					array(
+						'value'       => 'author',
+						'label'       => esc_html__( 'Post Author', 'barcelona' )
+					),
+					array(
+						'value'       => 'views',
+						'label'       => esc_html__( 'Post Views', 'barcelona' )
+					),
+					array(
+						'value'       => 'likes',
+						'label'       => esc_html__( 'Post Votes', 'barcelona' )
+					),
+					array(
+						'value'       => 'comments',
+						'label'       => esc_html__( 'Post Comments', 'barcelona' )
+					),
+					array(
+						'value'       => 'categories',
+						'label'       => esc_html__( 'Post Categories', 'barcelona' )
+					)
+				),
 				'section'     => 'ot-layout-settings',
 			),
 			array(
@@ -281,7 +310,7 @@ function barcelona_meta_boxes() {
 		)
 	);
 
-	// Add post options standards
+	// Add post options defaults
 	foreach ( $barcelona_po['fields'] as $k => $v ) {
 
 		if ( $v['id'] == 'barcelona_po_tab_background' ) {
@@ -289,7 +318,7 @@ function barcelona_meta_boxes() {
 		}
 
 		if ( $v['type'] != 'tab' ) {
-			$barcelona_po['fields'][ $k ]['std'] = barcelona_get_option( $v['id'] . '__single' );
+			$barcelona_po['fields'][ $k ]['std'] = barcelona_get_option( $v['id'], true );
 		}
 
 	}
@@ -327,9 +356,39 @@ function barcelona_meta_boxes() {
 				'type'        => 'tab'
 			),
 			array(
+				'id'          => 'barcelona_show_title',
+				'label'       => esc_html__( 'Display Title', 'barcelona' ),
+				'type'        => 'on-off'
+			),
+			array(
+				'id'          => 'barcelona_show_content',
+				'label'       => esc_html__( 'Display Content', 'barcelona' ),
+				'type'        => 'on-off'
+			),
+			array(
+				'id'          => 'barcelona_show_breadcrumb',
+				'label'       => esc_html__( 'Show Breadcrumb', 'barcelona' ),
+				'type'        => 'on-off'
+			),
+			array(
 				'id'          => 'barcelona_show_comments',
 				'label'       => esc_html__( 'Display Comments', 'barcelona' ),
 				'type'        => 'on-off'
+			),
+			array(
+				'id'          => 'barcelona_show_comment_voting',
+				'label'       => esc_html__( 'Display Comment Voting Buttons', 'barcelona' ),
+				'type'        => 'on-off',
+				'class'       => 'barcelona-setting-indent',
+				'condition'   => 'barcelona_show_comments:is(on)'
+			),
+			array(
+				'id'          => 'barcelona_comment_voting_login_req',
+				'label'       => esc_html__( 'Only logged-in users can vote comments', 'barcelona' ),
+				'type'        => 'on-off',
+				'class'       => 'barcelona-setting-indent',
+				'condition'   => 'barcelona_show_comments:is(on),barcelona_show_comment_voting:is(on)',
+				'operator'    => 'and'
 			),
 			array(
 				'id'          => 'barcelona_show_social_sharing',
@@ -337,16 +396,51 @@ function barcelona_meta_boxes() {
 				'type'        => 'on-off'
 			),
 			array(
-				'id'          => 'barcelona_show_voting',
-				'label'       => esc_html__( 'Display Voting Buttons', 'barcelona' ),
+				'id'          => 'barcelona_show_author_box',
+				'label'       => esc_html__( 'Display Author Box', 'barcelona' ),
 				'type'        => 'on-off'
 			),
 			array(
-				'id'          => 'barcelona_voting_login_req',
-				'label'       => esc_html__( 'Only logged-in users can vote', 'barcelona' ),
+				'id'          => 'barcelona_show_voting',
+				'label'       => esc_html__( 'Display Post Voting Buttons', 'barcelona' ),
+				'type'        => 'on-off'
+			),
+			array(
+				'id'          => 'barcelona_post_voting_login_req',
+				'label'       => esc_html__( 'Only logged-in users can vote this post', 'barcelona' ),
 				'type'        => 'on-off',
 				'class'       => 'barcelona-setting-indent',
 				'condition'   => 'barcelona_show_voting:is(on)'
+			),
+			array(
+				'id'          => 'barcelona_post_meta_choices',
+				'label'       => esc_html__( 'Page Meta Data', 'barcelona' ),
+				'desc'        => esc_html__( 'Check which meta data to show for this page', 'barcelona' ),
+				'std'         => '',
+				'type'        => 'checkbox',
+				'choices'     => array(
+					array(
+						'value'       => 'date',
+						'label'       => esc_html__( 'Page Date', 'barcelona' )
+					),
+					array(
+						'value'       => 'author',
+						'label'       => esc_html__( 'Page Author', 'barcelona' )
+					),
+					array(
+						'value'       => 'views',
+						'label'       => esc_html__( 'Page Views', 'barcelona' )
+					),
+					array(
+						'value'       => 'likes',
+						'label'       => esc_html__( 'Page Votes', 'barcelona' )
+					),
+					array(
+						'value'       => 'comments',
+						'label'       => esc_html__( 'Page Comments', 'barcelona' )
+					)
+				),
+				'section'     => 'ot-layout-settings',
 			),
 			array(
 				'id'          => 'barcelona_po_tab_background',
@@ -362,6 +456,41 @@ function barcelona_meta_boxes() {
 				'id'    => 'barcelona_po_tab_ad',
 				'label' => esc_html__( 'Advertisement', 'barcelona' ),
 				'type'  => 'tab'
+			),
+			array(
+				'id'          => 'barcelona_post_content_ad',
+				'label'       => esc_html__( 'Page Content Ad', 'barcelona' ),
+				'type'        => 'select',
+				'choices'     => array(
+					array(
+						'value' => 'inherit',
+						'label' => esc_html__( 'Inherit (Same as page settings)', 'barcelona' )
+					),
+					array(
+						'value' => 'custom',
+						'label' => esc_html__( 'Custom', 'barcelona' )
+					)
+				)
+			),
+			array(
+				'id'          => 'barcelona_post_content_ad_1',
+				'label'       => esc_html__( 'Page Content Ad (728x90)', 'barcelona' ),
+				'desc'        => esc_html__( 'Put the ad code to page content for large screens.', 'barcelona' ),
+				'type'        => 'textarea-simple',
+				'rows'        => 4,
+				'section'     => 'ot-layout-settings',
+				'condition'   => 'barcelona_post_content_ad:is(custom)',
+				'class'       => 'barcelona-setting-indent barcelona-textarea-code'
+			),
+			array(
+				'id'          => 'barcelona_post_content_ad_2',
+				'label'       => esc_html__( 'Page Content Ad (468x60)', 'barcelona' ),
+				'desc'        => esc_html__( 'Put the ad code to page content for small screens.', 'barcelona' ),
+				'type'        => 'textarea-simple',
+				'rows'        => 4,
+				'section'     => 'ot-layout-settings',
+				'condition'   => 'barcelona_post_content_ad:is(custom)',
+				'class'       => 'barcelona-setting-indent barcelona-textarea-code'
 			),
 			array(
 				'id'          => 'barcelona_add_header_ad',
@@ -403,7 +532,7 @@ function barcelona_meta_boxes() {
 		)
 	);
 
-	// Add page options standards
+	// Add page options defaults
 	foreach ( $barcelona_pgo['fields'] as $k => $v ) {
 
 		if ( $v['id'] == 'barcelona_po_tab_background' ) {
@@ -411,7 +540,7 @@ function barcelona_meta_boxes() {
 		}
 
 		if ( $v['type'] != 'tab' ) {
-			$barcelona_pgo['fields'][ $k ]['std'] = barcelona_get_option( $v['id'] . '__page' );
+			$barcelona_pgo['fields'][ $k ]['std'] = barcelona_get_option( $v['id'], true );
 		}
 
 	}
@@ -482,8 +611,6 @@ function barcelona_meta_boxes() {
 		)
 	);
 
-	unset( $barcelona_post_meta_choices['author'], $barcelona_post_meta_choices['categories'] );
-
 	/*
 	 * Meta box for page builder
 	 */
@@ -505,9 +632,9 @@ function barcelona_meta_boxes() {
 				'id'            => 'barcelona_fp_max_number_of_posts',
 				'label'         => esc_html__( 'Max Number of Post', 'barcelona' ),
 				'type'          => 'numeric-slider',
-				'std'           => '3',
-				'min_max_step'  => '1,10,1',
-				'class'         => 'barcelona-max-number-of-posts',
+				'std'           => 3,
+				'min_max_step'  => '1,100,1',
+				'class'         => 'barcelona-max-number-of-posts barcelona-half',
 				'condition'     => 'barcelona_fp_style:not(none)'
 			),
 			array(
@@ -516,7 +643,34 @@ function barcelona_meta_boxes() {
 				'type'          => 'numeric-slider',
 				'std'           => '0',
 				'min_max_step'  => '0,100,1',
-				'class'         => 'barcelona-posts-offset',
+				'class'         => 'barcelona-posts-offset barcelona-half',
+				'condition'     => 'barcelona_fp_style:not(none)'
+			),
+			array(
+				'id'          => 'barcelona_fp_post_meta_choices',
+				'label'       => esc_html__( 'Page Meta Data', 'barcelona' ),
+				'desc'        => esc_html__( 'Check which meta data to show for featured posts', 'barcelona' ),
+				'std'         => '',
+				'type'        => 'checkbox',
+				'choices'     => array(
+					array(
+						'value'       => 'date',
+						'label'       => esc_html__( 'Post Date', 'barcelona' )
+					),
+					array(
+						'value'       => 'views',
+						'label'       => esc_html__( 'Post Views', 'barcelona' )
+					),
+					array(
+						'value'       => 'likes',
+						'label'       => esc_html__( 'Post Votes', 'barcelona' )
+					),
+					array(
+						'value'       => 'comments',
+						'label'       => esc_html__( 'Post Comments', 'barcelona' )
+					)
+				),
+				'class'     => 'barcelona-filter-category barcelona-half',
 				'condition'     => 'barcelona_fp_style:not(none)'
 			),
 			array(
@@ -524,7 +678,7 @@ function barcelona_meta_boxes() {
 				'label'         => esc_html__( 'Filter by Category', 'barcelona' ),
 				'type'          => 'taxonomy-checkbox',
 				'taxonomy'      => 'category',
-				'class'         => 'barcelona-filter-category',
+				'class'         => 'barcelona-filter-category barcelona-half',
 				'condition'     => 'barcelona_fp_style:not(none)'
 			),
 			array(
@@ -532,7 +686,7 @@ function barcelona_meta_boxes() {
 				'label'         => esc_html__( 'Filter by Tag Name', 'barcelona' ),
 				'desc'          => esc_html__( 'Add tag(s) seperated by comma. i.e. sports, cooking', 'barcelona' ),
 				'type'          => 'text',
-				'class'         => 'barcelona-filter-tag',
+				'class'         => 'barcelona-filter-tag barcelona-half',
 				'condition'     => 'barcelona_fp_style:not(none)'
 			),
 			array(
@@ -540,7 +694,7 @@ function barcelona_meta_boxes() {
 				'label'         => esc_html__( 'Filter by Post Manually', 'barcelona' ),
 				'desc'          => esc_html__( 'Specify post ids separated by comma. i.e. 45,73,132,19', 'barcelona' ),
 				'type'          => 'text',
-				'class'         => 'barcelona-filter-post',
+				'class'         => 'barcelona-filter-post barcelona-half',
 				'condition'     => 'barcelona_fp_style:not(none)'
 			),
 			array(
@@ -549,7 +703,7 @@ function barcelona_meta_boxes() {
 				'type'          => 'select',
 				'std'           => 'date',
 				'choices'       => $barcelona_orderby_choices,
-				'class'         => 'barcelona-orderby',
+				'class'         => 'barcelona-orderby barcelona-half',
 				'condition'     => 'barcelona_fp_style:not(none)'
 			),
 			array(
@@ -567,7 +721,16 @@ function barcelona_meta_boxes() {
 						'label' => esc_html__( 'Descending', 'barcelona' )
 					)
 				),
-				'class'     => 'barcelona-orderby',
+				'class'     => 'barcelona-orderby barcelona-half',
+				'condition' => 'barcelona_fp_style:not(none)'
+			),
+			array(
+				'id'        => 'barcelona_fp_prevent_duplication',
+				'label'     => esc_html__( 'Do not duplicate (Display only in featured posts area)' ),
+				'desc'      => esc_html__( 'Enable this option if you want posts in featured posts area to be excluded from other modules so they don\'t appear twice' ),
+				'type'      => 'on-off',
+				'std'       => 'off',
+				'class'     => 'barcelona-prevent-duplication',
 				'condition' => 'barcelona_fp_style:not(none)'
 			),
 			array(
@@ -646,7 +809,7 @@ function barcelona_meta_boxes() {
 					),
 					array(
 						'id'        => 'g_show_overlay_always',
-						'label'     => esc_html__( 'Display Title', 'barcelona' ),
+						'label'     => esc_html__( 'Display Post Title', 'barcelona' ),
 						'type'      => 'select',
 						'std'       => 'off',
 						'choices'   => array(
@@ -661,22 +824,56 @@ function barcelona_meta_boxes() {
 								'src'   => ''
 							)
 						),
-						'condition' => 'barcelona_module_layout:is(g)'
+						'class'     => 'barcelona-half',
+						'condition' => 'module_layout:is(g)'
 					),
 					array(
 						'id'        => 'g_is_autoplay',
 						'label'     => esc_html__( 'Enable Autoplay', 'barcelona' ),
 						'type'      => 'on-off',
 						'std'       => 'off',
+						'class'     => 'barcelona-half',
 						'condition' => 'module_layout:is(g)'
 					),
 					array(
-						'id'    => 'add_tabs',
-						'label' => esc_html__( 'Add Tabs', 'barcelona' ),
-						'type'  => 'on-off',
-						'std'   => 'off',
-						'operator' => 'and',
+						'id'        => 'add_tabs',
+						'label'     => esc_html__( 'Add Tabs', 'barcelona' ),
+						'type'      => 'on-off',
+						'std'       => 'off',
+						'operator'  => 'and',
+						'class'     => 'barcelona-half',
 						'condition' => 'module_layout:not(l)'
+					),
+					array(
+						'id'        => 'pagination',
+						'label'     => esc_html__( 'Pagination Type', 'barcelona' ),
+						'type'      => 'select',
+						'std'       => 'none',
+						'choices'   => array(
+							array(
+								'value' => 'none',
+								'label' => esc_html__( 'None', 'barcelona' )
+							),
+							array(
+								'value' => 'numeric',
+								'label' => esc_html__( 'Numeric Pagination Buttons', 'barcelona' )
+							),
+							array(
+								'value' => 'nextprev',
+								'label' => esc_html__( 'Prev/Next Page Links', 'barcelona' )
+							),
+							array(
+								'value' => 'loadmore',
+								'label' => esc_html__( 'Load More Button', 'barcelona' )
+							),
+							array(
+								'value' => 'infinite',
+								'label' => esc_html__( 'Infinite Scroll', 'barcelona' )
+							)
+						),
+						'operator'  => 'and',
+						'class'     => 'barcelona-half',
+						'condition' => 'module_layout:not(e),module_layout:not(g),module_layout:not(l)'
 					),
 					array(
 						'id'        => 'tab_type',
@@ -685,13 +882,11 @@ function barcelona_meta_boxes() {
 						'choices'   => array(
 							array(
 								'value' => 't1',
-								'label' => esc_html__( 'Use Selected Categories as Tab', 'barcelona' ),
-								'src'   => ''
+								'label' => esc_html__( 'Use Selected Categories as Tab', 'barcelona' )
 							),
 							array(
 								'value' => 't2',
-								'label' => esc_html__( 'Use Statistical Tabs', 'barcelona' ),
-								'src'   => ''
+								'label' => esc_html__( 'Use Statistical Tabs', 'barcelona' )
 							)
 						),
 						'operator' => 'and',
@@ -701,8 +896,8 @@ function barcelona_meta_boxes() {
 						'id'            => 'max_number_of_posts',
 						'label'         => esc_html__( 'Max Number of Post', 'barcelona' ),
 						'type'          => 'numeric-slider',
-						'min_max_step'  => '1,10,1',
-						'class'         => 'barcelona-max-number-of-posts',
+						'min_max_step'  => '1,100,1',
+						'class'         => 'barcelona-max-number-of-posts barcelona-half',
 					    'operator'      => 'and',
 						'condition'     => 'module_layout:not(a),module_layout:not(b),module_layout:not(l)'
 					),
@@ -711,16 +906,44 @@ function barcelona_meta_boxes() {
 						'label'         => esc_html__( 'Posts Offset', 'barcelona' ),
 						'type'          => 'numeric-slider',
 						'min_max_step'  => '0,100,1',
-						'class'         => 'barcelona-posts-offset',
+						'class'         => 'barcelona-posts-offset barcelona-half',
 						'operator'      => 'and',
 						'condition'     => 'module_layout:not(l)'
+					),
+					array(
+						'id'          => 'post_meta_choices',
+						'label'       => esc_html__( 'Posts Meta Data', 'barcelona' ),
+						'desc'        => esc_html__( 'Check which meta data to show for the posts in module', 'barcelona' ),
+						'std'         => array( 'date' ),
+						'type'        => 'checkbox',
+						'choices'     => array(
+							array(
+								'value'       => 'date',
+								'label'       => esc_html__( 'Post Date', 'barcelona' )
+							),
+							array(
+								'value'       => 'views',
+								'label'       => esc_html__( 'Post Views', 'barcelona' )
+							),
+							array(
+								'value'       => 'likes',
+								'label'       => esc_html__( 'Post Votes', 'barcelona' )
+							),
+							array(
+								'value'       => 'comments',
+								'label'       => esc_html__( 'Post Comments', 'barcelona' )
+							)
+						),
+						'class'       => 'barcelona-filter-category barcelona-half',
+						'section'     => 'ot-layout-settings',
+						'condition'   => 'module_layout:not(l)'
 					),
 					array(
 						'id'            => 'filter_category',
 						'label'         => esc_html__( 'Filter by Category', 'barcelona' ),
 						'type'          => 'taxonomy-checkbox',
 						'taxonomy'      => 'category',
-						'class'         => 'barcelona-filter-category',
+						'class'         => 'barcelona-filter-category barcelona-half',
 						'operator'      => 'and',
 						'condition'     => 'module_layout:not(l)'
 					),
@@ -729,7 +952,7 @@ function barcelona_meta_boxes() {
 						'label'         => esc_html__( 'Filter by Tag Name', 'barcelona' ),
 						'desc'          => esc_html__( 'Add tag(s) seperated by comma. i.e. sports, cooking', 'barcelona' ),
 						'type'          => 'text',
-						'class'         => 'barcelona-filter-tag',
+						'class'         => 'barcelona-filter-tag barcelona-half',
 						'operator'      => 'and',
 						'condition'     => 'module_layout:not(l)'
 					),
@@ -738,7 +961,7 @@ function barcelona_meta_boxes() {
 						'label'         => esc_html__( 'Filter by Post Manually', 'barcelona' ),
 						'desc'          => esc_html__( 'Specify post ids separated by comma. i.e. 45,73,132,19', 'barcelona' ),
 						'type'          => 'text',
-						'class'         => 'barcelona-filter-post',
+						'class'         => 'barcelona-filter-post barcelona-half',
 						'operator'      => 'and',
 						'condition'     => 'module_layout:not(l)'
 					),
@@ -748,8 +971,8 @@ function barcelona_meta_boxes() {
 						'type'          => 'select',
 						'std'           => 'date',
 						'choices'       => $barcelona_orderby_choices,
-						'condition'     => 'module_layout:not(l)',
-						'class'         => 'barcelona-orderby'
+						'class'         => 'barcelona-orderby barcelona-half',
+						'condition'     => 'module_layout:not(l)'
 					),
 					array(
 						'id'        => 'order',
@@ -766,19 +989,8 @@ function barcelona_meta_boxes() {
 								'label' => esc_html__( 'Descending', 'barcelona' )
 							)
 						),
-						'condition' => 'module_layout:not(l)',
-						'class'     => 'barcelona-orderby'
-					),
-					array(
-						'id'          => 'post_meta_choices',
-						'label'       => esc_html__( 'Posts Meta Data', 'barcelona' ),
-						'desc'        => esc_html__( 'Check which meta data to show for the posts in module', 'barcelona' ),
-						'std'         => array( 'date' ),
-						'type'        => 'checkbox',
-						'choices'     => array_values( $barcelona_post_meta_choices ),
-						'section'     => 'ot-layout-settings',
-						'condition'   => 'module_layout:not(l)',
-						'class'       => 'barcelona-pm-choices'
+						'class'     => 'barcelona-orderby barcelona-half',
+						'condition' => 'module_layout:not(l)'
 					),
 					array(
 						'id'        => 'html',
@@ -789,6 +1001,15 @@ function barcelona_meta_boxes() {
 						'condition' => 'module_layout:is(l)',
 						'operator'  => 'and',
 						'class'     => 'barcelona-setting-indent barcelona-textarea-code'
+					),
+					array(
+						'id'        => 'prevent_duplication',
+						'label'     => esc_html__( 'Do not duplicate (Display only in this module)' ),
+						'desc'      => esc_html__( 'Enable this option if you want posts in this module to be excluded from other modules so they don\'t appear twice' ),
+						'type'      => 'on-off',
+						'std'       => 'on',
+						'class'     => 'barcelona-prevent-duplication',
+						'condition' => 'module_layout:not(l)'
 					)
 				)
 			)
@@ -809,19 +1030,31 @@ function barcelona_category_add_form_fields() {
 
 	global $wp_registered_sidebars;
 
-	$barcelona_fp_style           = barcelona_get_option( 'fp_style__category' );
-	$barcelona_fp_number          = barcelona_get_option( 'fp_max_number_of_posts__category' );
-	$barcelona_fp_posts_offset    = barcelona_get_option( 'fp_posts_offset__category' );
-	$barcelona_fp_filter_tag      = barcelona_get_option( 'fp_filter_tag__category' );
-	$barcelona_fp_filter_post     = barcelona_get_option( 'fp_filter_post__category' );
-	$barcelona_fp_orderby         = barcelona_get_option( 'fp_orderby__category' );
-	$barcelona_fp_order           = barcelona_get_option( 'fp_order__category' );
+	$barcelona_fp_style            = barcelona_get_option( 'fp_style__category' );
+	$barcelona_fp_number           = barcelona_get_option( 'fp_max_number_of_posts__category' );
+	$barcelona_fp_posts_offset     = barcelona_get_option( 'fp_posts_offset__category' );
+	$barcelona_fp_filter_tag       = barcelona_get_option( 'fp_filter_tag__category' );
+	$barcelona_fp_filter_post      = barcelona_get_option( 'fp_filter_post__category' );
+	$barcelona_fp_orderby          = barcelona_get_option( 'fp_orderby__category' );
+	$barcelona_fp_order            = barcelona_get_option( 'fp_order__category' );
+	$barcelona_prevent_duplication = barcelona_get_option( 'fp_prevent_duplication__category' );
+
+	$barcelona_fp_post_meta_choices = barcelona_get_option( 'fp_post_meta_choices__category' );
+	if ( ! is_array( $barcelona_fp_post_meta_choices ) ) {
+		$barcelona_fp_post_meta_choices = array();
+	}
 
 	$barcelona_posts_layout       = barcelona_get_option( 'posts_layout__category' );
+	$barcelona_pagination         = barcelona_get_option( 'pagination__category' );
 	$barcelona_default_sidebar    = barcelona_get_option( 'default_sidebar__category' );
 	$barcelona_sidebar_position   = barcelona_get_option( 'sidebar_position__category' );
 	$barcelona_show_breadcrumb    = barcelona_get_option( 'show_breadcrumb__category' );
 	$barcelona_show_cat_title     = barcelona_get_option( 'show_cat_title__category' );
+
+	$barcelona_post_meta_choices  = barcelona_get_option( 'post_meta_choices__category' );
+	if ( ! is_array( $barcelona_post_meta_choices ) ) {
+		$barcelona_post_meta_choices = array();
+	}
 
 	?>
 	<div class="form-field fp-layout-wrap" data-el="barcelona-fp-layout-options">
@@ -838,6 +1071,15 @@ function barcelona_category_add_form_fields() {
 	</div>
 
 	<div class="barcelona-toggle-area barcelona-fp-layout-options barcelona-hide barcelona-clearfix" data-cond="not:none">
+
+		<div class="form-field fp-post-meta-choices-wrap">
+			<label for="barcelona-tag-fp-post-meta-choices"><?php esc_html_e( 'Post Meta Data', 'barcelona' ); ?></label>
+			<label><input type="checkbox" name="barcelona_cat[fp_post_meta_choices][]" value="date"<?php echo in_array( 'date', $barcelona_fp_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Date', 'barcelona' ); ?></label>
+			<label><input type="checkbox" name="barcelona_cat[fp_post_meta_choices][]" value="views"<?php echo in_array( 'views', $barcelona_fp_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Views', 'barcelona' ); ?></label>
+			<label><input type="checkbox" name="barcelona_cat[fp_post_meta_choices][]" value="likes"<?php echo in_array( 'likes', $barcelona_fp_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Votes', 'barcelona' ); ?></label>
+			<label><input type="checkbox" name="barcelona_cat[fp_post_meta_choices][]" value="comments"<?php echo in_array( 'comments', $barcelona_fp_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Comments', 'barcelona' ); ?></label>
+			<p><?php esc_html_e( 'Check which meta data to show for the featured posts.', 'barcelona' ); ?></p>
+		</div>
 
 		<div class="form-field fp-max-posts-wrap">
 			<label for="barcelona-tag-fp-max-posts"><?php esc_html_e( 'Max. Number of Post', 'barcelona' ); ?></label>
@@ -889,6 +1131,13 @@ function barcelona_category_add_form_fields() {
 			</select>
 		</div>
 
+		<div class="form-field fp-prevent-duplication-wrap">
+			<label for="barcelona-tag-fp-prevent-duplication"><?php esc_html_e( 'Do not duplicate (Display only in featured posts area)', 'barcelona' ); ?></label>
+			<label><input type="radio" name="barcelona_cat[fp_prevent_duplication]" value="on"<?php echo ( $barcelona_prevent_duplication == 'on' ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'On', 'barcelona' ); ?></label>
+			<label><input type="radio" name="barcelona_cat[fp_prevent_duplication]" value="off"<?php echo ( $barcelona_prevent_duplication == 'off' ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Off', 'barcelona' ); ?></label>
+			<p class="description"><?php esc_html_e( 'Enable this option if you want posts in featured posts area to be excluded from other modules so they don\'t appear twice', 'barcelona' ); ?></p>
+		</div>
+
 	</div>
 
 	<div class="form-field posts-layout-wrap">
@@ -902,6 +1151,25 @@ function barcelona_category_add_form_fields() {
 			<input type="hidden" name="barcelona_cat[posts_layout]" class="barcelona-hidden-val" value="<?php echo esc_attr( $barcelona_posts_layout ); ?>" />
 		</div>
 		<p><?php esc_html_e( 'Choose how posts of the category will display.', 'barcelona' ); ?></p>
+	</div>
+
+	<div class="form-field pagination-wrap">
+		<label for="barcelona-tag-pagination"><?php esc_html_e( 'Pagination Type', 'barcelona' ); ?></label>
+		<select name="barcelona_cat[pagination]" id="barcelona-tag-pagination" class="barcelona-tax-select widefat">
+			<option value="<?php echo esc_attr( 'numeric' ); ?>"<?php echo ( $barcelona_pagination == 'numeric' ) ? ' selected' : ''; ?>><?php echo esc_html__( 'Numeric Pagination Buttons', 'barcelona' ); ?></option>
+			<option value="<?php echo esc_attr( 'nextprev' ); ?>"<?php echo ( $barcelona_pagination == 'nextprev' ) ? ' selected' : ''; ?>><?php echo esc_html__( 'Prev/Next Page Links', 'barcelona' ); ?></option>
+			<option value="<?php echo esc_attr( 'loadmore' ); ?>"<?php echo ( $barcelona_pagination == 'loadmore' ) ? ' selected' : ''; ?>><?php echo esc_html__( 'Load More Button', 'barcelona' ); ?></option>
+			<option value="<?php echo esc_attr( 'infinite' ); ?>"<?php echo ( $barcelona_pagination == 'infinite' ) ? ' selected' : ''; ?>><?php echo esc_html__( 'Infinite Scroll', 'barcelona' ); ?></option>
+		</select>
+	</div>
+
+	<div class="form-field post-meta-choices-wrap">
+		<label for="barcelona-tag-post-meta-choices"><?php esc_html_e( 'Post Meta Data', 'barcelona' ); ?></label>
+		<label><input type="checkbox" name="barcelona_cat[post_meta_choices][]" value="date"<?php echo in_array( 'date', $barcelona_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Date', 'barcelona' ); ?></label>
+		<label><input type="checkbox" name="barcelona_cat[post_meta_choices][]" value="views"<?php echo in_array( 'views', $barcelona_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Views', 'barcelona' ); ?></label>
+		<label><input type="checkbox" name="barcelona_cat[post_meta_choices][]" value="likes"<?php echo in_array( 'likes', $barcelona_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Votes', 'barcelona' ); ?></label>
+		<label><input type="checkbox" name="barcelona_cat[post_meta_choices][]" value="comments"<?php echo in_array( 'comments', $barcelona_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Comments', 'barcelona' ); ?></label>
+		<p><?php esc_html_e( 'Check which meta data to show for the posts in this category.', 'barcelona' ); ?></p>
 	</div>
 
 	<div class="form-field sidebar-wrap">
@@ -1041,24 +1309,36 @@ function barcelona_category_edit_form_fields( $term ) {
 
 	$term_id = $term->term_id;
 
-	$barcelona_fp_style           = barcelona_get_option( 'fp_style__category_'. $term_id );
-	$barcelona_fp_number          = barcelona_get_option( 'fp_max_number_of_posts__category_'. $term_id );
-	$barcelona_fp_posts_offset    = barcelona_get_option( 'fp_posts_offset__category_'. $term_id );
-	$barcelona_fp_filter_tag      = barcelona_get_option( 'fp_filter_tag__category_'. $term_id );
-	$barcelona_fp_filter_post     = barcelona_get_option( 'fp_filter_post__category_'. $term_id );
-	$barcelona_fp_orderby         = barcelona_get_option( 'fp_orderby__category_'. $term_id );
-	$barcelona_fp_order           = barcelona_get_option( 'fp_order__category_'. $term_id );
+	$barcelona_fp_style            = barcelona_get_option( 'fp_style__category_'. $term_id, true );
+	$barcelona_fp_number           = barcelona_get_option( 'fp_max_number_of_posts__category_'. $term_id, true );
+	$barcelona_fp_posts_offset     = barcelona_get_option( 'fp_posts_offset__category_'. $term_id, true );
+	$barcelona_fp_filter_tag       = barcelona_get_option( 'fp_filter_tag__category_'. $term_id, true );
+	$barcelona_fp_filter_post      = barcelona_get_option( 'fp_filter_post__category_'. $term_id, true );
+	$barcelona_fp_orderby          = barcelona_get_option( 'fp_orderby__category_'. $term_id, true );
+	$barcelona_fp_order            = barcelona_get_option( 'fp_order__category_'. $term_id, true );
+	$barcelona_prevent_duplication = barcelona_get_option( 'fp_prevent_duplication__category_'. $term_id, true );
 
-	$barcelona_posts_layout       = barcelona_get_option( 'posts_layout__category_'. $term_id );
-	$barcelona_default_sidebar    = barcelona_get_option( 'default_sidebar__category_'. $term_id );
-	$barcelona_sidebar_position   = barcelona_get_option( 'sidebar_position__category_'. $term_id );
-	$barcelona_show_breadcrumb    = barcelona_get_option( 'show_breadcrumb__category_'. $term_id );
-	$barcelona_show_cat_title     = barcelona_get_option( 'show_cat_title__category_'. $term_id );
-	$barcelona_add_header_ad      = barcelona_get_option( 'add_header_ad__category_'. $term_id );
-	$barcelona_header_ad_1        = ( $barcelona_add_header_ad == 'custom' ) ? barcelona_get_option( 'header_ad_1__category_'. $term_id ) : '';
-	$barcelona_header_ad_2        = ( $barcelona_add_header_ad == 'custom' ) ? barcelona_get_option( 'header_ad_2__category_'. $term_id ) : '';
-	$barcelona_set_background     = barcelona_get_option( 'set_background__category_'. $term_id );
-	$barcelona_background         = ( $barcelona_set_background == 'custom' ) ? barcelona_get_option( 'custom_background__category_'. $term_id ) : array();
+	$barcelona_fp_post_meta_choices = barcelona_get_option( 'fp_post_meta_choices__category_'. $term_id, true );
+	if ( ! is_array( $barcelona_fp_post_meta_choices ) ) {
+		$barcelona_fp_post_meta_choices = array();
+	}
+
+	$barcelona_posts_layout       = barcelona_get_option( 'posts_layout__category_'. $term_id, true );
+	$barcelona_pagination         = barcelona_get_option( 'pagination__category_'. $term_id, true );
+	$barcelona_default_sidebar    = barcelona_get_option( 'default_sidebar__category_'. $term_id, true );
+	$barcelona_sidebar_position   = barcelona_get_option( 'sidebar_position__category_'. $term_id, true );
+	$barcelona_show_breadcrumb    = barcelona_get_option( 'show_breadcrumb__category_'. $term_id, true );
+	$barcelona_show_cat_title     = barcelona_get_option( 'show_cat_title__category_'. $term_id, true );
+	$barcelona_add_header_ad      = barcelona_get_option( 'add_header_ad__category_'. $term_id, true );
+	$barcelona_header_ad_1        = ( $barcelona_add_header_ad == 'custom' ) ? barcelona_get_option( 'header_ad_1__category_'. $term_id, true ) : '';
+	$barcelona_header_ad_2        = ( $barcelona_add_header_ad == 'custom' ) ? barcelona_get_option( 'header_ad_2__category_'. $term_id, true ) : '';
+	$barcelona_set_background     = barcelona_get_option( 'set_background__category_'. $term_id, true );
+	$barcelona_background         = ( $barcelona_set_background == 'custom' ) ? barcelona_get_option( 'custom_background__category_'. $term_id, true ) : array();
+
+	$barcelona_post_meta_choices  = barcelona_get_option( 'post_meta_choices__category_'. $term_id, true );
+	if ( ! is_array( $barcelona_post_meta_choices ) ) {
+		$barcelona_post_meta_choices = array();
+	}
 
 	?>
 	<tr class="form-field fp-layout-wrap" data-el="barcelona-fp-layout-options">
@@ -1082,6 +1362,15 @@ function barcelona_category_edit_form_fields( $term ) {
 		<th scope="row">&nbsp;</th>
 		<td>
 			<div class="barcelona-toggle-area barcelona-clearfix">
+
+				<div class="form-field fp-post-meta-choices-wrap">
+					<label for="barcelona-tag-fp-post-meta-choices"><?php esc_html_e( 'Post Meta Data', 'barcelona' ); ?></label>
+					<label><input type="checkbox" name="barcelona_cat[fp_post_meta_choices][]" value="date"<?php echo in_array( 'date', $barcelona_fp_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Date', 'barcelona' ); ?></label>
+					<label><input type="checkbox" name="barcelona_cat[fp_post_meta_choices][]" value="views"<?php echo in_array( 'views', $barcelona_fp_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Views', 'barcelona' ); ?></label>
+					<label><input type="checkbox" name="barcelona_cat[fp_post_meta_choices][]" value="likes"<?php echo in_array( 'likes', $barcelona_fp_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Votes', 'barcelona' ); ?></label>
+					<label><input type="checkbox" name="barcelona_cat[fp_post_meta_choices][]" value="comments"<?php echo in_array( 'comments', $barcelona_fp_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Comments', 'barcelona' ); ?></label>
+					<p class="description"><?php esc_html_e( 'Check which meta data to show for the featured posts.', 'barcelona' ); ?></p>
+				</div>
 
 				<div class="form-field fp-max-posts-wrap">
 					<label for="barcelona-tag-fp-max-posts"><?php esc_html_e( 'Max Number of Post', 'barcelona' ); ?></label>
@@ -1133,6 +1422,13 @@ function barcelona_category_edit_form_fields( $term ) {
 					</select>
 				</div>
 
+				<div class="form-field fp-prevent-duplication-wrap">
+					<label for="barcelona-tag-fp-prevent-duplication"><?php esc_html_e( 'Do not duplicate (Display only in featured posts area)', 'barcelona' ); ?></label>
+					<label><input type="radio" name="barcelona_cat[fp_prevent_duplication]" value="on"<?php echo ( $barcelona_prevent_duplication == 'on' ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'On', 'barcelona' ); ?></label>
+					<label><input type="radio" name="barcelona_cat[fp_prevent_duplication]" value="off"<?php echo ( $barcelona_prevent_duplication == 'off' ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Off', 'barcelona' ); ?></label>
+					<p class="description"><?php esc_html_e( 'Enable this option if you want posts in featured posts area to be excluded from other modules so they don\'t appear twice', 'barcelona' ); ?></p>
+				</div>
+
 			</div>
 		</td>
 	</tr>
@@ -1151,6 +1447,33 @@ function barcelona_category_edit_form_fields( $term ) {
 				<input type="hidden" name="barcelona_cat[posts_layout]" class="barcelona-hidden-val" value="<?php echo esc_attr( $barcelona_posts_layout ); ?>" />
 			</div>
 			<p class="description"><?php esc_html_e( 'Choose how posts of the category will display.', 'barcelona' ); ?></p>
+		</td>
+	</tr>
+
+	<tr class="form-field pagination-wrap">
+		<th scope="row">
+			<label for="barcelona-tag-pagination"><?php esc_html_e( 'Pagination Type', 'barcelona' ); ?></label>
+		</th>
+		<td>
+			<select name="barcelona_cat[pagination]" id="barcelona-tag-pagination" class="barcelona-tax-select">
+				<option value="<?php echo esc_attr( 'numeric' ); ?>"<?php echo ( $barcelona_pagination == 'numeric' ) ? ' selected' : ''; ?>><?php echo esc_html__( 'Numeric Pagination Buttons', 'barcelona' ); ?></option>
+				<option value="<?php echo esc_attr( 'nextprev' ); ?>"<?php echo ( $barcelona_pagination == 'nextprev' ) ? ' selected' : ''; ?>><?php echo esc_html__( 'Prev/Next Page Links', 'barcelona' ); ?></option>
+				<option value="<?php echo esc_attr( 'loadmore' ); ?>"<?php echo ( $barcelona_pagination == 'loadmore' ) ? ' selected' : ''; ?>><?php echo esc_html__( 'Load More Button', 'barcelona' ); ?></option>
+				<option value="<?php echo esc_attr( 'infinite' ); ?>"<?php echo ( $barcelona_pagination == 'infinite' ) ? ' selected' : ''; ?>><?php echo esc_html__( 'Infinite Scroll', 'barcelona' ); ?></option>
+			</select>
+		</td>
+	</tr>
+
+	<tr class="form-field post-meta-choices-wrap">
+		<th scope="row">
+			<label for="barcelona-tag-post-meta-choices"><?php esc_html_e( 'Post Meta Data', 'barcelona' ); ?></label>
+		</th>
+		<td>
+			<label><input type="checkbox" name="barcelona_cat[post_meta_choices][]" value="date"<?php echo in_array( 'date', $barcelona_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Date', 'barcelona' ); ?></label>
+			<label><input type="checkbox" name="barcelona_cat[post_meta_choices][]" value="views"<?php echo in_array( 'views', $barcelona_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Views', 'barcelona' ); ?></label>
+			<label><input type="checkbox" name="barcelona_cat[post_meta_choices][]" value="likes"<?php echo in_array( 'likes', $barcelona_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Votes', 'barcelona' ); ?></label>
+			<label><input type="checkbox" name="barcelona_cat[post_meta_choices][]" value="comments"<?php echo in_array( 'comments', $barcelona_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Comments', 'barcelona' ); ?></label>
+			<p class="description"><?php esc_html_e( 'Check which meta data to show for the posts in this category.', 'barcelona' ); ?></p>
 		</td>
 	</tr>
 
@@ -1336,12 +1659,28 @@ function barcelona_save_category_meta_fields( $term_id ) {
 		$barcelona_meta['fp_filter_post']           = isset( $_POST['barcelona_cat']['fp_filter_post'] ) ? sanitize_text_field( $_POST['barcelona_cat']['fp_filter_post'] ) : sanitize_text_field( barcelona_get_option( 'fp_filter_post__category' ) );
 		$barcelona_meta['fp_orderby']               = isset( $_POST['barcelona_cat']['fp_orderby'] ) ? sanitize_key( $_POST['barcelona_cat']['fp_orderby'] ) : sanitize_key( barcelona_get_option( 'fp_orderby__category' ) );
 		$barcelona_meta['fp_order']                 = isset( $_POST['barcelona_cat']['fp_order'] ) ? sanitize_key( $_POST['barcelona_cat']['fp_order'] ) : sanitize_key( barcelona_get_option( 'fp_order__category' ) );
+		$barcelona_meta['fp_prevent_duplication']   = isset( $_POST['barcelona_cat']['fp_prevent_duplication'] ) ? sanitize_key( $_POST['barcelona_cat']['fp_prevent_duplication'] ) : sanitize_key( barcelona_get_option( 'fp_prevent_duplication__category' ) );
+
+		$barcelona_meta['fp_post_meta_choices'] = array();
+		if ( isset( $_POST['barcelona_cat']['fp_post_meta_choices'] ) && is_array( $_POST['barcelona_cat']['fp_post_meta_choices'] ) ) {
+			foreach ( $_POST['barcelona_cat']['fp_post_meta_choices'] as $barcelona_v ) {
+				$barcelona_meta['fp_post_meta_choices'][] = sanitize_key( $barcelona_v );
+			}
+		}
 
 		$barcelona_meta['posts_layout']     = isset( $_POST['barcelona_cat']['posts_layout'] ) ? sanitize_key( $_POST['barcelona_cat']['posts_layout'] ) : sanitize_key( barcelona_get_option( 'posts_layout__category' ) );
+		$barcelona_meta['pagination']       = isset( $_POST['barcelona_cat']['pagination'] ) ? sanitize_key( $_POST['barcelona_cat']['pagination'] ) : sanitize_key( barcelona_get_option( 'pagination__category' ) );
 		$barcelona_meta['default_sidebar']  = isset( $_POST['barcelona_cat']['sidebar'] ) ? sanitize_text_field( $_POST['barcelona_cat']['sidebar'] ) : sanitize_text_field( barcelona_get_option( 'default_sidebar__category' ) );
 		$barcelona_meta['sidebar_position'] = isset( $_POST['barcelona_cat']['sidebar_position'] ) ? sanitize_key( $_POST['barcelona_cat']['sidebar_position'] ) : sanitize_key( barcelona_get_option( 'sidebar_position__category' ) );
 		$barcelona_meta['show_breadcrumb']  = isset( $_POST['barcelona_cat']['show_breadcrumb'] ) ? sanitize_key( $_POST['barcelona_cat']['show_breadcrumb'] ) : sanitize_key( barcelona_get_option( 'show_breadcrumb__category' ) );
 		$barcelona_meta['show_cat_title']   = isset( $_POST['barcelona_cat']['show_cat_title'] ) ? sanitize_key( $_POST['barcelona_cat']['show_cat_title'] ) : sanitize_key( barcelona_get_option( 'show_cat_title__category' ) );
+
+		$barcelona_meta['post_meta_choices'] = array();
+		if ( isset( $_POST['barcelona_cat']['post_meta_choices'] ) && is_array( $_POST['barcelona_cat']['post_meta_choices'] ) ) {
+			foreach ( $_POST['barcelona_cat']['post_meta_choices'] as $barcelona_v ) {
+				$barcelona_meta['post_meta_choices'][] = sanitize_key( $barcelona_v );
+			}
+		}
 
 		$barcelona_meta['add_header_ad'] = sanitize_key( $_POST['barcelona_cat']['add_header_ad'] );
 
@@ -1364,3 +1703,16 @@ function barcelona_save_category_meta_fields( $term_id ) {
 }
 add_action( 'edited_category', 'barcelona_save_category_meta_fields', 10, 2 );
 add_action( 'create_category', 'barcelona_save_category_meta_fields', 10, 2 );
+
+function barcelona_category_pre_edit_form( $term ) {
+
+	if ( barcelona_get_option( 'barcelona_override_options__category' ) == 'on' ):
+	?>
+	<div id="message" class="notice barcelona-notice">
+		<p><?php echo esc_html__( 'The options for this category are overridden from global category options. To disable override, go to Theme Options -> Layout Settings -> Category' ); ?></p>
+	</div>
+	<?php
+	endif;
+
+}
+add_action( 'category_pre_edit_form', 'barcelona_category_pre_edit_form' );

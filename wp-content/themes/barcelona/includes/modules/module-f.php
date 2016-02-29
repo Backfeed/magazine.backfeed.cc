@@ -119,7 +119,7 @@ foreach ( $barcelona_posts_payload as $barcelona_posts ):
 
 				<?php
 				if ( isset( $barcelona_mod_post_meta ) ) {
-					barcelona_post_meta( $barcelona_mod_post_meta, true );
+					barcelona_post_meta( $barcelona_mod_post_meta, false );
 				}
 				?>
 

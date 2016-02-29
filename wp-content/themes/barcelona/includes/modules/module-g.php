@@ -79,7 +79,7 @@ $barcelona_owl_data = array(
 
 					<?php
 					if ( isset( $barcelona_mod_post_meta ) ) {
-						barcelona_post_meta( $barcelona_mod_post_meta, true );
+						barcelona_post_meta( $barcelona_mod_post_meta );
 					}
 					?>
 

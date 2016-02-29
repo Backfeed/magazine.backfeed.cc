@@ -146,6 +146,11 @@ function barcelona_theme_options() {
 	 */
 	$barcelona_fi_choices = array(
 		array(
+			'value'     => 'none',
+			'label'     => esc_html__( 'None', 'barcelona' ),
+			'src'       => BARCELONA_THEME_PATH .'includes/admin/images/fpstyle-none.png'
+		),
+		array(
 			'value'     => 'cl',
 			'label'     => esc_html__( 'Classic Featured Image', 'barcelona' ),
 			'src'       => BARCELONA_THEME_PATH .'includes/admin/images/fimg-cl.jpg'
@@ -208,6 +213,28 @@ function barcelona_theme_options() {
 	);
 
 	/*
+	 * Pagination Type Choices
+	 */
+	$barcelona_pagination_choices = array(
+		array(
+			'value' => 'numeric',
+			'label' => esc_html__( 'Numeric Pagination Buttons', 'barcelona' )
+		),
+		array(
+			'value' => 'nextprev',
+			'label' => esc_html__( 'Prev/Next Page Links', 'barcelona' )
+		),
+		array(
+			'value' => 'loadmore',
+			'label' => esc_html__( 'Load More Button', 'barcelona' )
+		),
+		array(
+			'value' => 'infinite',
+			'label' => esc_html__( 'Infinite Scroll', 'barcelona' )
+		)
+	);
+
+	/*
 	 * Custom settings array that will eventually be
 	 * passes to the OptionTree Settings API Class.
 	 */
@@ -244,6 +271,18 @@ function barcelona_theme_options() {
 			array(
 				'id' => 'ot-advertisement',
 				'title' => '<i class="fa fa-bullhorn"></i> '. esc_html__( 'Advertisement', 'barcelona' )
+			),
+			array(
+				'id' => 'ot-buddypress',
+				'title' => '<i class="fa fa-users"></i> '. esc_html__( 'BuddyPress', 'barcelona' )
+			),
+			array(
+				'id' => 'ot-bbpress',
+				'title' => '<i class="fa fa-comments"></i> '. esc_html__( 'bbPress', 'barcelona' )
+			),
+			array(
+				'id' => 'ot-woocommerce',
+				'title' => '<i class="fa fa-shopping-cart"></i> '. esc_html__( 'WooCommerce', 'barcelona' )
 			)
 		),
 		'settings' => array(
@@ -297,6 +336,82 @@ function barcelona_theme_options() {
 				'type'        => 'upload',
 				'section'     => 'ot-logos-icons',
 				'condition'   => 'barcelona_show_header_logo_as_text:is(off)',
+				'class'       => 'barcelona-setting-indent'
+			),
+			array(
+				'id'          => 'barcelona_sticky_nav_logo',
+				'label'       => esc_html__( 'Sticky Nav Menu Logo', 'barcelona' ),
+				'type'        => 'select',
+				'section'     => 'ot-logos-icons',
+				'choices'     => array(
+					array(
+						'value' => 'inherit',
+						'label' => esc_html__( 'Inherit (Same as header logo)', 'barcelona' )
+					),
+					array(
+						'value' => 'custom',
+						'label' => esc_html__( 'Custom', 'barcelona' )
+					),
+					array(
+						'value' => 'disabled',
+						'label' => esc_html__( 'Disabled', 'barcelona' )
+					)
+				)
+			),
+			array(
+				'id'          => 'barcelona_show_sticky_nav_logo_as_text',
+				'label'       => esc_html__( 'Display Sticky Nav Menu Logo as Text', 'barcelona' ),
+				'type'        => 'on-off',
+				'section'     => 'ot-logos-icons',
+				'condition'   => 'barcelona_sticky_nav_logo:is(custom)'
+			),
+			array(
+				'id'          => 'barcelona_sticky_nav_logo_text',
+				'label'       => esc_html__( 'Sticky Nav Menu Logo Text', 'barcelona' ),
+				'type'        => 'text',
+				'section'     => 'ot-logos-icons',
+				'condition'   => 'barcelona_show_sticky_nav_logo_as_text:is(on),barcelona_sticky_nav_logo:is(custom)',
+				'operator'    => 'and',
+				'class'       => 'barcelona-setting-indent'
+			),
+			array(
+				'id'          => 'barcelona_sticky_nav_dark_logo_url',
+				'label'       => esc_html__( 'Sticky Nav Menu Logo URL (Dark Version)', 'barcelona' ),
+				'desc'        => esc_html__( 'Put the URL of logo for dark version or upload new one for sticky nav menu. (Recommended size: 140px by 50px)', 'barcelona' ),
+				'type'        => 'upload',
+				'section'     => 'ot-logos-icons',
+				'condition'   => 'barcelona_show_sticky_nav_logo_as_text:is(off),barcelona_sticky_nav_logo:is(custom)',
+				'operator'    => 'and',
+				'class'       => 'barcelona-setting-indent'
+			),
+			array(
+				'id'          => 'barcelona_sticky_nav_dark_retina_logo_url',
+				'label'       => esc_html__( 'Sticky Nav Menu Retina Logo URL (Dark Version)', 'barcelona' ),
+				'desc'        => esc_html__( 'Double size of sticky nav menu logo for dark version. (Recommended size: 280px by 100px)', 'barcelona' ),
+				'type'        => 'upload',
+				'section'     => 'ot-logos-icons',
+				'condition'   => 'barcelona_show_sticky_nav_logo_as_text:is(off),barcelona_sticky_nav_logo:is(custom)',
+				'operator'    => 'and',
+				'class'       => 'barcelona-setting-indent'
+			),
+			array(
+				'id'          => 'barcelona_sticky_nav_light_logo_url',
+				'label'       => esc_html__( 'Sticky Nav Menu Logo URL (Light Version)', 'barcelona' ),
+				'desc'        => esc_html__( 'Put the URL of logo for light version or upload new one for sticky nav menu. (Recommended size: 140px by 50px)', 'barcelona' ),
+				'type'        => 'upload',
+				'section'     => 'ot-logos-icons',
+				'condition'   => 'barcelona_show_sticky_nav_logo_as_text:is(off),barcelona_sticky_nav_logo:is(custom)',
+				'operator'    => 'and',
+				'class'       => 'barcelona-setting-indent'
+			),
+			array(
+				'id'          => 'barcelona_sticky_nav_light_retina_logo_url',
+				'label'       => esc_html__( 'Sticky Nav Menu Retina Logo URL (Light Version)', 'barcelona' ),
+				'desc'        => esc_html__( 'Double size of sticky nav menu logo for light version. (Recommended size: 280px by 100px)', 'barcelona' ),
+				'type'        => 'upload',
+				'section'     => 'ot-logos-icons',
+				'condition'   => 'barcelona_show_sticky_nav_logo_as_text:is(off),barcelona_sticky_nav_logo:is(custom)',
+				'operator'    => 'and',
 				'class'       => 'barcelona-setting-indent'
 			),
 			array(
@@ -404,6 +519,18 @@ function barcelona_theme_options() {
 				'section'     => 'ot-layout-settings'
 			),
 			array(
+				'id'          => 'barcelona_show_search_button',
+				'label'       => esc_html__( 'Display Search Button in Main Menu', 'barcelona' ),
+				'type'        => 'on-off',
+				'section'     => 'ot-layout-settings'
+			),
+			array(
+				'id'          => 'barcelona_zoom_in_post_on_hover',
+				'label'       => esc_html__( 'Zoom in Post Image on Hover' ),
+				'type'        => 'on-off',
+				'section'     => 'ot-layout-settings'
+			),
+			array(
 				'id'          => 'barcelona_disqus_comments',
 				'label'       => esc_html__( 'Enable Disqus Comment System', 'barcelona' ),
 				'desc'        => esc_html__( 'Find more info about Disqus: https://disqus.com', 'barcelona' ),
@@ -443,8 +570,21 @@ function barcelona_theme_options() {
 				        'value' => 'b',
 				        'label' => esc_html__( 'Centered Logo Only', 'barcelona' ),
 				        'src'   => BARCELONA_THEME_PATH .'includes/admin/images/header-b.png'
-			        )
+			        ),
+				    array(
+					    'value' => 'c',
+					    'label' => esc_html__( 'Cover Image', 'barcelona' ),
+					    'src'   => BARCELONA_THEME_PATH .'includes/admin/images/header-c.png'
+				    )
 			    )
+			),
+			array(
+				'id'          => 'barcelona_header_cover_image',
+				'label'       => esc_html__( 'Header Cover Image', 'barcelona' ),
+				'desc'        => esc_html__( '(Recommended min. width: 1140px)', 'barcelona' ),
+				'type'        => 'upload',
+				'section'     => 'ot-layout-settings',
+				'condition'   => 'barcelona_header_style:is(c)'
 			),
 			array(
 				'id'          => 'barcelona_show_top_bar_menu',
@@ -467,29 +607,39 @@ function barcelona_theme_options() {
 				'section'     => 'ot-layout-settings'
 			),
 			array(
+				'id'          => 'barcelona_show_footer',
+				'label'       => esc_html__( 'Display Footer', 'barcelona' ),
+				'type'        => 'on-off',
+				'section'     => 'ot-layout-settings'
+			),
+			array(
 				'id'          => 'barcelona_show_footer_sidebars',
 				'label'       => esc_html__( 'Enable Footer Sidebars', 'barcelona' ),
 				'type'        => 'on-off',
-				'section'     => 'ot-layout-settings'
+				'section'     => 'ot-layout-settings',
+				'condition'   => 'barcelona_show_footer:is(on)'
 			),
 			array(
 				'id'          => 'barcelona_show_footer_logo',
 				'label'       => esc_html__( 'Display Logo on Footer', 'barcelona' ),
 				'type'        => 'on-off',
-				'section'     => 'ot-layout-settings'
+				'section'     => 'ot-layout-settings',
+				'condition'   => 'barcelona_show_footer:is(on)'
 			),
 			array(
 				'id'          => 'barcelona_show_footer_menu',
 				'label'       => esc_html__( 'Display Menu on Footer', 'barcelona' ),
 				'type'        => 'on-off',
-				'section'     => 'ot-layout-settings'
+				'section'     => 'ot-layout-settings',
+				'condition'   => 'barcelona_show_footer:is(on)'
 			),
 			array(
 				'id'          => 'barcelona_footer_copyright_text',
 				'label'       => esc_html__( 'Footer Copyright Text', 'barcelona' ),
 				'type'        => 'textarea-simple',
 				'section'     => 'ot-layout-settings',
-				'rows'        => 3
+				'rows'        => 3,
+				'condition'   => 'barcelona_show_footer:is(on)'
 			),
 
 			/* Layout Settings - Mega Menu */
@@ -524,6 +674,31 @@ function barcelona_theme_options() {
 				'section'     => 'ot-layout-settings'
 			),
 			array(
+				'id'          => 'barcelona_mm_post_meta_choices',
+				'label'       => esc_html__( 'Post Meta Data', 'barcelona' ),
+				'desc'        => esc_html__( 'Check which meta data to show for mega menu posts', 'barcelona' ),
+				'type'        => 'checkbox',
+				'choices'     => array(
+					array(
+						'value'       => 'date',
+						'label'       => esc_html__( 'Post Date', 'barcelona' )
+					),
+					array(
+						'value'       => 'views',
+						'label'       => esc_html__( 'Post Views', 'barcelona' )
+					),
+					array(
+						'value'       => 'likes',
+						'label'       => esc_html__( 'Post Votes', 'barcelona' )
+					),
+					array(
+						'value'       => 'comments',
+						'label'       => esc_html__( 'Post Comments', 'barcelona' )
+					)
+				),
+				'section'     => 'ot-layout-settings'
+			),
+			array(
 				'id'          => 'barcelona_show_tags_under_mm',
 				'label'       => esc_html__( 'Display Popular Tags Under Mega Menu', 'barcelona' ),
 				'type'        => 'on-off',
@@ -547,8 +722,7 @@ function barcelona_theme_options() {
 			array(
 				'id'          => 'barcelona_post_meta_choices__single',
 				'label'       => esc_html__( 'Post Meta Data', 'barcelona' ),
-				'desc'        => esc_html__( 'Check which meta data to show for single post', 'barcelona' ),
-				'std'         => '',
+				'desc'        => esc_html__( 'Check which meta data to show for single posts', 'barcelona' ),
 				'type'        => 'checkbox',
 				'choices'     => array(
 					array(
@@ -592,6 +766,18 @@ function barcelona_theme_options() {
 				'choices'     => $barcelona_sidebar_position_choices
 			),
 			array(
+				'id'          => 'barcelona_show_title__single',
+				'label'       => esc_html__( 'Display Title', 'barcelona' ),
+				'type'        => 'on-off',
+				'section'     => 'ot-layout-settings'
+			),
+			array(
+				'id'          => 'barcelona_show_content__single',
+				'label'       => esc_html__( 'Display Content', 'barcelona' ),
+				'type'        => 'on-off',
+				'section'     => 'ot-layout-settings'
+			),
+			array(
 				'id'          => 'barcelona_show_breadcrumb__single',
 				'label'       => esc_html__( 'Display Breadcrumb', 'barcelona' ),
 				'type'        => 'on-off',
@@ -601,6 +787,23 @@ function barcelona_theme_options() {
 				'id'          => 'barcelona_show_comments__single',
 				'label'       => esc_html__( 'Display Comments', 'barcelona' ),
 				'type'        => 'on-off',
+				'section'     => 'ot-layout-settings'
+			),
+			array(
+				'id'          => 'barcelona_show_comment_voting__single',
+				'label'       => esc_html__( 'Display Comment Voting Buttons', 'barcelona' ),
+				'type'        => 'on-off',
+				'class'       => 'barcelona-setting-indent',
+				'section'     => 'ot-layout-settings',
+				'condition'   => 'barcelona_show_comments__single:is(on)'
+			),
+			array(
+				'id'          => 'barcelona_comment_voting_login_req__single',
+				'label'       => esc_html__( 'Only logged-in users can vote comments', 'barcelona' ),
+				'type'        => 'on-off',
+				'class'       => 'barcelona-setting-indent',
+				'condition'   => 'barcelona_show_comments__single:is(on),barcelona_show_comment_voting__single:is(on)',
+				'operator'    => 'and',
 				'section'     => 'ot-layout-settings'
 			),
 			array(
@@ -623,13 +826,13 @@ function barcelona_theme_options() {
 			),
 			array(
 				'id'          => 'barcelona_show_voting__single',
-				'label'       => esc_html__( 'Display Voting Buttons', 'barcelona' ),
+				'label'       => esc_html__( 'Display Post Voting Buttons', 'barcelona' ),
 				'type'        => 'on-off',
 				'section'     => 'ot-layout-settings'
 			),
 			array(
-				'id'          => 'barcelona_voting_login_req__single',
-				'label'       => esc_html__( 'Only logged-in users can vote', 'barcelona' ),
+				'id'          => 'barcelona_post_voting_login_req__single',
+				'label'       => esc_html__( 'Only logged-in users can vote posts', 'barcelona' ),
 				'type'        => 'on-off',
 				'class'       => 'barcelona-setting-indent',
 				'condition'   => 'barcelona_show_voting__single:is(on)',
@@ -810,6 +1013,35 @@ function barcelona_theme_options() {
 				'choices'     => $barcelona_fi_choices
 			),
 			array(
+				'id'          => 'barcelona_post_meta_choices__page',
+				'label'       => esc_html__( 'Page Meta Data', 'barcelona' ),
+				'desc'        => esc_html__( 'Check which meta data to show for pages', 'barcelona' ),
+				'type'        => 'checkbox',
+				'choices'     => array(
+					array(
+						'value'       => 'date',
+						'label'       => esc_html__( 'Page Date', 'barcelona' )
+					),
+					array(
+						'value'       => 'author',
+						'label'       => esc_html__( 'Page Author', 'barcelona' )
+					),
+					array(
+						'value'       => 'views',
+						'label'       => esc_html__( 'Page Views', 'barcelona' )
+					),
+					array(
+						'value'       => 'likes',
+						'label'       => esc_html__( 'Page Votes', 'barcelona' )
+					),
+					array(
+						'value'       => 'comments',
+						'label'       => esc_html__( 'Page Comments', 'barcelona' )
+					)
+				),
+				'section'     => 'ot-layout-settings'
+			),
+			array(
 				'id'          => 'barcelona_default_sidebar__page',
 				'label'       => esc_html__( 'Page Sidebar', 'barcelona' ),
 				'type'        => 'sidebar-select',
@@ -823,9 +1055,44 @@ function barcelona_theme_options() {
 				'choices'     => $barcelona_sidebar_position_choices
 			),
 			array(
+				'id'          => 'barcelona_show_title__page',
+				'label'       => esc_html__( 'Display Title', 'barcelona' ),
+				'type'        => 'on-off',
+				'section'     => 'ot-layout-settings'
+			),
+			array(
+				'id'          => 'barcelona_show_content__page',
+				'label'       => esc_html__( 'Display Content', 'barcelona' ),
+				'type'        => 'on-off',
+				'section'     => 'ot-layout-settings'
+			),
+			array(
+				'id'          => 'barcelona_show_breadcrumb__page',
+				'label'       => esc_html__( 'Display Breadcrumb', 'barcelona' ),
+				'type'        => 'on-off',
+				'section'     => 'ot-layout-settings'
+			),
+			array(
 				'id'          => 'barcelona_show_comments__page',
 				'label'       => esc_html__( 'Display Comments', 'barcelona' ),
 				'type'        => 'on-off',
+				'section'     => 'ot-layout-settings'
+			),
+			array(
+				'id'          => 'barcelona_show_comment_voting__page',
+				'label'       => esc_html__( 'Display Comment Voting Buttons', 'barcelona' ),
+				'type'        => 'on-off',
+				'class'       => 'barcelona-setting-indent',
+				'section'     => 'ot-layout-settings',
+				'condition'   => 'barcelona_show_comments__page:is(on)'
+			),
+			array(
+				'id'          => 'barcelona_comment_voting_login_req__page',
+				'label'       => esc_html__( 'Only logged-in users can vote comments', 'barcelona' ),
+				'type'        => 'on-off',
+				'class'       => 'barcelona-setting-indent',
+				'condition'   => 'barcelona_show_comments__page:is(on),barcelona_show_comment_voting__page:is(on)',
+				'operator'    => 'and',
 				'section'     => 'ot-layout-settings'
 			),
 			array(
@@ -835,18 +1102,50 @@ function barcelona_theme_options() {
 				'section'     => 'ot-layout-settings'
 			),
 			array(
-				'id'          => 'barcelona_show_voting__page',
-				'label'       => esc_html__( 'Display Voting Buttons', 'barcelona' ),
+				'id'          => 'barcelona_show_author_box__page',
+				'label'       => esc_html__( 'Display Author Box', 'barcelona' ),
 				'type'        => 'on-off',
 				'section'     => 'ot-layout-settings'
 			),
 			array(
-				'id'          => 'barcelona_voting_login_req__page',
-				'label'       => esc_html__( 'Only logged-in users can vote', 'barcelona' ),
+				'id'          => 'barcelona_show_voting__page',
+				'label'       => esc_html__( 'Display Page Voting Buttons', 'barcelona' ),
+				'type'        => 'on-off',
+				'section'     => 'ot-layout-settings'
+			),
+			array(
+				'id'          => 'barcelona_post_voting_login_req__page',
+				'label'       => esc_html__( 'Only logged-in users can vote pages', 'barcelona' ),
 				'type'        => 'on-off',
 				'class'       => 'barcelona-setting-indent',
 				'condition'   => 'barcelona_show_voting__page:is(on)',
 				'section'     => 'ot-layout-settings'
+			),
+			array(
+				'id'          => 'barcelona_show_post_content_ad__page',
+				'label'       => esc_html__( 'Display Page Content Ad', 'barcelona' ),
+				'type'        => 'on-off',
+				'section'     => 'ot-layout-settings'
+			),
+			array(
+				'id'          => 'barcelona_post_content_ad_1__page',
+				'label'       => esc_html__( 'Page Content Ad (728x90)', 'barcelona' ),
+				'desc'        => esc_html__( 'Put the ad code to page content for large screens.', 'barcelona' ),
+				'type'        => 'textarea-simple',
+				'rows'        => 4,
+				'section'     => 'ot-layout-settings',
+				'condition'   => 'barcelona_show_post_content_ad__page:is(on)',
+				'class'       => 'barcelona-setting-indent barcelona-textarea-code'
+			),
+			array(
+				'id'          => 'barcelona_post_content_ad_2__page',
+				'label'       => esc_html__( 'Page Content Ad (468x60)', 'barcelona' ),
+				'desc'        => esc_html__( 'Put the ad code to page content for small screens.', 'barcelona' ),
+				'type'        => 'textarea-simple',
+				'rows'        => 4,
+				'section'     => 'ot-layout-settings',
+				'condition'   => 'barcelona_show_post_content_ad__page:is(on)',
+				'class'       => 'barcelona-setting-indent barcelona-textarea-code'
 			),
 			array(
 				'id'          => 'barcelona_add_header_ad__page',
@@ -932,6 +1231,38 @@ function barcelona_theme_options() {
 				'type'        => 'radio-image',
 				'section'     => 'ot-layout-settings',
 				'choices'     => $barcelona_posts_layout_choices
+			),
+			array(
+				'id'        => 'barcelona_pagination__category',
+				'label'     => esc_html__( 'Pagination Type', 'barcelona' ),
+				'type'      => 'select',
+				'section'     => 'ot-layout-settings',
+				'choices'   => $barcelona_pagination_choices
+			),
+			array(
+				'id'          => 'barcelona_post_meta_choices__category',
+				'label'       => esc_html__( 'Post Meta Data', 'barcelona' ),
+				'desc'        => esc_html__( 'Check which meta data to show for category posts', 'barcelona' ),
+				'type'        => 'checkbox',
+				'choices'     => array(
+					array(
+						'value'       => 'date',
+						'label'       => esc_html__( 'Post Date', 'barcelona' )
+					),
+					array(
+						'value'       => 'views',
+						'label'       => esc_html__( 'Post Views', 'barcelona' )
+					),
+					array(
+						'value'       => 'likes',
+						'label'       => esc_html__( 'Post Votes', 'barcelona' )
+					),
+					array(
+						'value'       => 'comments',
+						'label'       => esc_html__( 'Post Comments', 'barcelona' )
+					)
+				),
+				'section'     => 'ot-layout-settings'
 			),
 			array(
 				'id'          => 'barcelona_default_sidebar__category',
@@ -1038,6 +1369,38 @@ function barcelona_theme_options() {
 				'choices'     => $barcelona_posts_layout_choices
 			),
 			array(
+				'id'        => 'barcelona_pagination__author',
+				'label'     => esc_html__( 'Pagination Type', 'barcelona' ),
+				'type'      => 'select',
+				'section'   => 'ot-layout-settings',
+				'choices'   => $barcelona_pagination_choices
+			),
+			array(
+				'id'          => 'barcelona_post_meta_choices__author',
+				'label'       => esc_html__( 'Post Meta Data', 'barcelona' ),
+				'desc'        => esc_html__( 'Check which meta data to show for author posts', 'barcelona' ),
+				'type'        => 'checkbox',
+				'choices'     => array(
+					array(
+						'value'       => 'date',
+						'label'       => esc_html__( 'Post Date', 'barcelona' )
+					),
+					array(
+						'value'       => 'views',
+						'label'       => esc_html__( 'Post Views', 'barcelona' )
+					),
+					array(
+						'value'       => 'likes',
+						'label'       => esc_html__( 'Post Votes', 'barcelona' )
+					),
+					array(
+						'value'       => 'comments',
+						'label'       => esc_html__( 'Post Comments', 'barcelona' )
+					)
+				),
+				'section'     => 'ot-layout-settings'
+			),
+			array(
 				'id'          => 'barcelona_default_sidebar__author',
 				'label'       => esc_html__( 'Author Page Sidebar', 'barcelona' ),
 				'type'        => 'sidebar-select',
@@ -1142,6 +1505,38 @@ function barcelona_theme_options() {
 				'choices'     => $barcelona_posts_layout_choices
 			),
 			array(
+				'id'        => 'barcelona_pagination__search',
+				'label'     => esc_html__( 'Pagination Type', 'barcelona' ),
+				'type'      => 'select',
+				'section'   => 'ot-layout-settings',
+				'choices'   => $barcelona_pagination_choices
+			),
+			array(
+				'id'          => 'barcelona_post_meta_choices__search',
+				'label'       => esc_html__( 'Post Meta Data', 'barcelona' ),
+				'desc'        => esc_html__( 'Check which meta data to show for search result posts', 'barcelona' ),
+				'type'        => 'checkbox',
+				'choices'     => array(
+					array(
+						'value'       => 'date',
+						'label'       => esc_html__( 'Post Date', 'barcelona' )
+					),
+					array(
+						'value'       => 'views',
+						'label'       => esc_html__( 'Post Views', 'barcelona' )
+					),
+					array(
+						'value'       => 'likes',
+						'label'       => esc_html__( 'Post Votes', 'barcelona' )
+					),
+					array(
+						'value'       => 'comments',
+						'label'       => esc_html__( 'Post Comments', 'barcelona' )
+					)
+				),
+				'section'     => 'ot-layout-settings'
+			),
+			array(
 				'id'          => 'barcelona_default_sidebar__search',
 				'label'       => esc_html__( 'Search Page Sidebar', 'barcelona' ),
 				'type'        => 'sidebar-select',
@@ -1238,6 +1633,38 @@ function barcelona_theme_options() {
 				'type'        => 'radio-image',
 				'section'     => 'ot-layout-settings',
 				'choices'     => $barcelona_posts_layout_choices
+			),
+			array(
+				'id'        => 'barcelona_pagination__tag',
+				'label'     => esc_html__( 'Pagination Type', 'barcelona' ),
+				'type'      => 'select',
+				'section'   => 'ot-layout-settings',
+				'choices'   => $barcelona_pagination_choices
+			),
+			array(
+				'id'          => 'barcelona_post_meta_choices__tag',
+				'label'       => esc_html__( 'Post Meta Data', 'barcelona' ),
+				'desc'        => esc_html__( 'Check which meta data to show for tag posts', 'barcelona' ),
+				'type'        => 'checkbox',
+				'choices'     => array(
+					array(
+						'value'       => 'date',
+						'label'       => esc_html__( 'Post Date', 'barcelona' )
+					),
+					array(
+						'value'       => 'views',
+						'label'       => esc_html__( 'Post Views', 'barcelona' )
+					),
+					array(
+						'value'       => 'likes',
+						'label'       => esc_html__( 'Post Votes', 'barcelona' )
+					),
+					array(
+						'value'       => 'comments',
+						'label'       => esc_html__( 'Post Comments', 'barcelona' )
+					)
+				),
+				'section'     => 'ot-layout-settings'
 			),
 			array(
 				'id'          => 'barcelona_default_sidebar__tag',
@@ -1338,6 +1765,38 @@ function barcelona_theme_options() {
 				'choices'     => $barcelona_posts_layout_choices
 			),
 			array(
+				'id'        => 'barcelona_pagination__home',
+				'label'     => esc_html__( 'Pagination Type', 'barcelona' ),
+				'type'      => 'select',
+				'section'   => 'ot-layout-settings',
+				'choices'   => $barcelona_pagination_choices
+			),
+			array(
+				'id'          => 'barcelona_post_meta_choices__home',
+				'label'       => esc_html__( 'Post Meta Data', 'barcelona' ),
+				'desc'        => esc_html__( 'Check which meta data to show for posts in posts page', 'barcelona' ),
+				'type'        => 'checkbox',
+				'choices'     => array(
+					array(
+						'value'       => 'date',
+						'label'       => esc_html__( 'Post Date', 'barcelona' )
+					),
+					array(
+						'value'       => 'views',
+						'label'       => esc_html__( 'Post Views', 'barcelona' )
+					),
+					array(
+						'value'       => 'likes',
+						'label'       => esc_html__( 'Post Votes', 'barcelona' )
+					),
+					array(
+						'value'       => 'comments',
+						'label'       => esc_html__( 'Post Comments', 'barcelona' )
+					)
+				),
+				'section'     => 'ot-layout-settings'
+			),
+			array(
 				'id'          => 'barcelona_default_sidebar__home',
 				'label'       => esc_html__( 'Posts Page Sidebar', 'barcelona' ),
 				'type'        => 'sidebar-select',
@@ -1434,6 +1893,38 @@ function barcelona_theme_options() {
 				'type'        => 'radio-image',
 				'section'     => 'ot-layout-settings',
 				'choices'     => $barcelona_posts_layout_choices
+			),
+			array(
+				'id'        => 'barcelona_pagination__archive',
+				'label'     => esc_html__( 'Pagination Type', 'barcelona' ),
+				'type'      => 'select',
+				'section'   => 'ot-layout-settings',
+				'choices'   => $barcelona_pagination_choices
+			),
+			array(
+				'id'          => 'barcelona_post_meta_choices__archive',
+				'label'       => esc_html__( 'Post Meta Data', 'barcelona' ),
+				'desc'        => esc_html__( 'Check which meta data to show for archive posts', 'barcelona' ),
+				'type'        => 'checkbox',
+				'choices'     => array(
+					array(
+						'value'       => 'date',
+						'label'       => esc_html__( 'Post Date', 'barcelona' )
+					),
+					array(
+						'value'       => 'views',
+						'label'       => esc_html__( 'Post Views', 'barcelona' )
+					),
+					array(
+						'value'       => 'likes',
+						'label'       => esc_html__( 'Post Votes', 'barcelona' )
+					),
+					array(
+						'value'       => 'comments',
+						'label'       => esc_html__( 'Post Comments', 'barcelona' )
+					)
+				),
+				'section'     => 'ot-layout-settings'
 			),
 			array(
 				'id'          => 'barcelona_default_sidebar__archive',
@@ -1536,6 +2027,8 @@ function barcelona_theme_options() {
 				'section'     => 'ot-sidebar-settings',
 				'settings'    => array()
 			),
+
+			/* Social Settings */
 			array(
 				'id'          => 'barcelona_social_rss_feed_url',
 				'label'       => esc_html__( 'RSS Feed URL', 'barcelona' ),
@@ -1605,6 +2098,12 @@ function barcelona_theme_options() {
 			array(
 				'id'          => 'barcelona_social_flickr_url',
 				'label'       => esc_html__( 'Flickr URL', 'barcelona' ),
+				'type'        => 'text',
+				'section'     => 'ot-social-settings'
+			),
+			array(
+				'id'          => 'barcelona_social_soundcloud_url',
+				'label'       => esc_html__( 'SoundCloud URL', 'barcelona' ),
 				'type'        => 'text',
 				'section'     => 'ot-social-settings'
 			),
@@ -1748,6 +2247,8 @@ function barcelona_theme_options() {
 				'type'        => 'css',
 				'section'     => 'ot-custom-codes'
 			),
+
+			/* Color Scheme */
 			array(
 				'id'          => 'barcelona_top_nav_color_scheme',
 				'label'       => esc_html__( 'Top Navigation Bar Color Scheme', 'barcelona' ),
@@ -1775,6 +2276,8 @@ function barcelona_theme_options() {
 				'type'        => 'colorpicker',
 				'section'     => 'ot-color-scheme'
 			),
+
+			/* Advertisement */
 			array(
 				'id'          => 'barcelona_header_ad_1',
 				'label'       => esc_html__( 'Header Ad for Large Screens (728x90)', 'barcelona' ),
@@ -1792,7 +2295,263 @@ function barcelona_theme_options() {
 				'rows'        => 6,
 				'section'     => 'ot-advertisement',
 				'class'       => 'barcelona-textarea-code barcelona-textarea-code'
+			),
+
+			/* BuddyPress */
+			array(
+				'id'          => 'barcelona_default_sidebar__buddypress',
+				'label'       => esc_html__( 'BuddyPress Sidebar', 'barcelona' ),
+				'type'        => 'sidebar-select',
+				'section'     => 'ot-buddypress'
+			),
+			array(
+				'id'          => 'barcelona_sidebar_position__woocommerce',
+				'label'       => esc_html__( 'BuddyPress Sidebar Position', 'barcelona' ),
+				'type'        => 'radio-image',
+				'section'     => 'ot-buddypress',
+				'choices'     => $barcelona_sidebar_position_choices
+			),
+			array(
+				'id'          => 'barcelona_show_breadcrumb__buddypress',
+				'label'       => esc_html__( 'Display Breadcrumb', 'barcelona' ),
+				'type'        => 'on-off',
+				'section'     => 'ot-buddypress'
+			),
+			array(
+				'id'          => 'barcelona_add_header_ad__buddypress',
+				'label'       => esc_html__( 'Header Ad for BuddyPress pages', 'barcelona' ),
+				'type'        => 'select',
+				'section'     => 'ot-buddypress',
+				'choices'     => array(
+					array(
+						'value' => 'inherit',
+						'label' => esc_html__( 'Inherit (Same as global setting)', 'barcelona' )
+					),
+					array(
+						'value' => 'custom',
+						'label' => esc_html__( 'Custom', 'barcelona' )
+					),
+					array(
+						'value' => 'disabled',
+						'label' => esc_html__( 'Disabled', 'barcelona' )
+					)
+				)
+			),
+			array(
+				'id'          => 'barcelona_header_ad_1__buddypress',
+				'label'       => esc_html__( 'Header Ad for Large Screens (728x90)', 'barcelona' ),
+				'desc'        => esc_html__( 'Put the ad code to header for large screen sizes.', 'barcelona' ),
+				'type'        => 'textarea-simple',
+				'rows'        => 4,
+				'section'     => 'ot-buddypress',
+				'condition'   => 'barcelona_add_header_ad__buddypress:is(custom)',
+				'class'       => 'barcelona-setting-indent barcelona-textarea-code'
+			),
+			array(
+				'id'          => 'barcelona_header_ad_2__buddypress',
+				'label'       => esc_html__( 'Header Ad for Small Screens (468x60)', 'barcelona' ),
+				'desc'        => esc_html__( 'Put the ad code to header for small screen sizes.', 'barcelona' ),
+				'type'        => 'textarea-simple',
+				'rows'        => 4,
+				'section'     => 'ot-buddypress',
+				'condition'   => 'barcelona_add_header_ad__buddypress:is(custom)',
+				'class'       => 'barcelona-setting-indent barcelona-textarea-code'
+			),
+			array(
+				'id'          => 'barcelona_set_background__buddypress',
+				'label'       => esc_html__( 'Background for BuddyPress pages', 'barcelona' ),
+				'type'        => 'select',
+				'section'     => 'ot-buddypress',
+				'choices'     => array(
+					array(
+						'value' => 'inherit',
+						'label' => esc_html__( 'Inherit (Same as global setting)', 'barcelona' )
+					),
+					array(
+						'value' => 'custom',
+						'label' => esc_html__( 'Custom', 'barcelona' )
+					)
+				)
+			),
+			array(
+				'id'          => 'barcelona_custom_background__buddypress',
+				'label'       => esc_html__( 'Background', 'barcelona' ),
+				'type'        => 'background',
+				'section'     => 'ot-buddypress',
+				'condition'   => 'barcelona_set_background__buddypress:is(custom)',
+				'class'       => 'barcelona-setting-indent'
+			),
+
+			/* bbPress */
+			array(
+				'id'          => 'barcelona_default_sidebar__bbpress',
+				'label'       => esc_html__( 'bbPress Sidebar', 'barcelona' ),
+				'type'        => 'sidebar-select',
+				'section'     => 'ot-bbpress'
+			),
+			array(
+				'id'          => 'barcelona_sidebar_position__woocommerce',
+				'label'       => esc_html__( 'bbPress Sidebar Position', 'barcelona' ),
+				'type'        => 'radio-image',
+				'section'     => 'ot-bbpress',
+				'choices'     => $barcelona_sidebar_position_choices
+			),
+			array(
+				'id'          => 'barcelona_show_breadcrumb__bbpress',
+				'label'       => esc_html__( 'Display Breadcrumb', 'barcelona' ),
+				'type'        => 'on-off',
+				'section'     => 'ot-bbpress'
+			),
+			array(
+				'id'          => 'barcelona_add_header_ad__bbpress',
+				'label'       => esc_html__( 'Header Ad for bbPress pages', 'barcelona' ),
+				'type'        => 'select',
+				'section'     => 'ot-bbpress',
+				'choices'     => array(
+					array(
+						'value' => 'inherit',
+						'label' => esc_html__( 'Inherit (Same as global setting)', 'barcelona' )
+					),
+					array(
+						'value' => 'custom',
+						'label' => esc_html__( 'Custom', 'barcelona' )
+					),
+					array(
+						'value' => 'disabled',
+						'label' => esc_html__( 'Disabled', 'barcelona' )
+					)
+				)
+			),
+			array(
+				'id'          => 'barcelona_header_ad_1__bbpress',
+				'label'       => esc_html__( 'Header Ad for Large Screens (728x90)', 'barcelona' ),
+				'desc'        => esc_html__( 'Put the ad code to header for large screen sizes.', 'barcelona' ),
+				'type'        => 'textarea-simple',
+				'rows'        => 4,
+				'section'     => 'ot-bbpress',
+				'condition'   => 'barcelona_add_header_ad__bbpress:is(custom)',
+				'class'       => 'barcelona-setting-indent barcelona-textarea-code'
+			),
+			array(
+				'id'          => 'barcelona_header_ad_2__bbpress',
+				'label'       => esc_html__( 'Header Ad for Small Screens (468x60)', 'barcelona' ),
+				'desc'        => esc_html__( 'Put the ad code to header for small screen sizes.', 'barcelona' ),
+				'type'        => 'textarea-simple',
+				'rows'        => 4,
+				'section'     => 'ot-bbpress',
+				'condition'   => 'barcelona_add_header_ad__bbpress:is(custom)',
+				'class'       => 'barcelona-setting-indent barcelona-textarea-code'
+			),
+			array(
+				'id'          => 'barcelona_set_background__bbpress',
+				'label'       => esc_html__( 'Background for bbPress pages', 'barcelona' ),
+				'type'        => 'select',
+				'section'     => 'ot-bbpress',
+				'choices'     => array(
+					array(
+						'value' => 'inherit',
+						'label' => esc_html__( 'Inherit (Same as global setting)', 'barcelona' )
+					),
+					array(
+						'value' => 'custom',
+						'label' => esc_html__( 'Custom', 'barcelona' )
+					)
+				)
+			),
+			array(
+				'id'          => 'barcelona_custom_background__bbpress',
+				'label'       => esc_html__( 'Background', 'barcelona' ),
+				'type'        => 'background',
+				'section'     => 'ot-bbpress',
+				'condition'   => 'barcelona_set_background__bbpress:is(custom)',
+				'class'       => 'barcelona-setting-indent'
+			),
+
+			/* WooCommerce */
+			array(
+				'id'          => 'barcelona_default_sidebar__woocommerce',
+				'label'       => esc_html__( 'WooCommerce Sidebar', 'barcelona' ),
+				'type'        => 'sidebar-select',
+				'section'     => 'ot-woocommerce'
+			),
+		    array(
+			    'id'          => 'barcelona_sidebar_position__woocommerce',
+			    'label'       => esc_html__( 'WooCommerce Sidebar Position', 'barcelona' ),
+			    'type'        => 'radio-image',
+			    'section'     => 'ot-woocommerce',
+			    'choices'     => $barcelona_sidebar_position_choices
+		    ),
+			array(
+				'id'          => 'barcelona_show_breadcrumb__woocommerce',
+				'label'       => esc_html__( 'Display Breadcrumb', 'barcelona' ),
+				'type'        => 'on-off',
+				'section'     => 'ot-woocommerce'
+			),
+			array(
+				'id'          => 'barcelona_add_header_ad__woocommerce',
+				'label'       => esc_html__( 'Header Ad for WooCommerce pages', 'barcelona' ),
+				'type'        => 'select',
+				'section'     => 'ot-woocommerce',
+				'choices'     => array(
+					array(
+						'value' => 'inherit',
+						'label' => esc_html__( 'Inherit (Same as global setting)', 'barcelona' )
+					),
+					array(
+						'value' => 'custom',
+						'label' => esc_html__( 'Custom', 'barcelona' )
+					),
+					array(
+						'value' => 'disabled',
+						'label' => esc_html__( 'Disabled', 'barcelona' )
+					)
+				)
+			),
+			array(
+				'id'          => 'barcelona_header_ad_1__woocommerce',
+				'label'       => esc_html__( 'Header Ad for Large Screens (728x90)', 'barcelona' ),
+				'desc'        => esc_html__( 'Put the ad code to header for large screen sizes.', 'barcelona' ),
+				'type'        => 'textarea-simple',
+				'rows'        => 4,
+				'section'     => 'ot-woocommerce',
+				'condition'   => 'barcelona_add_header_ad__woocommerce:is(custom)',
+				'class'       => 'barcelona-setting-indent barcelona-textarea-code'
+			),
+			array(
+				'id'          => 'barcelona_header_ad_2__woocommerce',
+				'label'       => esc_html__( 'Header Ad for Small Screens (468x60)', 'barcelona' ),
+				'desc'        => esc_html__( 'Put the ad code to header for small screen sizes.', 'barcelona' ),
+				'type'        => 'textarea-simple',
+				'rows'        => 4,
+				'section'     => 'ot-woocommerce',
+				'condition'   => 'barcelona_add_header_ad__woocommerce:is(custom)',
+				'class'       => 'barcelona-setting-indent barcelona-textarea-code'
+			),
+			array(
+				'id'          => 'barcelona_set_background__woocommerce',
+				'label'       => esc_html__( 'Background for WooCommerce pages', 'barcelona' ),
+				'type'        => 'select',
+				'section'     => 'ot-woocommerce',
+				'choices'     => array(
+					array(
+						'value' => 'inherit',
+						'label' => esc_html__( 'Inherit (Same as global setting)', 'barcelona' )
+					),
+					array(
+						'value' => 'custom',
+						'label' => esc_html__( 'Custom', 'barcelona' )
+					)
+				)
+			),
+			array(
+				'id'          => 'barcelona_custom_background__woocommerce',
+				'label'       => esc_html__( 'Background', 'barcelona' ),
+				'type'        => 'background',
+				'section'     => 'ot-woocommerce',
+				'condition'   => 'barcelona_set_background__woocommerce:is(custom)',
+				'class'       => 'barcelona-setting-indent'
 			)
+
 		)
 	);
 

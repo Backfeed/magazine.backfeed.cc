@@ -29,18 +29,22 @@ function barcelona_category_pre_posts( $query ) {
 		$barcelona_cat = get_queried_object();
 		$barcelona_fp_query = barcelona_get_featured_posts_query( $barcelona_cat->term_id, 'category' );
 
-		$barcelona_post_ids = array();
+		if ( is_object( $barcelona_fp_query ) && property_exists( $barcelona_fp_query, 'prevent_duplication' ) && $barcelona_fp_query->prevent_duplication == 'on' ) {
 
-		if ( $barcelona_fp_query && $barcelona_fp_query->have_posts() ) {
+			$barcelona_post_ids = array();
 
-			while ( $barcelona_fp_query->have_posts() ) {
-				$barcelona_fp_query->the_post();
-				$barcelona_post_ids[] = get_the_ID();
+			if ( $barcelona_fp_query && $barcelona_fp_query->have_posts() ) {
+
+				while ( $barcelona_fp_query->have_posts() ) {
+					$barcelona_fp_query->the_post();
+					$barcelona_post_ids[] = get_the_ID();
+				}
+
 			}
 
-		}
+			$query->set( 'post__not_in', $barcelona_post_ids );
 
-		$query->set( 'post__not_in', $barcelona_post_ids );
+		}
 
 	}
 

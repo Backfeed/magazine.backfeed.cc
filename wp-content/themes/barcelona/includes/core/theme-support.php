@@ -44,6 +44,11 @@ function barcelona_theme_support() {
 	add_theme_support( 'custom-background' );
 
 	/*
+	 * Declare WooCommerce support
+	 */
+	add_theme_support( 'woocommerce' );
+
+	/*
 	 * Enable support for Post Formats.
 	 */
 	add_theme_support( 'post-formats', array(
@@ -75,7 +80,7 @@ add_action( 'after_setup_theme', 'barcelona_theme_support' );
  */
 function barcelona_remove_ev_post_type_support() {
 
-	$barcelona_pt = array( 'page', 'attachment', 'literature', 'portfolio_item', 'recipe', 'restaurant_item' );
+	$barcelona_pt = array( 'attachment', 'literature', 'portfolio_item', 'recipe', 'restaurant_item' );
 
 	foreach ( $barcelona_pt as $k ) {
 		remove_post_type_support( $k, 'entry-views' );

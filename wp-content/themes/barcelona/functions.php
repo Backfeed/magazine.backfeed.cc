@@ -1,6 +1,6 @@
 <?php
 
-define( 'BARCELONA_THEME_VERSION', '1.2.0' );
+define( 'BARCELONA_THEME_VERSION', '1.3.0' );
 define( 'BARCELONA_THEME_NAME', esc_html_x( 'Barcelona.', 'Theme Name', 'barcelona' ) );
 define( 'BARCELONA_THEME_PATH', trailingslashit( get_template_directory_uri() ) );
 define( 'BARCELONA_SERVER_PATH', trailingslashit( get_template_directory() ) );

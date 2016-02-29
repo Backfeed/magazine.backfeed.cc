@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Barcelona.\n"
-"POT-Creation-Date: 2016-01-13 19:04+0200\n"
-"PO-Revision-Date: 2016-01-13 19:04+0200\n"
+"POT-Creation-Date: 2016-02-24 16:23+0200\n"
+"PO-Revision-Date: 2016-02-24 16:23+0200\n"
 "Last-Translator: \n"
 "Language-Team: Aggressive Motions <contact@aggressivemotions.com>\n"
 "Language: en\n"
@@ -56,7 +56,7 @@ msgstr[1] ""
 msgid "Leave a Reply"
 msgstr ""
 
-#: comments.php:64
+#: comments.php:64 woocommerce/single-product-reviews.php:73
 #, php-format
 msgid "Leave a Reply to %s"
 msgstr ""
@@ -86,11 +86,11 @@ msgctxt "noun"
 msgid "Comment"
 msgstr ""
 
-#: comments.php:77
+#: comments.php:77 woocommerce/single-product-reviews.php:77
 msgid "Name"
 msgstr ""
 
-#: comments.php:78
+#: comments.php:78 woocommerce/single-product-reviews.php:79
 msgid "Email"
 msgstr ""
 
@@ -145,216 +145,251 @@ msgstr ""
 msgid "Linkedin URL"
 msgstr ""
 
-#: includes/core/filters.php:177
+#: includes/core/filters.php:182
 msgid "Close"
 msgstr ""
 
-#: includes/core/filters.php:180
+#: includes/core/filters.php:185
 msgctxt "placeholder"
 msgid "Search&hellip;"
 msgstr ""
 
-#: includes/core/filters.php:180
+#: includes/core/filters.php:185 woocommerce/product-searchform.php:29
 msgctxt "label"
 msgid "Search for:"
 msgstr ""
 
-#: includes/core/filters.php:182
+#: includes/core/filters.php:187 woocommerce/product-searchform.php:32
 msgctxt "submit button"
 msgid "Search"
 msgstr ""
 
-#: includes/core/filters.php:199
+#: includes/core/filters.php:204
 #, php-format
 msgctxt "Category archives title"
 msgid "%s"
 msgstr ""
 
-#: includes/core/filters.php:203
+#: includes/core/filters.php:208
 #, php-format
 msgid "Tag: %s"
 msgstr ""
 
-#: includes/core/filters.php:207
+#: includes/core/filters.php:212
 #, php-format
 msgid "Author: %s"
 msgstr ""
 
-#: includes/core/filters.php:211
+#: includes/core/filters.php:216
 #, php-format
 msgctxt "Yearly archives title"
 msgid "Archive: %s"
 msgstr ""
 
-#: includes/core/filters.php:215
+#: includes/core/filters.php:220
 #, php-format
 msgctxt "Monthly archives title"
 msgid "Archive: %s"
 msgstr ""
 
-#: includes/core/filters.php:219
+#: includes/core/filters.php:224
 #, php-format
 msgctxt "Daily archives title"
 msgid "Archive: %s"
 msgstr ""
 
-#: includes/core/filters.php:225
+#: includes/core/filters.php:230
 msgctxt "post format archive title"
 msgid "Asides"
 msgstr ""
 
-#: includes/core/filters.php:229
+#: includes/core/filters.php:234
 msgctxt "post format archive title"
 msgid "Galleries"
 msgstr ""
 
-#: includes/core/filters.php:233
+#: includes/core/filters.php:238
 msgctxt "post format archive title"
 msgid "Images"
 msgstr ""
 
-#: includes/core/filters.php:237
+#: includes/core/filters.php:242
 msgctxt "post format archive title"
 msgid "Videos"
 msgstr ""
 
-#: includes/core/filters.php:241
+#: includes/core/filters.php:246
 msgctxt "post format archive title"
 msgid "Quotes"
 msgstr ""
 
-#: includes/core/filters.php:245
+#: includes/core/filters.php:250
 msgctxt "post format archive title"
 msgid "Links"
 msgstr ""
 
-#: includes/core/filters.php:249
+#: includes/core/filters.php:254
 msgctxt "post format archive title"
 msgid "Statuses"
 msgstr ""
 
-#: includes/core/filters.php:253
+#: includes/core/filters.php:258
 msgctxt "post format archive title"
 msgid "Audio"
 msgstr ""
 
-#: includes/core/filters.php:257
+#: includes/core/filters.php:262
 msgctxt "post format archive title"
 msgid "Chats"
 msgstr ""
 
-#: includes/core/filters.php:263
+#: includes/core/filters.php:268
 #, php-format
 msgid "Archives: %s"
 msgstr ""
 
-#: includes/core/filters.php:269
+#: includes/core/filters.php:274
 #, php-format
 msgid "%1$s: %2$s"
 msgstr ""
 
-#: includes/core/filters.php:273
+#: includes/core/filters.php:278
 msgid "Archives"
 msgstr ""
 
-#: includes/core/filters.php:302
+#: includes/core/filters.php:307
 msgid "Post Format Options: Video"
 msgstr ""
 
-#: includes/core/filters.php:309
+#: includes/core/filters.php:321 includes/core/filters.php:369
+msgid "External"
+msgstr ""
+
+#: includes/core/filters.php:325 includes/core/filters.php:373
+msgid "Self-Hosted"
+msgstr ""
+
+#: includes/core/filters.php:331
 msgid "Video Embed Code"
 msgstr ""
 
-#: includes/core/filters.php:310
+#: includes/core/filters.php:332
 msgid "Add the embed code of video from services like Youtube, Vimeo, or Hulu."
 msgstr ""
 
-#: includes/core/filters.php:325
+#: includes/core/filters.php:340
+msgid "Video Url"
+msgstr ""
+
+#: includes/core/filters.php:341 includes/core/filters.php:389
+msgid "Put the url of the video or choose from library"
+msgstr ""
+
+#: includes/core/filters.php:355
 msgid "Post Format Options: Audio"
 msgstr ""
 
-#: includes/core/filters.php:332
+#: includes/core/filters.php:379
 msgid "Audio Embed Code"
 msgstr ""
 
-#: includes/core/filters.php:333
+#: includes/core/filters.php:380
 msgid "Add the embed code of audio from services like SoundCloud or Rdio."
 msgstr ""
 
-#: includes/core/filters.php:348
+#: includes/core/filters.php:388
+msgid "Audio Url"
+msgstr ""
+
+#: includes/core/filters.php:403
 msgid "Post Format Options: Gallery"
 msgstr ""
 
-#: includes/core/filters.php:408
+#: includes/core/filters.php:463
 msgid ""
 "This content is password protected. To view it please enter your password "
 "below:"
 msgstr ""
 
-#: includes/core/filters.php:409
+#: includes/core/filters.php:464
 msgid "Type password..."
 msgstr ""
 
-#: includes/core/filters.php:409
+#: includes/core/filters.php:464 woocommerce/single-product-reviews.php:82
 msgid "Submit"
 msgstr ""
 
-#: includes/core/filters.php:600
+#: includes/core/filters.php:655
 msgid "Forums Archive"
 msgstr ""
 
-#: includes/core/filters.php:626 includes/core/filters.php:641
+#: includes/core/filters.php:681 includes/core/filters.php:696
+#: includes/widgets/barcelona-posts.php:257
+#: includes/widgets/barcelona-slider-posts.php:321
 msgid "Post Views"
+msgstr ""
+
+#: includes/core/filters.php:836 includes/core/template-tags.php:306
+msgctxt "breadcrumb"
+msgid "Home"
+msgstr ""
+
+#: includes/core/filters.php:856 includes/core/template-tags.php:698
+msgid "&laquo; Prev"
+msgstr ""
+
+#: includes/core/filters.php:857 includes/core/template-tags.php:699
+msgid "Next &raquo;"
 msgstr ""
 
 #: includes/core/helpers.php:56
 msgid "RSS Feed"
 msgstr ""
 
-#: includes/core/helpers.php:456
+#: includes/core/helpers.php:488
 msgid "There is no excerpt because this is a protected post."
 msgstr ""
 
-#: includes/core/helpers.php:1089
+#: includes/core/helpers.php:1239
 msgid "just now"
 msgstr ""
 
-#: includes/core/helpers.php:1093
+#: includes/core/helpers.php:1243
 #, php-format
 msgid "%s seconds ago"
 msgstr ""
 
-#: includes/core/helpers.php:1097
+#: includes/core/helpers.php:1247
 msgid "about a minute ago"
 msgstr ""
 
-#: includes/core/helpers.php:1101
+#: includes/core/helpers.php:1251
 #, php-format
 msgid "about %s minutes ago"
 msgstr ""
 
-#: includes/core/helpers.php:1105 includes/core/helpers.php:1110
+#: includes/core/helpers.php:1255 includes/core/helpers.php:1260
 #, php-format
 msgid "about an hour ago"
 msgid_plural "about %s hours ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/core/helpers.php:1114 includes/core/helpers.php:1119
+#: includes/core/helpers.php:1264 includes/core/helpers.php:1269
 #, php-format
 msgid "about a day ago"
 msgid_plural "about %s days ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/core/helpers.php:1124
+#: includes/core/helpers.php:1274
 #, php-format
 msgid "about a month ago"
 msgid_plural "about %s months ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/core/helpers.php:1129
+#: includes/core/helpers.php:1279
 #, php-format
 msgid "about a year ago"
 msgid_plural "about %s years ago"
@@ -454,79 +489,98 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: includes/core/nav-menu.php:487
+#: includes/core/nav-menu.php:483
 msgid "Popular Tags:"
 msgstr ""
 
-#: includes/core/nav-menu.php:500
+#: includes/core/nav-menu.php:496
 msgid "See All"
 msgstr ""
 
-#: includes/core/scripts.php:87
+#: includes/core/scripts.php:97
 msgid "Please login to vote!"
 msgstr ""
 
-#: includes/core/scripts.php:208
+#: includes/core/scripts.php:232
 msgid "Visit the post for more."
 msgstr ""
 
-#: includes/core/scripts.php:223
+#: includes/core/scripts.php:247
 msgid "(no title)"
 msgstr ""
 
-#: includes/core/template-tags.php:20
+#: includes/core/template-tags.php:22
 msgid "Edit"
 msgstr ""
 
-#: includes/core/template-tags.php:25
+#: includes/core/template-tags.php:27
 msgid "Your comment is awaiting moderation."
 msgstr ""
 
-#: includes/core/template-tags.php:68
+#: includes/core/template-tags.php:83
 msgid "&laquo; Older Comments"
 msgstr ""
 
-#: includes/core/template-tags.php:72
+#: includes/core/template-tags.php:87
 msgid "Newer Comments &raquo;"
 msgstr ""
 
-#: includes/core/template-tags.php:211
+#: includes/core/template-tags.php:109
+msgid "Vote Up"
+msgstr ""
+
+#: includes/core/template-tags.php:115
+msgid "Vote Down"
+msgstr ""
+
+#: includes/core/template-tags.php:133 includes/core/template-tags.php:134
+#: includes/core/template-tags.php:135 includes/core/template-tags.php:136
+#: includes/core/template-tags.php:137
+#, php-format
+msgid "Share on %s"
+msgstr ""
+
+#: includes/core/template-tags.php:272
 msgid "Search Results"
 msgstr ""
 
-#: includes/core/template-tags.php:215
+#: includes/core/template-tags.php:276
 msgid "Author Archive"
 msgstr ""
 
-#: includes/core/template-tags.php:219
+#: includes/core/template-tags.php:280
 msgid "Yearly Archive"
 msgstr ""
 
-#: includes/core/template-tags.php:223
+#: includes/core/template-tags.php:284
 msgid "Monthly Archive"
 msgstr ""
 
-#: includes/core/template-tags.php:227
+#: includes/core/template-tags.php:288
 msgid "Daily Archive"
 msgstr ""
 
-#: includes/core/template-tags.php:231
+#: includes/core/template-tags.php:292
 msgid "Tag Archive"
 msgstr ""
 
-#: includes/core/template-tags.php:239
-msgid "Home"
+#: includes/core/template-tags.php:719
+msgid "&laquo; Older Entries"
 msgstr ""
 
-#: includes/core/template-tags.php:554
-msgid "&laquo; Prev"
+#: includes/core/template-tags.php:720
+msgid "Newer Entries &raquo;"
 msgstr ""
 
-#: includes/core/template-tags.php:555
-msgid "Next &raquo;"
+#: includes/core/template-tags.php:726 includes/core/template-tags.php:730
+msgid "Loading..."
 msgstr ""
 
-#: includes/core/template-tags.php:878
+#: includes/core/template-tags.php:726
+msgid "Load More"
+msgstr ""
+
+#: includes/core/template-tags.php:1043
 msgid "Related Posts"
 msgstr ""
 
@@ -561,6 +615,10 @@ msgstr ""
 
 #: includes/core/widgets.php:76
 msgid "bbPress Sidebar"
+msgstr ""
+
+#: includes/core/widgets.php:90
+msgid "WooCommerce Sidebar"
 msgstr ""
 
 #: includes/modules/module-none.php:19
@@ -814,6 +872,31 @@ msgstr ""
 msgid "Ascending"
 msgstr ""
 
+#: includes/widgets/barcelona-posts.php:255
+#: includes/widgets/barcelona-slider-posts.php:319
+msgid "Post Meta Data"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:256
+#: includes/widgets/barcelona-slider-posts.php:320
+msgid "Post Date"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:258
+#: includes/widgets/barcelona-slider-posts.php:322
+msgid "Post Votes"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:259
+#: includes/widgets/barcelona-slider-posts.php:323
+msgid "Post Comments"
+msgstr ""
+
+#: includes/widgets/barcelona-posts.php:260
+#: includes/widgets/barcelona-slider-posts.php:324
+msgid "Check which meta data to show for the posts."
+msgstr ""
+
 #: includes/widgets/barcelona-slider-posts.php:12
 msgctxt "Slider Posts widget description"
 msgid "Displays the specified posts as a slider"
@@ -880,20 +963,20 @@ msgstr ""
 msgid "Url:"
 msgstr ""
 
-#: page-modules.php:84
+#: page-modules.php:39 page.php:33 single.php:33
+msgid "Pages:"
+msgstr ""
+
+#: page-modules.php:139
 msgid "Most Recent"
 msgstr ""
 
-#: page-modules.php:85
+#: page-modules.php:140
 msgid "Most Commented"
 msgstr ""
 
-#: page-modules.php:86
+#: page-modules.php:141
 msgid "Most Viewed"
-msgstr ""
-
-#: page.php:30 single.php:31
-msgid "Pages:"
 msgstr ""
 
 #: search.php:18
@@ -905,21 +988,99 @@ msgstr ""
 msgid "Search&hellip;"
 msgstr ""
 
-#: single.php:45
+#: single.php:49
 msgid "Tags:"
 msgstr ""
 
-#: single.php:54
-msgid "Vote Up"
+#: woocommerce/content-product.php:64
+msgid "View Details"
 msgstr ""
 
-#: single.php:60
-msgid "Vote Down"
+#: woocommerce/product-searchform.php:29
+msgctxt "placeholder"
+msgid "Search Products&hellip;"
 msgstr ""
 
-#: single.php:71 single.php:72 single.php:73 single.php:74 single.php:75
+#: woocommerce/single-product-reviews.php:34
 #, php-format
-msgid "Share on %s"
+msgid "%s review for %s"
+msgid_plural "%s reviews for %s"
+msgstr[0] ""
+msgstr[1] ""
+
+#: woocommerce/single-product-reviews.php:36
+msgid "Reviews"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:59
+msgid "There are no reviews yet."
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:72
+msgid "Add a review"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:72
+#, php-format
+msgid "Be the first to review &ldquo;%s&rdquo;"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:88
+#, php-format
+msgid "You must be <a href=\"%s\">logged in</a> to post a review."
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:92
+msgid "Your Rating"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:93
+msgid "Rate&hellip;"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:94
+msgid "Perfect"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:95
+msgid "Good"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:96
+msgid "Average"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:97
+msgid "Not that bad"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:98
+msgid "Very Poor"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:102
+msgid "Your Review"
+msgstr ""
+
+#: woocommerce/single-product-reviews.php:111
+msgid ""
+"Only logged in customers who have purchased this product may leave a review."
+msgstr ""
+
+#: woocommerce/single-product/related.php:51
+msgid "Related Products"
+msgstr ""
+
+#: woocommerce/single-product/tabs/additional-information.php:24
+msgid "Additional Information"
+msgstr ""
+
+#: woocommerce/single-product/tabs/description.php:24
+msgid "Product Description"
+msgstr ""
+
+#: woocommerce/single-product/up-sells.php:52
+msgid "You may also like&hellip;"
 msgstr ""
 
 #, fuzzy
