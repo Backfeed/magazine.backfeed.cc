@@ -10,4 +10,11 @@
 	$('#mc-embedded-subscribe-form').removeAttr('novalidate')
 }(jQuery));
 
-var $mcj = jQuery.noConflict(true);
+/* @see http://tympanus.net/codrops/2015/09/15/styling-customizing-file-inputs-smart-way */
+var featuredImageUploader = document.getElementsByClassName('ninja-forms-field-featured-image-wrap')[0];
+if (featuredImageUploader) {
+	featuredImageUploader.addEventListener('change', function (e) {
+		var label = e.target.parentElement.querySelector('label');
+		label.textContent = 'Image File Loaded';
+	});
+}
