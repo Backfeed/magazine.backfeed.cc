@@ -16,16 +16,6 @@ add_action('after_setup_theme', function() {
 	}, 99);
 }, 99);
 
-
-
-add_filter('ninja_forms_textarea_rte', function($default_args) {
-	$args = [
-		'quicktags' => false,
-		'drag_drop_upload' => true
-	];
-	return array_merge($default_args, $args);
-});
-
 add_action('after_setup_theme', function() {
 	remove_action('wp_head', 'rsd_link'); //removes EditURI/RSD (Really Simple Discovery) link.
 	remove_action('wp_head', 'wlwmanifest_link'); //removes wlwmanifest (Windows Live Writer) link.
@@ -41,7 +31,7 @@ add_action('after_setup_theme', function() {
 	remove_filter('the_content_feed', 'wp_staticize_emoji');
 	remove_filter('comment_text_rss', 'wp_staticize_emoji');
 	// filter to remove TinyMCE emojis
-	add_filter('tiny_mce_plugins', 'disable_emojicons_tinymce');
+//	add_filter('tiny_mce_plugins', 'disable_emojicons_tinymce');
 });
 
 
