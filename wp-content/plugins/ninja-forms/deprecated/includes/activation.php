@@ -197,7 +197,7 @@ function ninja_forms_activation( $network_wide ){
 	 	}
 
 		// Add the transient to redirect
-		set_transient( '_nf_activation_redirect', true, 30 );
+		// set_transient( '_nf_activation_redirect', true, 30 );
 
 	} else { // We're network activating.
 		header( 'Location: ' . network_admin_url( 'plugins.php?deactivate=true&nf_action=network_activation_error' ) );

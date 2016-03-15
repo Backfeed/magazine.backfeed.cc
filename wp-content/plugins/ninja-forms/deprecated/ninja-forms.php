@@ -265,7 +265,7 @@ class Ninja_Forms {
 
         // Plugin version
         if ( ! defined( 'NF_PLUGIN_VERSION' ) )
-            define( 'NF_PLUGIN_VERSION', '2.9.34' );
+            define( 'NF_PLUGIN_VERSION', '2.9.36' );
 
         // Plugin Folder Path
         if ( ! defined( 'NF_PLUGIN_DIR' ) )
@@ -373,9 +373,6 @@ class Ninja_Forms {
             $upgraded_from = get_option( 'nf_version_upgraded_from', FALSE );
             if( $upgraded_from && version_compare( $upgraded_from, '2.9', '<=') ) {
 
-                echo "<pre>";
-                var_dump($upgraded_from);
-                echo "</pre>";
                 // Include Upgrade Base Class
                 require_once( NF_PLUGIN_DIR . 'includes/admin/upgrades/class-upgrade.php');
 
@@ -865,9 +862,13 @@ function ninja_forms_three_addons_version_check(){
 }
 
 function ninja_forms_three_addons_check(){
-    $items = wp_remote_get( 'https://ninjaforms.com/?extend_feed=jlhrbgf89734go7387o4g3h' );
-    $items = wp_remote_retrieve_body( $items );
-    $items = json_decode( $items, true );
+    $items = array();
+    if( ! get_transient( 'ninja_forms_addons_check_items' ) ) {
+        $items = wp_remote_get('https://ninjaforms.com/?extend_feed=jlhrbgf89734go7387o4g3h');
+        $items = wp_remote_retrieve_body($items);
+        $items = json_decode($items, true);
+        set_transient( 'ninja_forms_addons_check_items', $items, 60 * 60 * 24 );
+    }
 
     $has_addons = FALSE;
     if( is_array( $items ) ) {

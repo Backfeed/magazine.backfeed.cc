@@ -2,8 +2,11 @@
 function ninja_forms_setup_processing_class( $form_id = '' ){
 	global $ninja_forms_processing;
 
-	// Manually set the cookie.
-	Ninja_Forms()->session->init()->set_cookie();
+	$session_reflection = new ReflectionMethod( 'WP_Session', 'set_cookie' );
+	if( $session_reflection->isPublic() ){
+		// Manually set the cookie.
+		Ninja_Forms()->session->init()->set_cookie();
+	}
 
 	$transient_id = Ninja_Forms()->session->get( 'nf_transient_id' );
 	//Set the form id

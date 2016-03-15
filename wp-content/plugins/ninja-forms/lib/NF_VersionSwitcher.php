@@ -170,3 +170,18 @@ function nf_fs_optout(){
     // Turn Freemius off.
     update_option( 'ninja_forms_freemius', 0 );
 }
+
+function nf_fs_custom_message( $message, $user_first_name, $plugin_title, $user_login, $site_link, $freemius_link ) {
+    return sprintf(
+        __fs( 'hey-x' ) . '<br>' .
+        __( 'Please help us improve %2$s! If you opt-in, some data about your installation of %2$s will be sent to %5$s (this does NOT include your submissions). If you skip this, that\'s okay! %2$s will still work just fine.', 'ninja-forms' ),
+        $user_first_name,
+        '<b>' . $plugin_title . '</b>',
+        '<b>' . $user_login . '</b>',
+        $site_link,
+        $freemius_link
+    );
+}
+
+nf_fs()->add_filter('connect_message', 'nf_fs_custom_message', 10, 6);
+nf_fs()->add_filter('connect_message_on_update', 'nf_fs_custom_message', 10, 6);
