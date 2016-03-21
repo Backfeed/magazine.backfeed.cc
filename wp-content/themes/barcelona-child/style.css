@@ -8,58 +8,18 @@
  * Template Version: 1.2.0
  * Version: 1.0.0
  */
-.ninja-forms-form-wrap input,
-.ninja-forms-form-wrap select,
-.ninja-forms-form-wrap textarea {
-    padding-left: 1rem;
-}
 
 .wp-media-buttons {
     float: right;
     margin-bottom: 0.5rem;
 }
 
-.wp-editor-container {
-    border: 1px #C3C3C3 solid;
-}
-
-.ninja-forms-field-description {
+.gform_wrapper .gfield_description {
     font-size: 13px;
     color: grey;
 }
 
-.nf-desc {
-    max-width: none;
-    margin: 0 0 10px;
-    line-height: initial;
-    text-transform: none;
-    font-size: initial;
-    color: initial;
-}
-
-.ninja-forms-field-featured-image-wrap label {
-    display: inline !important;
-    background-color: #cc1919;
-    color: white;
-    padding: 5px 15px;
-    cursor: pointer;
-}
-
-.ninja-forms-field-featured-image-wrap label:hover {
-    border-color: #e71d1d;
-    background-color: #e71d1d;
-}
-
-.ninja-forms-form-wrap input[type="file"] {
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
-    overflow: hidden;
-    position: absolute;
-    z-index: -1;
-}
-
-.ninja-forms-field[type="submit"] {
+.gform_wrapper .gform_footer input[type="submit"] {
     padding: 5px 15px;
     border: none;
     text-transform: uppercase;
@@ -68,11 +28,11 @@
     color: #fff;
 }
 
-.ninja-forms-field[type="submit"]:focus {
+.gform_wrapper .gform_footer input[type="submit"]:focus {
     outline: 0;
 }
 
-.ninja-forms-field[type="submit"]:hover {
+.gform_wrapper .gform_footer input[type="submit"]:hover {
     border-color: #e71d1d;
     background-color: #e71d1d;
 }
