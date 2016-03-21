@@ -8,8 +8,7 @@ defined( 'ABSPATH' ) or	die( 'Cheatin&#8217; uh?' );
  * @since 1.1.0
  */
 add_filter( 'rocket_buffer', 'rocket_exclude_deferred_js', 11 );
-function rocket_exclude_deferred_js( $buffer )
-{
+function rocket_exclude_deferred_js( $buffer ) {
 	// Get all JS files with this regex
 	preg_match_all( '#<script.*src=[\'|"]([^\'|"]+\.js?.+)[\'|"].*></script>#iU', $buffer, $tags_match );
 
@@ -43,8 +42,26 @@ function rocket_exclude_deferred_js( $buffer )
  * @since 1.1.0
  */
 add_action( 'wp_footer', 'rocket_insert_deferred_js', PHP_INT_MAX );
-function rocket_insert_deferred_js( $buffer )
-{
+function rocket_insert_deferred_js( $buffer ) {
+	// @since 2.7: Don't add anything on POST requests, if DONOTCACHEPAGE exists
+	// 			   and logged in users if the "Logged in user cache" option isn't activated
+	// Don't add anything on 404 page or on a page without these query strings
+	if ( is_404()
+		 || ! empty( $_POST )
+		 || ( defined( 'DONOTCACHEPAGE' ) && DONOTCACHEPAGE )
+		 || ( is_user_logged_in() && ! get_rocket_option( 'cache_logged_user', 0 ) )
+		 || ( ! empty( $_GET )
+			  && ( ! isset( $_GET['utm_source'], $_GET['utm_medium'], $_GET['utm_campaign'] ) )
+			  && ( ! isset( $_GET['fb_action_ids'], $_GET['fb_action_types'], $_GET['fb_source'] ) )
+			  && ( ! isset( $_GET['gclid'] ) )
+			  && ( ! isset( $_GET['permalink_name'] ) )
+			  && ( ! isset( $_GET['lp-variation-id'] ) )
+			  && ( ! isset( $_GET['lang'] ) )
+			)
+	) {
+		return;
+	}
+
 	/**
 	 * Filter LABjs file URL
 	 *
@@ -66,15 +83,6 @@ function rocket_insert_deferred_js( $buffer )
 	$labjs_options = apply_filters( 'rocket_labjs_options', array( 'AlwaysPreserveOrder' => true ) );
 
 	/**
-	 * Filter list of Deferred JavaScript files
-	 *
-	 * @since 1.1.0
-	 *
-	 * @param array List of Deferred JavaScript files
-	 */
-	$deferred_js_files = apply_filters( 'rocket_minify_deferred_js', get_rocket_option( 'deferred_js_files' ) );
-
-	/**
 	 * Filter list of Deferred JavaScript files waiting to load
 	 *
 	 * @since 1.1.0
@@ -93,7 +101,9 @@ function rocket_insert_deferred_js( $buffer )
 		$defer .= '.setOptions(' . json_encode( $labjs_options ) . ')';
 	}
 
-	foreach( $deferred_js_files as $k => $js ) {
+	$deferred_js_files = get_rocket_deferred_js_files();
+
+	foreach ( $deferred_js_files as $k => $js ) {
 		$wait 	= $deferred_js_wait[$k] == '1' ? '.wait(' . esc_js( apply_filters( 'rocket_labjs_wait_callback', false, $js ) ) . ')' : '';
 		$defer .= '.script("' . esc_js( $js ) . '")' . $wait;
 	}

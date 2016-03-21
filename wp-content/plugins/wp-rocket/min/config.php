@@ -18,6 +18,9 @@ if ( file_exists( $wp_rocket_config_file ) && ! defined( 'ABSPATH' ) ) {
 	require( $wp_rocket_config_file );
 }
 
+// Remove all CSS comments
+$min_serveOptions['minifierOptions']['text/css']['preserveComments'] = false;
+
 /**
  * Set to true to log messages to FirePHP (Firefox Firebug addon).
  * Set to false for no error logging (Minify may be slightly faster).
@@ -89,7 +92,7 @@ $min_cacheFileLocking = true;
  * move all @imports to the top of the output. Note that moving @imports could
  * affect CSS values (which is why this option is disabled by default).
  */
-$min_serveOptions['bubbleCssImports'] = false;
+$min_serveOptions['bubbleCssImports'] = true;
 
 
 /**
