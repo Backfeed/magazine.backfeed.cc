@@ -1,9 +1,6 @@
 <?php
 require_once('lib/login.php');
 
-/*
- * Enqueue Child Scripts & Styles
- */
 add_action('after_setup_theme', function() {
 	add_action('wp_enqueue_scripts', function() {
 		if (!is_admin()) {
@@ -34,8 +31,12 @@ add_action('after_setup_theme', function() {
 //	add_filter('tiny_mce_plugins', 'disable_emojicons_tinymce');
 });
 
-
 add_action('widgets_init', function() {
 	global $wp_widget_factory;
 	remove_action('wp_head', [$wp_widget_factory->widgets['WP_Widget_Recent_Comments'], 'recent_comments_style']);
+});
+
+add_filter('gform_rich_text_editor_options', function($editor_settings) {
+	$editor_settings['media_buttons'] = true;
+	return $editor_settings;
 });
