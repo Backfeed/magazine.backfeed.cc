@@ -1,5 +1,6 @@
 <?php
 require_once('lib/login.php');
+require_once('lib/ajax.php');
 
 add_action('after_setup_theme', function() {
 	add_action('wp_enqueue_scripts', function() {
