@@ -8,31 +8,4 @@
  * Template Version: 1.2.0
  * Version: 1.0.0
  */
-
-.wp-media-buttons {
-    float: right;
-    margin-bottom: 0.5rem;
-}
-
-.gform_wrapper .gfield_description {
-    font-size: 13px;
-    color: grey;
-}
-
-.gform_wrapper .gform_footer input[type="submit"] {
-    padding: 5px 15px;
-    border: none;
-    text-transform: uppercase;
-    font-weight: bold !important;
-    background-color: #cc1919;
-    color: #fff;
-}
-
-.gform_wrapper .gform_footer input[type="submit"]:focus {
-    outline: 0;
-}
-
-.gform_wrapper .gform_footer input[type="submit"]:hover {
-    border-color: #e71d1d;
-    background-color: #e71d1d;
-}
+@import "styles/barcelona-child.css";

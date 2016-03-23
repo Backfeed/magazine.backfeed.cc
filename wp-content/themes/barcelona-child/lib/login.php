@@ -1,6 +1,6 @@
 <?php
 add_action('login_enqueue_scripts', function() {
-    wp_enqueue_style( 'backfeed-login', trailingslashit( get_stylesheet_directory_uri() ).'custom-login.css' );
+    wp_enqueue_style( 'backfeed-login', trailingslashit( get_stylesheet_directory_uri() ).'styles/custom-login.css' );
 });
 
 add_filter('login_message', function($message) {

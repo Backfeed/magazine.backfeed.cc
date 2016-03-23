@@ -34,74 +34,42 @@ if (!get_post_meta(get_queried_object_id(), 'backfeed_barcelona_mod', true))
 
 ?>
 
-<img style="width: 100%;" src="<?=get_stylesheet_directory_uri()?>/images/homepage-banner.jpg" />
+	<div class="container backfeed-featured-section">
+		<i class="bf-fa bf-fa-close"></i>
+		<div class="backfeed-featured-section-titles">
+			<h2 class="backfeed-featured-section-title">Be a Content Miner</h2>
+			<h3 class="backfeed-featured-section-subtitle">Write, Rate, Share and get Tokens</h3>
+		</div>
+		<button class="btn">Take me on a Tour</button>
+	</div>
 
-<div class="<?php echo esc_attr( barcelona_single_class() ); ?>">
+<div class="<?=esc_attr(barcelona_single_class())?>">
 
-	<div class="<?php echo esc_attr( barcelona_row_class() ); ?>">
+	<div class="<?=esc_attr(barcelona_row_class())?>">
 
-		<main id="main" class="<?php echo esc_attr( barcelona_main_class() ); ?>">
+		<main id="main" class="<?=esc_attr(barcelona_main_class())?>">
 
 			<?php
 
-			if ( get_query_var( 'paged' ) ) {
-				$paged = get_query_var( 'paged' );
-			} elseif ( get_query_var( 'page' ) ) {
-				$paged = get_query_var( 'page' );
-			} else {
-				$paged = 1;
-			}
-
-			$barcelona_q_params = [
+			$barcelona_q = new WP_Query([
 				'posts_per_page'        => 8,
 				'post_type'             => 'post',
 				'post_status'           => 'publish',
 				'ignore_sticky_posts'   => true,
 				'no_found_rows'         => false,
-				'paged'                 => $paged
-			];
-
-			/*
-             * Posts Ordering
-             */
-			switch ( $barcelona_mod['orderby'] ) {
-				case 'views':
-					$barcelona_q_params['orderby'] = 'meta_value_num';
-					$barcelona_q_params['meta_key'] = 'backfeed_contribution_score';
-					break;
-				case 'comments':
-					$barcelona_q_params['orderby'] = 'comment_count';
-					break;
-				case 'votes':
-					$barcelona_q_params['orderby'] = 'meta_value_num';
-					$barcelona_q_params['meta_key'] = '_barcelona_vote_up';
-					break;
-				case 'random':
-					$barcelona_q_params['orderby'] = 'rand';
-					break;
-				case 'posts':
-					$barcelona_q_params['orderby'] = 'post__in';
-					break;
-				default:
-					$barcelona_q_params['orderby'] = 'date';
-			}
-
-			$barcelona_q_params['order'] = ( $barcelona_mod['order'] != 'asc' ) ? 'DESC' : 'ASC';
-
-			$barcelona_q = new WP_Query( $barcelona_q_params );
+				'paged'                 => 1,
+				'orderby'               => 'meta_value_num',
+				'meta_key'              => 'backfeed_contribution_score'
+			]);
+			
 			$barcelona_async = false;
 
-			$barcelona_mod_attr_data = array();
-			$barcelona_mod_attr_data['type'] = $barcelona_mod['tab_type'] . '_0';
-
-			$barcelona_mod_post_meta = array();
-			if (array_key_exists('post_meta_choices', $barcelona_mod)) {
-				$barcelona_mod_post_meta = $barcelona_mod['post_meta_choices'];
-			}
+			$barcelona_mod_attr_data = ['type' => 't2_0'];
+			$barcelona_mod_post_meta = ['date',	'views', 'likes', 'comments'];
 
 			include(locate_template('homepage-module.php'));
 
-			barcelona_pagination( $barcelona_mod['pagination'], $barcelona_q );
+			barcelona_pagination($barcelona_mod['pagination'], $barcelona_q);
 
 			?>
 		</main>
