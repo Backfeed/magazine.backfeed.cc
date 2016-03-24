@@ -5,20 +5,7 @@ if (!isset($barcelona_q)) $barcelona_q = $wp_query;
 
 if (!isset($barcelona_async)) $barcelona_async = false;
 
-if (!$barcelona_async) {
-	$barcelona_attr_str = '';
-	if ( isset( $barcelona_mod_attr_data ) && is_array( $barcelona_mod_attr_data ) ) {
-		foreach ( $barcelona_mod_attr_data as $j => $d ) {
-			$barcelona_attr_str .= ' data-'. sanitize_key( $j ) .'="'. esc_attr( $d ) .'"';
-		}
-	}
-
-	echo '<div class="posts-box posts-box-6"'. $barcelona_attr_str .'>';
-}
-
-if (isset($barcelona_mod_header)) echo $barcelona_mod_header;
-
-if (!$barcelona_async) echo '<div class="posts-wrapper row">';
+if (!$barcelona_async) echo '<div class="posts-box posts-box-6" data-type="t2_0"><div class="posts-wrapper row">';
 
 while ($barcelona_q->have_posts()): $barcelona_q->the_post(); ?>
 
@@ -41,10 +28,10 @@ while ($barcelona_q->have_posts()): $barcelona_q->the_post(); ?>
 				</h2>
 
 				<p class="post-excerpt">
-					<?=esc_html(barcelona_get_excerpt( 20 ))?>
+					<?=esc_html(barcelona_get_excerpt(20))?>
 				</p>
 
-				<?php if (isset($barcelona_mod_post_meta)) barcelona_post_meta($barcelona_mod_post_meta); ?>
+				<?php barcelona_post_meta(['date', 'views', 'likes', 'comments']); ?>
 
 			</div><!-- .post-details -->
 

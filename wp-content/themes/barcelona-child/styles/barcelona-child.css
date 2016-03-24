@@ -36,9 +36,12 @@
     .backfeed-featured-section .btn:hover {
       background-color: gray; }
 
+#page-wrapper {
+  margin-top: 20px; }
+
 #page-wrapper > .container:nth-of-type(1).backfeed-featured-section {
   padding-top: 0;
-  margin-top: 20px;
+  margin-top: 0;
   margin-bottom: 29px; }
 
 .wp-media-buttons {
