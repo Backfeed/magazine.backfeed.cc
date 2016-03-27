@@ -84,6 +84,20 @@ function barcelona_register_sidebars() {
 
 	}
 
+	if ( class_exists( 'Woocommerce' ) ) {
+
+		register_sidebar( array(
+			'name'          => esc_html__( 'WooCommerce Sidebar', 'barcelona' ),
+			'id'            => 'barcelona-woocommerce-sidebar',
+			'description'   => '',
+			'before_widget' => '<div id="%1$s" class="sidebar-widget wc-widget %2$s">',
+			'after_widget'  => '</div>',
+			'before_title'  => '<div class="widget-title"><h2 class="title">',
+			'after_title'   => '</h2></div>'
+		) );
+
+	}
+
 }
 add_action( 'widgets_init', 'barcelona_register_sidebars' );
 

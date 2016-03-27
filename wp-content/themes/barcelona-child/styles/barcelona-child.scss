@@ -1,0 +1,92 @@
+.backfeed-featured-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 292px;
+  position: relative;
+  background: url('../images/homepage-banner.jpg') no-repeat;
+  background-origin: content-box;
+  background-size: cover;
+
+  .bf-fa-close {
+    position: absolute;
+    top: 12px;
+    right: 30px;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+  }
+
+  .backfeed-featured-section-titles {
+    text-align: center;
+    color: white;
+  }
+
+  .backfeed-featured-section-title {
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 50px;
+    text-transform: uppercase;
+  }
+
+  .backfeed-featured-section-subtitle {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 20px;
+  }
+
+  .btn {
+    background-color: white;
+    text-transform: uppercase;
+    border: 0;
+    font-weight: bold;
+    padding: 7px 19px;
+
+    &:hover {
+      background-color: gray;
+    }
+  }
+}
+
+#page-wrapper {
+  margin-top: 20px;
+}
+
+#page-wrapper > .container:nth-of-type(1).backfeed-featured-section {
+  padding-top: 0;
+  margin-top: 0;
+  margin-bottom: 29px;
+}
+
+.wp-media-buttons {
+  float: right;
+  margin-bottom: 0.5rem;
+}
+
+.gform_wrapper {
+  .gfield_description {
+    font-size: 13px;
+    color: grey;
+  }
+
+  .gform_footer input[type="submit"] {
+    padding: 5px 15px;
+    border: none;
+    text-transform: uppercase;
+    font-weight: bold !important;
+    background-color: #cc1919;
+    color: #fff;
+
+    &:focus {
+      outline: 0;
+    }
+
+    &:hover {
+      border-color: #e71d1d;
+      background-color: #e71d1d;
+    }
+  }
+
+}
+

@@ -7,7 +7,30 @@
 	ftypes[1]='text';
 	fnames[2]='LNAME';
 	ftypes[2]='text';
-	$('#mc-embedded-subscribe-form').removeAttr('novalidate')
+	$('#mc-embedded-subscribe-form').removeAttr('novalidate');
+
+	window.twttr = (function(d, s, id) {
+		var js, fjs = d.getElementsByTagName(s)[0],
+			t = window.twttr || {};
+		if (d.getElementById(id)) return t;
+		js = d.createElement(s);
+		js.id = id;
+		js.src = "https://platform.twitter.com/widgets.js";
+		fjs.parentNode.insertBefore(js, fjs);
+
+		t._e = [];
+		t.ready = function(f) {
+			t._e.push(f);
+		};
+
+		return t;
+	}(document, "script", "twitter-wjs"));
+
+	var featuredSection = $('.backfeed-featured-section');
+	if (featuredSection) {
+		featuredSection.find('.bf-fa-close').on('click', function(e) {
+			featuredSection.slideUp();
+		});
+	}
 }(jQuery));
 
-var $mcj = jQuery.noConflict(true);

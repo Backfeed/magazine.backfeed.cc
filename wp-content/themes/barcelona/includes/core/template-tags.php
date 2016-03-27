@@ -5,6 +5,8 @@
  */
 function barcelona_comments_cb( $comment, $args, $depth ) {
 
+	global $post;
+
 	$GLOBALS['comment'] = $comment;
 ?>
 	<div <?php comment_class( empty( $args['has_children'] ) ? '' : 'parent' ); ?>>
@@ -35,17 +37,30 @@ function barcelona_comments_cb( $comment, $args, $depth ) {
 							'reply_text' => '<span class="fa fa-reply"></span>',
 							'depth'     => $depth,
 							'max_depth' => $args['max_depth']
-						) ) ); ?>
+						) ) );
+						?>
 					</li>
 
-					<?php foreach ( array( 'up', 'down' ) as $k ): ?>
-					<li class="comment-vote<?php if ( $barcelona_voted = barcelona_is_voted_comment() ) { echo ' comment-vote-disabled'; } ?>">
-						<button class="btn-vote btn-vote-<?php echo sanitize_html_class( $k ) . ( $barcelona_voted == $k ? ' btn-voted' : '' ); ?>" data-nonce="<?php echo wp_create_nonce( 'barcelona-comment-vote' ); ?>" data-type="<?php echo esc_attr( $k ); ?>" data-vote-type="comment" data-vote-id="<?php echo esc_attr( $comment->comment_ID ); ?>">
-							<span class="fa fa-thumbs-<?php echo sanitize_html_class( $k ); ?>"></span>
-							<span class="vote-num"><?php barcelona_comment_vote( $comment->comment_ID, $k ); ?></span>
-						</button>
-					</li>
-					<?php endforeach; ?>
+					<?php
+
+					if ( barcelona_get_option( 'show_comment_voting' ) == 'on' ):
+
+						foreach ( array( 'up', 'down' ) as $k ):
+
+						?>
+						<li class="comment-vote<?php if ( $barcelona_voted = barcelona_is_voted_comment() ) { echo ' comment-vote-disabled'; } ?>">
+							<button class="btn-vote btn-vote-<?php echo sanitize_html_class( $k ) . ( $barcelona_voted == $k ? ' btn-voted' : '' ); ?>" data-nonce="<?php echo wp_create_nonce( 'barcelona-comment-vote' ); ?>" data-type="<?php echo esc_attr( $k ); ?>" data-vote-type="comment" data-vote-id="<?php echo esc_attr( $comment->comment_ID ) .'_'. esc_attr( $post->ID ); ?>">
+								<span class="fa fa-thumbs-<?php echo sanitize_html_class( $k ); ?>"></span>
+								<span class="vote-num"><?php barcelona_comment_vote( $comment->comment_ID, $k ); ?></span>
+							</button>
+						</li>
+						<?php
+
+						endforeach;
+
+					endif;
+
+					?>
 
 				</ul>
 			</div><!-- .comment-metadata -->
@@ -82,12 +97,58 @@ function barcelona_comments_nav( $position = 'top' ) {
 }
 
 /*
+ * Post Voting
+ */
+function barcelona_post_voting() {
+
+	if ( barcelona_get_option( 'show_voting' ) == 'on' ): ?>
+	<div class="post-vote row<?php if ( $barcelona_voted = barcelona_is_voted_post() ) { echo ' post-vote-disabled'; } ?>">
+
+		<div class="col col-left col-xs-6">
+			<button class="btn btn-vote btn-vote-up<?php echo ( $barcelona_voted == 'up' ) ? ' btn-voted' : ''; ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'barcelona-post-vote' ) ); ?>" data-type="up" data-vote-type="post">
+				<span class="fa fa-thumbs-up"></span><?php esc_html_e( 'Vote Up', 'barcelona' ); ?>
+			</button>
+		</div>
+
+		<div class="col col-right col-xs-6">
+			<button class="btn btn-vote btn-vote-down<?php echo ( $barcelona_voted == 'down' ) ? ' btn-voted' : ''; ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'barcelona-post-vote' ) ); ?>" data-type="down" data-vote-type="post">
+				<span class="fa fa-thumbs-down"></span><?php esc_html_e( 'Vote Down', 'barcelona' ); ?>
+			</button>
+		</div>
+
+	</div><!-- .post-vote -->
+	<?php endif;
+
+}
+
+/*
+ * Social Sharing
+ */
+function barcelona_social_sharing() {
+
+	if ( barcelona_get_option( 'show_social_sharing' ) == 'on' ): ?>
+	<div class="post-sharing">
+
+		<ul class="list-inline text-center">
+			<li><a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode( get_the_permalink() ); ?>" target="_blank" title="<?php printf( esc_html__( 'Share on %s', 'barcelona' ), 'Facebook' ); ?>"><span class="fa fa-facebook"></span></a></li>
+			<li><a href="https://twitter.com/home?status=<?php echo urlencode( get_the_title() .' - '. get_the_permalink() ); ?>" target="_blank" title="<?php printf( esc_html__( 'Share on %s', 'barcelona' ), 'Twitter' ); ?>"><span class="fa fa-twitter"></span></a></li>
+			<li><a href="https://plus.google.com/share?url=<?php echo urlencode( get_the_permalink() ); ?>" target="_blank" title="<?php printf( esc_html__( 'Share on %s', 'barcelona' ), 'Google+' ); ?>"><span class="fa fa-google-plus"></span></a></li>
+			<li><a href="https://pinterest.com/pin/create/button/?url=<?php echo urlencode( get_the_permalink() ); ?>&amp;media=<?php barcelona_thumbnail_url( 'barcelona-lg' ); ?>&amp;description=<?php echo urlencode( get_the_title() ); ?>" target="_blank" title="<?php printf( esc_html__( 'Share on %s', 'barcelona' ), 'Pinterest' ); ?>"><span class="fa fa-pinterest"></span></a></li>
+			<li><a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=<?php echo urlencode( get_the_permalink() ); ?>&amp;title=<?php echo urlencode( get_the_title() ); ?>&amp;summary=<?php echo urlencode( get_the_excerpt() ); ?>&amp;source=<?php esc_attr( get_bloginfo( 'name' ) ) ?>" target="_blank" title="<?php printf( esc_html__( 'Share on %s', 'barcelona' ), 'Linkedin' ); ?>"><span class="fa fa-linkedin"></span></a></li>
+		</ul>
+
+	</div><!-- .post-sharing -->
+	<?php endif;
+
+}
+
+/*
  * Author box
  */
 function barcelona_author_box( $barcelona_author_id = NULL, $is_inverse = TRUE ) {
 
-	if ( barcelona_get_option( 'show_author_box' ) != 'on' ) {
-		return;
+	if ( barcelona_get_option( 'show_author_box' ) != 'on' && ! is_page_template( 'page-authors.php' ) ) {
+		return false;
 	}
 
 	if ( is_null( $barcelona_author_id ) ) {
@@ -97,7 +158,7 @@ function barcelona_author_box( $barcelona_author_id = NULL, $is_inverse = TRUE )
 		$barcelona_author_id = is_author() ? $barcelona_obj->data->ID : get_the_author_meta( 'ID' );
 
 		if ( empty( $barcelona_author_id ) ) {
-			return;
+			return false;
 		}
 
 	}
@@ -177,7 +238,7 @@ function barcelona_breadcrumb() {
 	$barcelona_sep_icon = '';
 	$barcelona_items = '';
 
-	if ( ( is_single() && $barcelona_post_type == 'post' && ! is_attachment() ) || is_category() ) {
+	if ( ( $barcelona_post_type == 'post' && ! is_attachment() ) || is_category() ) {
 
 		$barcelona_categories = is_category() ? array() : get_the_category();
 		$barcelona_current_cat = $barcelona_last_cat = is_category() ? get_queried_object() : $barcelona_categories[0];
@@ -206,7 +267,7 @@ function barcelona_breadcrumb() {
 			$barcelona_items = str_replace( 'content="%2%"', 'content="2"', $barcelona_items );
 		}
 
-	} else if ( is_archive() || is_search() ) {
+	} else if ( is_archive() || is_search() || is_page() ) {
 
 		$barcelona_title = is_search() ? esc_html__( 'Search Results', 'barcelona' ) : esc_html( get_the_archive_title() );
 
@@ -230,13 +291,19 @@ function barcelona_breadcrumb() {
 
 			$barcelona_title = esc_html__( 'Tag Archive', 'barcelona' );
 
+		} else if ( is_page() ) {
+
+			global $post;
+
+			$barcelona_title = esc_html( $post->post_title );
+
 		}
 
 		$barcelona_items .= $barcelona_sep_icon .'<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem"><span itemprop="item"><span itemprop="name">'. $barcelona_title .'</span></span><meta itemprop="position" content="2" /></li>';
 
 	}
 
-	$barcelona_items = '<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem"><a itemprop="item" href="'. esc_url( home_url( '/' ) ) .'">'. esc_html__( 'Home', 'barcelona' ) .'</a><meta itemprop="position" content="1" /></li>'. $barcelona_items;
+	$barcelona_items = '<li itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem"><a itemprop="item" href="'. esc_url( home_url( '/' ) ) .'">'. esc_html_x( 'Home', 'breadcrumb', 'barcelona' ) .'</a><meta itemprop="position" content="1" /></li>'. $barcelona_items;
 
 	echo '<div class="breadcrumb-wrapper"><div class="container"><ol itemscope itemtype="http://schema.org/BreadcrumbList" class="breadcrumb">'. $barcelona_items .'</ol></div></div>';
 
@@ -254,9 +321,15 @@ function barcelona_featured_img( $barcelona_fimg_id=NULL ) {
 	$barcelona_is_media = in_array( $barcelona_post_format, array( 'audio', 'gallery', 'video' ) );
 	$barcelona_post_type = get_post_type();
 	$barcelona_display = 'full';
+	$barcelona_fimg_disabled = false;
 
 	if ( is_null( $barcelona_fimg_id ) ) {
 		$barcelona_fimg_id = sanitize_key( barcelona_get_option( 'featured_image_style' ) );
+	}
+
+	if ( $barcelona_fimg_id == 'none' ) {
+		$barcelona_fimg_id = 'cl';
+		$barcelona_fimg_disabled = true;
 	}
 
 	if ( $barcelona_is_media && in_array( $barcelona_fimg_id, array( 'sp', 'fp', 'fs' ) ) ) {
@@ -278,48 +351,51 @@ function barcelona_featured_img( $barcelona_fimg_id=NULL ) {
 		$barcelona_post_title .= '<h3 class="post-excerpt">'. esc_html( $post->post_excerpt ) .'</h3>';
 	}
 
+	if ( barcelona_get_option( 'show_title' ) == 'off' ) {
+		$barcelona_post_title = '';
+	}
+
 	// Post meta
-	$barcelona_post_meta = '';
-	if ( is_single() && $barcelona_post_type == 'post' ) {
 
-		$barcelona_categories_html = '<ul class="list-inline">';
+	$barcelona_categories_html = '<ul class="list-inline">';
+	if ( $barcelona_post_type == 'post' ) {
 		$barcelona_categories = get_the_category();
-
 		foreach ( $barcelona_categories as $c ) {
 			$barcelona_categories_html .= '<li><a href="'. esc_url( get_category_link( $c ) ) .'">'. esc_html( $c->name ) .'</a></li>';
 		}
+	}
+	$barcelona_categories_html .= '</ul>';
 
-		$barcelona_author_html = '<a href="'. get_author_posts_url( $post->post_author ) .'" rel="author">'. get_the_author_meta( 'display_name', $post->post_author ) .'</a>';
+	$barcelona_author_html = '<a href="'. get_author_posts_url( $post->post_author ) .'" rel="author">'. get_the_author_meta( 'display_name', $post->post_author ) .'</a>';
 
-		$barcelona_meta = array(
-			'date' => array( 'clock-o', esc_html( get_the_date() ) ),
-			'author' => array( 'user', $barcelona_author_html ),
-			'views' => array( 'eye', esc_html( barcelona_get_post_views() ) ),
-			'likes' => array( 'thumbs-up', '<span class="post_vote_up_val">'. esc_html( barcelona_get_post_vote( $post->ID ) ) .'</span>' ),
-			'comments' => array( 'comments', intval( get_comments_number() ) ),
-			'categories' => array( 'times', $barcelona_categories_html )
-		);
+	$barcelona_meta = array(
+		'date' => array( 'clock-o', esc_html( get_the_date() ) ),
+		'author' => array( 'user', $barcelona_author_html ),
+		'views' => array( 'eye', esc_html( barcelona_get_post_views() ) ),
+		'likes' => array( 'thumbs-up', '<span class="post_vote_up_val">'. esc_html( barcelona_get_post_vote( $post->ID ) ) .'</span>' ),
+		'comments' => array( 'comments', intval( get_comments_number() ) ),
+		'categories' => array( 'bars', $barcelona_categories_html )
+	);
 
-		$barcelona_post_meta_choices = barcelona_get_option( 'post_meta_choices' );
+	$barcelona_post_meta_choices = barcelona_get_option( 'post_meta_choices' );
 
-		if ( ! is_array( $barcelona_post_meta_choices ) ) {
-			$barcelona_post_meta_choices = array();
+	if ( ! is_array( $barcelona_post_meta_choices ) ) {
+		$barcelona_post_meta_choices = array();
+	}
+
+	foreach ( $barcelona_meta as $k => $v ) {
+		if ( ! in_array( $k, $barcelona_post_meta_choices ) ) {
+			unset( $barcelona_meta[ $k ] );
 		}
+	}
 
+	$barcelona_post_meta = '';
+	if ( ! empty( $barcelona_meta ) ) {
+		$barcelona_post_meta = '<ul class="post-meta">';
 		foreach ( $barcelona_meta as $k => $v ) {
-			if ( ! in_array( $k, $barcelona_post_meta_choices ) ) {
-				unset( $barcelona_meta[ $k ] );
-			}
+			$barcelona_post_meta .= '<li class="post-'. sanitize_html_class( $k ) .'"><span class="fa fa-'. sanitize_html_class( $v[0] ) .'"></span>'. $v[1] .'</li>';
 		}
-
-		if ( ! empty( $barcelona_meta ) ) {
-			$barcelona_post_meta = '<ul class="post-meta">';
-			foreach ( $barcelona_meta as $k => $v ) {
-				$barcelona_post_meta .= '<li class="post-'. sanitize_html_class( $k ) .'"><span class="fa fa-'. sanitize_html_class( $v[0] ) .'"></span>'. $v[1] .'</li>';
-			}
-			$barcelona_post_meta .= '</ul>';
-		}
-
+		$barcelona_post_meta .= '</ul>';
 	}
 
 	$barcelona_media_output = '';
@@ -334,14 +410,28 @@ function barcelona_featured_img( $barcelona_fimg_id=NULL ) {
 
 	} else if ( in_array( $barcelona_post_format, array( 'audio', 'video' ) ) ) {
 
-		$barcelona_media_output = hybrid_media_grabber( array(
-			'split_media'   => true,
-			'content'       => get_post_meta( get_the_ID(), 'barcelona_format_'. $barcelona_post_format .'_embed', true )
-		) );
+		$barcelona_media_format_type = barcelona_get_option( 'format_'. $barcelona_post_format .'_type' );
+
+		if ( $barcelona_media_format_type == 'internal' ) {
+			$barcelona_media_output = barcelona_get_option( 'format_'. $barcelona_post_format .'_url' );
+		} else if ( $barcelona_media_format_type == 'external' ) {
+			$barcelona_media_output = barcelona_get_option( 'format_'. $barcelona_post_format .'_embed' );
+		}
+
+		if ( ! empty( $barcelona_media_output ) ) {
+
+			$barcelona_media_output = hybrid_media_grabber( array(
+				'split_media'   => true,
+				'content'       => $barcelona_media_output
+			) );
+
+		}
 
 	}
 
-	$barcelona_featured_image_url = barcelona_get_thumbnail_url( ( $barcelona_fimg_id == 'cl' ? 'barcelona-md' : 'barcelona-full' ), NULL, false );
+	$barcelona_featured_image_url = $barcelona_fimg_disabled ? false : barcelona_get_thumbnail_url( ( $barcelona_fimg_id == 'cl' ? 'barcelona-md' : 'barcelona-full' ), NULL, false );
+
+	$barcelona_featured_image_credit = barcelona_get_option( 'featured_image_credit' );
 
 	$barcelona_fimg_classes = array(
 		'fimg-wrapper',
@@ -359,16 +449,30 @@ function barcelona_featured_img( $barcelona_fimg_id=NULL ) {
 			'fimg-media-'. $barcelona_post_format
 		));
 
+		if ( isset( $barcelona_media_format_type ) ) {
+			$barcelona_fimg_classes[] = 'fimg-media-'. $barcelona_media_format_type;
+		}
+
 	}
 
 	if ( ! $barcelona_featured_image_url || $barcelona_is_media ) {
+
+		if ( empty( $barcelona_post_title ) ) {
+			return false;
+		}
+
 		$barcelona_fimg_classes[] = 'fimg-no-thumb';
+		$barcelona_featured_image_credit = '';
+
 	}
 
 	if ( $barcelona_in_loop && $barcelona_fimg_id == 'cl' ) { ?>
 		<header class="post-image">
 
 			<?php if ( $barcelona_featured_image_url && ! $barcelona_is_media ): ?>
+			<?php if ( ! empty( $barcelona_featured_image_credit ) ): ?>
+			<span class="featured-image-credit"><?php echo esc_html( $barcelona_featured_image_credit ); ?></span>
+			<?php endif; ?>
 			<script>jQuery(document).ready(function($){ $('.fimg-inner').backstretch('<?php echo esc_url( $barcelona_featured_image_url[0] ); ?>', {fade: 600}); });</script>
 			<?php endif; ?>
 
@@ -408,6 +512,9 @@ function barcelona_featured_img( $barcelona_fimg_id=NULL ) {
 		if ( $barcelona_fimg_id == 'fw' ): ?>
 
 			<div class="featured-image">
+				<?php if ( ! empty( $barcelona_featured_image_credit ) ): ?>
+				<span class="featured-image-credit"><?php echo esc_html( $barcelona_featured_image_credit ); ?></span>
+				<?php endif; ?>
 				<div class="fimg-inner">
 					<div class="vm-wrapper">
 						<div class="vm-middle">
@@ -420,6 +527,10 @@ function barcelona_featured_img( $barcelona_fimg_id=NULL ) {
 		<?php elseif ( $barcelona_fimg_id == 'sw' ): ?>
 
 			<div class="featured-image">
+
+				<?php if ( ! empty( $barcelona_featured_image_credit ) ): ?>
+				<span class="featured-image-credit"><?php echo esc_html( $barcelona_featured_image_credit ); ?></span>
+				<?php endif; ?>
 
 				<div class="fimg-inner">
 
@@ -447,6 +558,10 @@ function barcelona_featured_img( $barcelona_fimg_id=NULL ) {
 
 			<div class="featured-image">
 
+				<?php if ( ! empty( $barcelona_featured_image_credit ) ): ?>
+				<span class="featured-image-credit"><?php echo esc_html( $barcelona_featured_image_credit ); ?></span>
+				<?php endif; ?>
+
 				<div class="container">
 					<div class="fimg-inner">
 
@@ -472,6 +587,10 @@ function barcelona_featured_img( $barcelona_fimg_id=NULL ) {
 		<?php elseif ( $barcelona_fimg_id == 'fs' ): ?>
 
 			<div class="featured-image">
+
+				<?php if ( ! empty( $barcelona_featured_image_credit ) ): ?>
+				<span class="featured-image-credit"><?php echo esc_html( $barcelona_featured_image_credit ); ?></span>
+				<?php endif; ?>
 
 				<div class="container">
 					<div class="fimg-inner">
@@ -513,9 +632,15 @@ function barcelona_featured_img( $barcelona_fimg_id=NULL ) {
 
 				<?php if ( $barcelona_featured_image_url ): ?>
 				<div class="barcelona-parallax-wrapper">
+
+					<?php if ( ! empty( $barcelona_featured_image_credit ) ): ?>
+					<span class="featured-image-credit"><?php echo esc_html( $barcelona_featured_image_credit ); ?></span>
+					<?php endif; ?>
+
 					<div class="barcelona-parallax-inner">
 						<img src="<?php echo esc_url( $barcelona_featured_image_url[0] ); ?>" alt="<?php echo esc_attr( $post->post_title ); ?>" />
 					</div>
+
 				</div>
 				<?php endif; ?>
 
@@ -530,59 +655,91 @@ function barcelona_featured_img( $barcelona_fimg_id=NULL ) {
 }
 
 /*
- * Page Navigation
+ * Pagination
  */
-function barcelona_page_nav( $query=FALSE ) {
+function barcelona_pagination( $barcelona_type='numeric', $barcelona_query=FALSE ) {
 
-	if ( ! $query ) {
-		global $wp_query;
-		$query = $wp_query;
+	global $wp_query, $paged;
+
+	if ( ! $barcelona_query ) {
+		$barcelona_query = $wp_query;
+	}
+
+	$barcelona_max_num_pages = is_single() ? 99999 : $barcelona_query->max_num_pages;
+
+	if ( $paged == 0 ) {
+
+		$paged = 1;
+
+		if ( get_query_var( 'paged' ) ) {
+			$paged = get_query_var( 'paged' );
+		} elseif ( get_query_var( 'page' ) ) {
+			$paged = get_query_var( 'page' );
+		}
+
+	}
+
+	if ( $barcelona_type == 'none'
+			|| $barcelona_max_num_pages <= 1
+			|| ( in_array( $barcelona_type, array( 'loadmore', 'infinite' ) ) && $paged >= $barcelona_max_num_pages ) ) {
+		return false;
 	}
 
 	$barcelona_output = '';
 	$barcelona_post_type = get_post_type();
 
-	if ( is_home() || is_archive() || is_search() ) {
+	if ( $barcelona_type == 'numeric' ) {
 
-		if ( $query->max_num_pages > 1 ) {
+		$barcelona_output = paginate_links( array(
+			'base'      => str_replace( 99999, '%#%', esc_url( get_pagenum_link( 99999 ) ) ),
+			'format'    => '',
+			'current'   => max( 1, $paged ),
+			'total'     => $barcelona_max_num_pages,
+			'prev_text' => esc_html__( '&laquo; Prev', 'barcelona' ),
+			'next_text' => esc_html__( 'Next &raquo;', 'barcelona' )
+		) );
 
-			$barcelona_output = paginate_links( array(
-				'base'      => str_replace( 99999, '%#%', esc_url( get_pagenum_link( 99999 ) ) ),
-				'format'    => '',
-				'current'   => max( 1, get_query_var( 'paged' ) ),
-				'total'     => $query->max_num_pages,
-				'prev_text' => esc_html__( '&laquo; Prev', 'barcelona' ),
-				'next_text' => esc_html__( 'Next &raquo;', 'barcelona' )
-			) );
+	} else if ( $barcelona_type == 'nextprev' ) {
 
-			$barcelona_output = '<div class="pagination">'. $barcelona_output .'</div>';
+		if ( is_single() ) {
+
+			if ( $barcelona_post_type == 'post' && barcelona_get_option( 'show_post_nav' ) == 'on' ) {
+
+				$barcelona_prev = get_previous_post_link( '%link', '<span class="fa fa-angle-left"></span> %title' );
+				$barcelona_next = get_next_post_link( '%link', '<span class="fa fa-angle-right"></span> %title' );
+
+				if ( ! is_null( $barcelona_prev ) || ! is_null( $barcelona_next ) ) {
+					$barcelona_output = '<div class="row posts-nav"><div class="col col-xs-6">'. $barcelona_prev .'</div><div class="col col-xs-6">'. $barcelona_next .'</div></div>';
+				}
+
+			}
+
+		} else {
+
+			$barcelona_output .= get_next_posts_link( esc_html__( '&laquo; Older Entries', 'barcelona' ), $barcelona_max_num_pages );
+			$barcelona_output .= get_previous_posts_link( esc_html__( 'Newer Entries &raquo;', 'barcelona' ), $barcelona_max_num_pages );
 
 		}
 
-	} else if ( is_single() && $barcelona_post_type == 'post' && barcelona_get_option( 'show_post_nav' ) == 'on' ) {
+	} else if ( $barcelona_type == 'loadmore' ) {
 
-		$barcelona_prev = get_previous_post_link( '%link', '<span class="fa fa-angle-left"></span> %title' );
-		$barcelona_next = get_next_post_link( '%link', '<span class="fa fa-angle-right"></span> %title' );
+		$barcelona_output .= '<button type="button" class="btn btn-full" data-paged="'. $paged .'" data-max-pages="'. $barcelona_max_num_pages .'"><span class="btn-loader"><img src="'. BARCELONA_THEME_PATH .'assets/images/barcelona-loader.gif" alt="'. esc_html__( 'Loading...', 'barcelona' ) .'" /></span><span class="btn-text">'. esc_html__( 'Load More', 'barcelona' ) .'</span></button>';
 
-		if ( ! is_null( $barcelona_prev ) || ! is_null( $barcelona_next ) ): ?>
+	} else if ( $barcelona_type == 'infinite' ) {
 
-			<div class="row posts-nav">
+		$barcelona_output .= '<button type="button" class="btn btn-full" data-paged="'. $paged .'" data-max-pages="'. $barcelona_max_num_pages .'" disabled><span class="btn-loader"><img src="'. BARCELONA_THEME_PATH .'assets/images/barcelona-loader.gif" alt="'. esc_html__( 'Loading...', 'barcelona' ) .'" /></span></button>';
 
-				<div class="col col-xs-6">
-					<?php echo $barcelona_prev; ?>
-				</div>
+	}
 
-				<div class="col col-xs-6">
-					<?php echo $barcelona_next; ?>
-				</div>
+	if ( ! empty( $barcelona_output ) ) {
 
-			</div><!-- .posts-nav -->
-
-		<?php endif;
+		$barcelona_output = '<div class="pagination '. sanitize_html_class( 'pagination-'. $barcelona_type ) .'">'. $barcelona_output .'</div>';
 
 	}
 
 	echo $barcelona_output;
+
+	return true;
 
 }
 
@@ -591,7 +748,7 @@ function barcelona_page_nav( $query=FALSE ) {
  */
 function barcelona_logo( $location='header' ) {
 
-	if ( $location != 'footer' ) {
+	if ( ! in_array( $location, array( 'footer', 'sticky_nav' ) ) ) {
 		$location = 'header';
 	}
 
@@ -605,6 +762,8 @@ function barcelona_logo( $location='header' ) {
 	) );
 
 	$barcelona_logo_text = esc_html( get_bloginfo( 'name' ) );
+
+	echo '<span class="logo-location-'. $location .'">';
 
 	if ( $barcelona_options['show_'. $location .'_logo_as_text'] == 'on' ) {
 
@@ -624,6 +783,12 @@ function barcelona_logo( $location='header' ) {
 
 		echo $barcelona_logo_text;
 
+	}
+
+	echo '</span>';
+
+	if ( $location == 'header' && barcelona_get_option( 'sticky_nav_logo' ) == 'custom' ) {
+		barcelona_logo( 'sticky_nav' );
 	}
 
 }
@@ -888,7 +1053,7 @@ function barcelona_related_posts() {
  */
 function barcelona_featured_posts() {
 
-	global $barcelona_mod_header;
+	global $barcelona_mod_header, $barcelona_duplication_prevented_posts;
 
 	$barcelona_fp_type = 'category';
 	$barcelona_has_autoplay = false;
@@ -954,6 +1119,10 @@ function barcelona_featured_posts() {
 
 					<?php $i = 0; while ( $barcelona_q->have_posts() ): $barcelona_q->the_post();
 
+					if ( $barcelona_q->prevent_duplication == 'on' && is_array( $barcelona_duplication_prevented_posts ) ) {
+						$barcelona_duplication_prevented_posts[] = get_the_ID();
+					}
+
 					$barcelona_h = 2;
 					if ( ( $barcelona_fp_style == 'c' && ($i+1)%3 != 0 ) || ( $barcelona_fp_style == 'd' && $i%3 != 0 ) || $barcelona_fp_style == 'e' ) {
 						$barcelona_h = 1;
@@ -977,9 +1146,7 @@ function barcelona_featured_posts() {
 								<div class="vm-wrapper">
 									<div class="vm-middle">
 										<h2 class="post-title"><?php echo esc_html( get_the_title() ); ?></h2>
-										<ul class="post-meta no-sep">
-											<li class="post-date"><span class="fa fa-clock-o"></span><?php echo esc_html( get_the_time( BARCELONA_DATE_FORMAT ) ); ?></li>
-										</ul>
+										<?php barcelona_post_meta( $barcelona_q->post_meta_choices, false ); ?>
 									</div>
 								</div>
 							</a>
@@ -1018,38 +1185,46 @@ function barcelona_featured_posts() {
 /*
  * Post Meta
  */
-function barcelona_post_meta( $barcelona_opt, $barcelona_sep ) {
+function barcelona_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
 
 	global $post;
 
 	$barcelona_cls = array( 'post-meta clearfix' );
 
-	if ( $barcelona_sep ) {
+	if ( ! $barcelona_sep ) {
 		$barcelona_cls[] = 'no-sep';
 	}
 
-	if ( is_array( $barcelona_opt ) && ! empty( $barcelona_opt ) ): ?>
+	$barcelona_html = '';
 
-		<ul class="<?php echo implode( ' ', $barcelona_cls ); ?>">
-			<?php if ( in_array( 'date', $barcelona_opt ) ): ?>
-				<li class="post-date">
-					<span class="fa fa-clock-o"></span><?php echo esc_html( get_the_time( BARCELONA_DATE_FORMAT ) ); ?>
-				</li>
-			<?php endif; if ( in_array( 'views', $barcelona_opt ) ): ?>
-				<li class="post-views">
-					<span class="fa fa-eye"></span><?php barcelona_post_views(); ?>
-				</li>
-			<?php endif; if ( in_array( 'likes', $barcelona_opt ) ): ?>
-				<li class="post-likes">
-					<span class="fa fa-thumbs-up"></span><?php barcelona_post_vote(); ?>
-				</li>
-			<?php endif; if ( in_array( 'comments', $barcelona_opt ) ): ?>
-				<li class="post-comments">
-					<span class="fa fa-comments"></span><?php echo intval( $post->comment_count ); ?>
-				</li>
-			<?php endif; ?>
-		</ul><!-- .post-meta -->
+	if ( is_array( $barcelona_opt ) && ! empty( $barcelona_opt ) ) {
 
-	<?php endif;
+		$barcelona_html = '<ul class="'. implode( ' ', $barcelona_cls ) .'">';
+
+		if ( in_array( 'date', $barcelona_opt ) ) {
+			$barcelona_html .= '<li class="post-date"><span class="fa fa-clock-o"></span>'. esc_html( get_the_time( BARCELONA_DATE_FORMAT ) ) .'</li>';
+		}
+
+		if ( in_array( 'views', $barcelona_opt ) ) {
+			$barcelona_html .= '<li class="post-views"><span class="fa fa-eye"></span>'. barcelona_get_post_views() .'</li>';
+		}
+
+		if ( in_array( 'likes', $barcelona_opt ) ) {
+			$barcelona_html .= '<li class="post-likes"><span class="fa fa-thumbs-up"></span>'. barcelona_get_post_vote() .'</li>';
+		}
+
+		if ( in_array( 'comments', $barcelona_opt ) ) {
+			$barcelona_html .= '<li class="post-comments"><span class="fa fa-comments"></span>'. intval( $post->comment_count ) .'</li>';
+		}
+
+		$barcelona_html .= '</ul>';
+
+	}
+
+	if ( $echo ) {
+		echo $barcelona_html;
+	}
+
+	return $barcelona_html;
 
 }

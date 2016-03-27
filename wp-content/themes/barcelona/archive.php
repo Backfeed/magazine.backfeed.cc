@@ -20,7 +20,7 @@ if ( is_category() ) {
 			$barcelona_mod_header = '';
 		}
 
-		$barcelona_mod_header .= '<div class="box-description">'. apply_filters( 'the_content', $barcelona_cat->description ) .'</div>';
+		$barcelona_mod_header .= '<div class="box-description post-content">'. apply_filters( 'the_content', $barcelona_cat->description ) .'</div>';
 
 	}
 
@@ -42,9 +42,11 @@ if ( barcelona_featured_posts() && isset( $barcelona_mod_header ) ) {
 				barcelona_author_box();
 			}
 
+			$barcelona_mod_post_meta = barcelona_get_option( 'post_meta_choices' );
+
 			include( locate_template( 'includes/modules/module-'. barcelona_get_option( 'posts_layout' ) .'.php' ) );
 
-			barcelona_page_nav();
+			barcelona_pagination( barcelona_get_option( 'pagination' ) );
 
 		?>
 		</main>

@@ -1,0 +1,70 @@
+body {
+  background-color: rgba(0, 0, 0, 0.96);
+  color: white; }
+
+a {
+  color: #fd065c;
+  text-decoration: initial; }
+
+.login h1 {
+  font-size: 22px;
+  text-transform: uppercase;
+  font-weight: 400;
+  margin-bottom: 1rem; }
+  .login h1 a {
+    display: none; }
+.login h2 {
+  font-size: 14px;
+  font-weight: 400;
+  text-align: center; }
+.login #nav a[href$="wp-login.php"] {
+  font-size: 22px; }
+.login form {
+  background: none; }
+  .login form p {
+    font-size: 14px; }
+  .login form .input,
+  .login form input[type=checkbox],
+  .login form input[type=text] {
+    background: #202020;
+    border: 1px solid #6b6b6b; }
+.login label {
+  color: white; }
+.login #login_error,
+.login .message {
+  background-color: #333;
+  margin-top: 1rem; }
+
+.login .button-primary,
+.wp-core-ui .button.button-large {
+  background: #b80443;
+  text-shadow: none;
+  box-shadow: none;
+  border: 0;
+  height: initial;
+  width: 100%;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  margin-top: 15px; }
+
+#nav {
+  display: none; }
+
+#backtoblog {
+  display: none; }
+
+.logingoback {
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  color: white;
+  text-decoration: initial;
+  font-size: 18px; }
+
+.login-footer {
+  background-color: #454545;
+  padding-top: 18px;
+  padding-bottom: 18px;
+  text-align: center; }
+
+/*# sourceMappingURL=custom-login.css.map */

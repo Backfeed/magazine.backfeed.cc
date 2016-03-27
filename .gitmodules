@@ -1,0 +1,3 @@
+[submodule "wp-content/plugins/d-mag"]
+	path = wp-content/plugins/d-mag
+	url = https://github.com/Backfeed/d-magazine.git

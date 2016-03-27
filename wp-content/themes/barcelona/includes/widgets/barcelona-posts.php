@@ -42,6 +42,8 @@ class Barcelona_Widget_Posts extends WP_Widget {
 
 		ob_start();
 
+		$barcelona_post_meta_choices = is_array( $instance['post_meta_choices'] ) ? $instance['post_meta_choices'] : array();
+
 		$barcelona_params = array(
 			'no_found_rows'         => true,
 			'post_status'           => 'publish',
@@ -127,11 +129,7 @@ class Barcelona_Widget_Posts extends WP_Widget {
 							<h2 class="post-title">
 								<a href="<?php echo esc_url( get_the_permalink() ); ?>"><?php echo esc_html( get_the_title() ); ?></a>
 							</h2>
-							<ul class="post-meta no-sep">
-								<li class="post-date">
-									<span class="fa fa-clock-o"></span><?php echo esc_html( get_the_time( BARCELONA_DATE_FORMAT ) ); ?>
-								</li>
-							</ul>
+							<?php barcelona_post_meta( $barcelona_post_meta_choices, false ); ?>
 						</div>
 					</div><!-- .post-summary -->
 				</div>
@@ -168,13 +166,14 @@ class Barcelona_Widget_Posts extends WP_Widget {
 
 		$instance = $old_instance;
 
-		$instance['title']          = strip_tags( $new_instance['title'] );
-		$instance['number']         = absint( $new_instance['number'] );
-		$instance['offset']         = absint( $new_instance['offset'] );
-		$instance['filter_posts']   = strip_tags( $new_instance['filter_posts'] );
-		$instance['category']       = $new_instance['category'];
-		$instance['orderby']        = sanitize_key( $new_instance['orderby'] );
-		$instance['order']          = sanitize_key( $new_instance['order'] );
+		$instance['title']              = strip_tags( $new_instance['title'] );
+		$instance['number']             = absint( $new_instance['number'] );
+		$instance['offset']             = absint( $new_instance['offset'] );
+		$instance['filter_posts']       = strip_tags( $new_instance['filter_posts'] );
+		$instance['category']           = $new_instance['category'];
+		$instance['orderby']            = sanitize_key( $new_instance['orderby'] );
+		$instance['order']              = sanitize_key( $new_instance['order'] );
+		$instance['post_meta_choices']  = $new_instance['post_meta_choices'];
 
 		$this->flush_widget_cache();
 
@@ -189,13 +188,14 @@ class Barcelona_Widget_Posts extends WP_Widget {
 
 	public function form( $instance ) {
 
-		$barcelona_title        = isset( $instance['title'] ) ? $instance['title'] : '';
-		$barcelona_number       = isset( $instance['number'] ) ? $instance['number'] : 5;
-		$barcelona_offset       = isset( $instance['offset'] ) ? $instance['offset'] : 0;
-		$barcelona_filter_posts = isset( $instance['filter_posts'] ) ? $instance['filter_posts'] : '';
-		$barcelona_category     = isset( $instance['category'] ) ? intval( $instance['category'] ) : '';
-		$barcelona_orderby      = isset( $instance['orderby'] ) ? sanitize_key( $instance['orderby'] ) : 'date';
-		$barcelona_order        = isset( $instance['order'] ) ? sanitize_key( $instance['order'] ) : 'desc';
+		$barcelona_title             = isset( $instance['title'] ) ? $instance['title'] : '';
+		$barcelona_number            = isset( $instance['number'] ) ? $instance['number'] : 5;
+		$barcelona_offset            = isset( $instance['offset'] ) ? $instance['offset'] : 0;
+		$barcelona_filter_posts      = isset( $instance['filter_posts'] ) ? $instance['filter_posts'] : '';
+		$barcelona_category          = isset( $instance['category'] ) ? intval( $instance['category'] ) : '';
+		$barcelona_orderby           = isset( $instance['orderby'] ) ? sanitize_key( $instance['orderby'] ) : 'date';
+		$barcelona_order             = isset( $instance['order'] ) ? sanitize_key( $instance['order'] ) : 'desc';
+		$barcelona_post_meta_choices = is_array( $instance['post_meta_choices'] ) ? $instance['post_meta_choices'] : array();
 
 		$barcelona_categories = get_categories();
 
@@ -206,17 +206,17 @@ class Barcelona_Widget_Posts extends WP_Widget {
 		</p>
 
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'number' ) ); ?>"><?php esc_html_e( 'Number of posts:', 'barcelona' ); ?></label>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'number' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'number' ) ); ?>" type="text" value="<?php echo absint( $barcelona_number ); ?>" size="3" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'number' ) ); ?>"><?php esc_html_e( 'Number of posts:', 'barcelona' ); ?></label><br />
+			<input id="<?php echo esc_attr( $this->get_field_id( 'number' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'number' ) ); ?>" type="text" value="<?php echo absint( $barcelona_number ); ?>" size="3" class="widefat" />
 		</p>
 
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'offset' ) ); ?>"><?php esc_html_e( 'Posts Offset:', 'barcelona' ); ?></label>
-			<input id="<?php echo esc_attr( $this->get_field_id( 'offset' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'offset' ) ); ?>" type="text" value="<?php echo absint( $barcelona_offset ); ?>" size="3" />
+			<label for="<?php echo esc_attr( $this->get_field_id( 'offset' ) ); ?>"><?php esc_html_e( 'Posts Offset:', 'barcelona' ); ?></label><br />
+			<input id="<?php echo esc_attr( $this->get_field_id( 'offset' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'offset' ) ); ?>" type="text" value="<?php echo absint( $barcelona_offset ); ?>" size="3" class="widefat" />
 		</p>
 
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'category' ) ); ?>"><?php esc_html_e( 'Choose category:', 'barcelona' ); ?></label>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'category' ) ); ?>"><?php esc_html_e( 'Choose category:', 'barcelona' ); ?></label><br />
 			<select id="<?php echo esc_attr( $this->get_field_id( 'category' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'category' ) ); ?>">
 				<option value=""><?php esc_html_e( '- All -', 'barcelona' ); ?></option>
 				<?php foreach ( $barcelona_categories as $barcelona_cat ): ?>
@@ -226,13 +226,13 @@ class Barcelona_Widget_Posts extends WP_Widget {
 		</p>
 
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'filter_posts' ) ); ?>"><?php esc_html_e( 'Filter by Post Manually:', 'barcelona' ); ?></label>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'filter_posts' ) ); ?>"><?php esc_html_e( 'Filter by Post Manually:', 'barcelona' ); ?></label><br />
 			<input id="<?php echo esc_attr( $this->get_field_id( 'filter_posts' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'filter_posts' ) ); ?>" class="widefat" type="text" value="<?php echo esc_attr( $barcelona_filter_posts ); ?>" />
 			<span class="barcelona-widget-description"><?php esc_html_e( 'Specify post ids separated by comma. i.e. 45,73,132,19', 'barcelona' ); ?></span>
 		</p>
 
 		<p>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'orderby' ) ); ?>"><?php esc_html_e( 'Order Posts by', 'barcelona' ) ?></label>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'orderby' ) ); ?>"><?php esc_html_e( 'Order Posts by', 'barcelona' ) ?></label><br />
 			<select id="<?php echo esc_attr( $this->get_field_id( 'orderby' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'orderby' ) ); ?>" class="barcelona-select-post-orderby">
 				<option value="date"<?php echo ( $barcelona_orderby == 'date' ) ? ' selected' : ''; ?>><?php esc_html_e( 'Date', 'barcelona' ) ?></option>
 				<option value="views"<?php echo ( $barcelona_orderby == 'views' ) ? ' selected' : ''; ?>><?php esc_html_e( 'Number of Views', 'barcelona' ) ?></option>
@@ -244,11 +244,20 @@ class Barcelona_Widget_Posts extends WP_Widget {
 		</p>
 
 		<p class="barcelona-post-order-type"<?php echo ( $barcelona_orderby == 'random' ) ? ' style="display: none;' : ''; ?>>
-			<label for="<?php echo esc_attr( $this->get_field_id( 'order' ) ); ?>"><?php esc_html_e( 'Order Type', 'barcelona' ) ?></label>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'order' ) ); ?>"><?php esc_html_e( 'Order Type', 'barcelona' ) ?></label><br />
 			<select id="<?php echo esc_attr( $this->get_field_id( 'order' ) ); ?>" name="<?php echo esc_attr( $this->get_field_name( 'order' ) ); ?>">
 				<option value="desc"<?php echo ( $barcelona_order == 'desc' ) ? ' selected' : ''; ?>><?php esc_html_e( 'Descending', 'barcelona' ) ?></option>
 				<option value="asc"<?php echo ( $barcelona_order == 'asc' ) ? ' selected' : ''; ?>><?php esc_html_e( 'Ascending', 'barcelona' ) ?></option>
 			</select>
+		</p>
+
+		<p>
+			<label for="<?php echo esc_attr( $this->get_field_id( 'post_meta_choices' ) ); ?>"><?php esc_html_e( 'Post Meta Data', 'barcelona' ) ?></label><br />
+			<label><input type="checkbox" name="<?php echo esc_attr( $this->get_field_name( 'post_meta_choices' ) ); ?>[]" value="date"<?php echo in_array( 'date', $barcelona_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Date', 'barcelona' ); ?></label><br />
+			<label><input type="checkbox" name="<?php echo esc_attr( $this->get_field_name( 'post_meta_choices' ) ); ?>[]" value="views"<?php echo in_array( 'views', $barcelona_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Views', 'barcelona' ); ?></label><br />
+			<label><input type="checkbox" name="<?php echo esc_attr( $this->get_field_name( 'post_meta_choices' ) ); ?>[]" value="likes"<?php echo in_array( 'likes', $barcelona_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Votes', 'barcelona' ); ?></label><br />
+			<label><input type="checkbox" name="<?php echo esc_attr( $this->get_field_name( 'post_meta_choices' ) ); ?>[]" value="comments"<?php echo in_array( 'comments', $barcelona_post_meta_choices ) ? ' checked' : ''; ?> /> <?php esc_html_e( 'Post Comments', 'barcelona' ); ?></label><br />
+			<span class="barcelona-widget-description"><?php esc_html_e( 'Check which meta data to show for the posts.', 'barcelona' ); ?></span>
 		</p>
 		<?php
 

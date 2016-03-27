@@ -1,5 +1,7 @@
 <?php
 
+if ( barcelona_get_option( 'show_footer' ) != 'off' ):
+
 $barcelona_opts = barcelona_get_options( array(
 	'show_footer_sidebars',
 	'show_footer_menu',
@@ -61,7 +63,7 @@ if ( ! empty( $barcelona_opts['footer_copyright_text'] ) ) {
 
 				<?php
 				if ( ! empty( $barcelona_opts['footer_copyright_text'] ) ) {
-					echo '<p class="copy-info">'. wp_kses( nl2br( $barcelona_opts['footer_copyright_text'] ), array( 'br' => array() ) ) .'</p>';
+					echo '<p class="copy-info">'. nl2br( $barcelona_opts['footer_copyright_text'] ) .'</p>';
 				}
 				?>
 
@@ -90,7 +92,13 @@ if ( ! empty( $barcelona_opts['footer_copyright_text'] ) ) {
 
 </div><!-- #page-wrapper -->
 
-<?php wp_footer(); ?>
+<?php
+
+endif; // show_footer
+
+wp_footer();
+
+?>
 
 </body>
 </html>

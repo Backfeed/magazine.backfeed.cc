@@ -28,9 +28,11 @@ $barcelona_search_query = esc_html( get_search_query() );
 
 			<?php
 
+				$barcelona_mod_post_meta = barcelona_get_option( 'post_meta_choices' );
+
 				include( locate_template( 'includes/modules/module-'. barcelona_get_option( 'posts_layout' ) .'.php' ) );
 
-				barcelona_page_nav();
+				barcelona_pagination( barcelona_get_option( 'pagination' ) );
 
 			?>
 		</main>

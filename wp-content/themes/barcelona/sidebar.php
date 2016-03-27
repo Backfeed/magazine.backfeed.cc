@@ -10,6 +10,8 @@ if( function_exists( 'buddypress' ) && is_buddypress() ) {
 	$barcelona_sidebar = 'barcelona-buddypress-sidebar';
 } else if ( function_exists( 'bbpress' ) && is_bbpress() ) {
 	$barcelona_sidebar = 'barcelona-bbpress-sidebar';
+} else if ( class_exists( 'Woocommerce' ) && is_woocommerce() ) {
+	$barcelona_sidebar = 'barcelona-woocommerce-sidebar';
 }
 
 ?>

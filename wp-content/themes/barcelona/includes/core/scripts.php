@@ -48,6 +48,18 @@ function barcelona_enqueue_scripts() {
 			wp_enqueue_style( 'barcelona-rtl' );
 		}
 
+		if ( class_exists('Woocommerce') ) {
+
+			wp_register_style( 'barcelona-woocommerce-stylesheet', BARCELONA_THEME_PATH  .'woocommerce/css/woocommerce.css', array(), BARCELONA_THEME_VERSION );
+			wp_enqueue_style('barcelona-woocommerce-stylesheet');
+
+			if ( is_rtl() ) {
+				wp_register_style( 'barcelona-woocommerce-rtl', BARCELONA_THEME_PATH  .'woocommerce/css/woocommerce-rtl.css', array(), BARCELONA_THEME_VERSION );
+				wp_enqueue_style('barcelona-woocommerce-rtl');
+			}
+
+		}
+
 		/*
 		 * Enqueue Scripts
 		 */
@@ -78,19 +90,31 @@ function barcelona_enqueue_scripts() {
 			wp_enqueue_script( 'comment-reply' );
 		}
 
-		wp_register_script( 'barcelona-main', BARCELONA_THEME_PATH .'assets/js/barcelona-main.js', array( 'jquery' ), BARCELONA_THEME_VERSION, true );
-		wp_enqueue_script( 'barcelona-main' );
-		wp_localize_script( 'barcelona-main', 'barcelonaParams', array(
+		$barcelona_params = array(
 			'ajaxurl' => esc_url( admin_url( 'admin-ajax.php' ) ),
 			'post_id' => $barcelona_post_id,
 			'i18n' => array(
 				'login_to_vote' => esc_html__( 'Please login to vote!', 'barcelona' )
 			)
-		) );
+		);
+
+		if ( is_archive() || is_search() || is_home() ) {
+			global $wp_query;
+			if ( property_exists( $wp_query, 'query' ) ) {
+				$barcelona_params['query'] = $wp_query->query;
+			}
+			$barcelona_params['posts_layout'] = barcelona_get_option( 'posts_layout' );
+			$barcelona_params['post_meta_choices'] = barcelona_get_option( 'post_meta_choices' );
+		}
+
+		wp_register_script( 'barcelona-main', BARCELONA_THEME_PATH .'assets/js/barcelona-main.js', array( 'jquery' ), BARCELONA_THEME_VERSION, true );
+		wp_enqueue_script( 'barcelona-main' );
+		wp_localize_script( 'barcelona-main', 'barcelonaParams', $barcelona_params );
 
 	}
 
 }
+add_filter( 'woocommerce_enqueue_styles', '__return_empty_array' );
 
 /*
  * This theme styles the visual editor to resemble the theme style

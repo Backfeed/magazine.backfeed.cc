@@ -99,6 +99,10 @@ function barcelona_get_social_links() {
 		'flickr' => array(
 			'title' => 'Flickr',
 			'href' => barcelona_get_option( 'social_flickr_url' )
+		),
+		'SoundCloud' => array(
+			'title' => 'SoundCloud',
+			'href' => barcelona_get_option( 'social_soundcloud_url' )
 		)
 	);
 
@@ -114,6 +118,12 @@ function barcelona_get_social_links() {
 					break;
 				case 'pinterest':
 					$i = 'pinterest-p';
+					break;
+				case 'soundcloud':
+					$i = 'cloud';
+					break;
+				case 'facebook';
+					$i = 'facebook-official';
 					break;
 			}
 
@@ -228,13 +238,35 @@ function barcelona_get_thumbnail_url( $size, $post_id=NULL, $placeholder=TRUE, $
 
 	} else if ( $placeholder ) { // Return default post thumbnail image url
 
-		$output = array( 'assets/images/placeholders/'. ( $size == 'full' ? 'barcelona-full' : $size ) .'-pthumb.jpg', 0, 0 );
-
-		if ( is_readable( BARCELONA_SERVER_PATH . $output[0] ) ) {
-			@list( $output[1], $output[2] ) = getimagesize( BARCELONA_SERVER_PATH . $output[0] );
+		if ( is_null( $post_id ) ) {
+			$post_id = get_the_ID();
 		}
 
-		$output[0] = BARCELONA_THEME_PATH . $output[0];
+		$barcelona_post_format = get_post_format( $post_id );
+
+		if ( $barcelona_post_format == 'video' && barcelona_get_option( 'use_yt_video_cover__single' ) == 'on' ) {
+			$barcelona_placeholder_img = barcelona_get_youtube_video_thumbnail( get_post_meta( $post_id, 'barcelona_format_video_embed', true ), $size );
+		}
+
+		if ( ! isset( $barcelona_placeholder_img ) || false === $barcelona_placeholder_img ) {
+
+			$output = array(
+				'assets/images/placeholders/' . ( $size == 'full' ? 'barcelona-full' : $size ) . '-pthumb.jpg',
+				0,
+				0
+			);
+
+			if ( is_readable( BARCELONA_SERVER_PATH . $output[0] ) ) {
+				@list( $output[1], $output[2] ) = getimagesize( BARCELONA_SERVER_PATH . $output[0] );
+			}
+
+			$output[0] = BARCELONA_THEME_PATH . $output[0];
+
+		} else {
+
+			$output[0] = $barcelona_placeholder_img;
+
+		}
 
 	}
 
@@ -460,10 +492,13 @@ function barcelona_get_excerpt( $barcelona_words_length ) {
 
 	if ( $barcelona_post_excerpt == NULL ) {
 
+		$barcelona_links_pattern = '~http(s)?://[^\s]*~i';
+
 		$barcelona_post_excerpt = $post->post_content;
 		$barcelona_post_excerpt = strip_shortcodes( $barcelona_post_excerpt );
 		$barcelona_post_excerpt = str_replace( ']]>', ']]&gt;', $barcelona_post_excerpt );
 		$barcelona_post_excerpt = strip_tags( $barcelona_post_excerpt );
+		$barcelona_post_excerpt = preg_replace( $barcelona_links_pattern, '', $barcelona_post_excerpt );
 		$barcelona_post_excerpt = mb_substr( $barcelona_post_excerpt, 0, intval( $barcelona_words_length ) * 4.2, 'UTF-8' ) .'&hellip;';
 
 	}
@@ -488,116 +523,28 @@ function barcelona_the_month_abbrev() {
 /*
  * Get option
  */
-function barcelona_get_option( $field, $is_default=FALSE, $affix_check=FALSE ) {
+function barcelona_get_option( $barcelona_field, $barcelona_ignore_override = FALSE, $barcelona_get_default = FALSE ) {
 
-	global $wp_query;
+	// Remove prefix of the field key if exists
+	if ( strpos( $barcelona_field, 'barcelona_' ) === 0 ) {
+		$barcelona_field = preg_replace( '#^barcelona_#is', '', $barcelona_field );
+	}
 
-	if ( $field == 'social_links' ) {
+	if ( $barcelona_field == 'featured_image_style'
+			&& is_singular()
+			&& barcelona_get_post_format() == 'standard'
+			&& ! has_post_thumbnail() ) {
+		return 'cl';
+	}
+
+	if ( $barcelona_field == 'social_links' ) {
 		return barcelona_get_social_links();
 	}
 
-	if ( $field == 'posts_layout' && ( is_archive() || is_search() ) && ! have_posts() ) {
+	if ( $barcelona_field == 'posts_layout' && ( is_archive() || is_search() ) && ! have_posts() ) {
 		return 'none';
 	}
 
-	// Remove prefix of the key
-	if ( strpos( $field, 'barcelona_' ) === 0 ) {
-		$field = preg_replace( '#^barcelona_#is', '', $field );
-	}
-
-	if ( preg_match( '#__category_([0-9]+)$#is', $field, $barcelona_match ) ) {
-		$barcelona_affix = '_category';
-		$barcelona_cat_id = end( $barcelona_match );
-		$field = preg_replace( '#_' . $barcelona_cat_id . '$#', '', $field );
-	} else if ( is_home() ) {
-		$barcelona_affix = '_home';
-	} else if ( is_category() ) {
-		$barcelona_affix = '_category';
-		$barcelona_cat_id = $wp_query->get_queried_object_id();
-	} else if ( is_tag() ) {
-		$barcelona_affix = '_tag';
-	} else if ( is_author() ) {
-		$barcelona_affix = '_author';
-	} else if ( is_search() ) {
-		$barcelona_affix = '_search';
-	} else if ( is_archive() ) {
-		$barcelona_affix = '_archive';
-	} else if ( is_single() ) {
-		$barcelona_affix = '_single';
-	} else if ( is_page() && ! is_front_page() && ! is_page_template() ) {
-		$barcelona_affix = '_page';
-	}
-
-	/*
-	 * Override global options if enabled
-	 */
-	if ( isset( $barcelona_affix )
-		&& ! preg_match( '#_'. $barcelona_affix .'$#', $field )
-		&& barcelona_get_option( 'override_options_'. $barcelona_affix ) == 'on' ) {
-
-		$barcelona_global_option = barcelona_get_option( $field .'_'. $barcelona_affix );
-		if ( ! empty( $barcelona_global_option ) ) {
-			return $barcelona_global_option;
-		}
-
-	}
-
-	if ( is_single() || is_page() ) {
-
-		$barcelona_post_option = get_post_meta( get_the_ID(), 'barcelona_'. $field, true );
-
-		if ( ! empty( $barcelona_post_option ) ) {
-			return $barcelona_post_option;
-		}
-
-	}
-
-	if ( isset( $barcelona_cat_id ) ) {
-
-		$barcelona_cat_option = get_option( '_barcelona_category_'. $barcelona_cat_id );
-		$barcelona_f = preg_replace( '#__category$#', '', $field );
-
-		if ( is_array( $barcelona_cat_option ) ) {
-
-			if ( $barcelona_f == 'custom_background' && $barcelona_cat_option['set_background'] == 'custom' ) {
-
-				return $barcelona_cat_option['background'];
-
-			} else if ( in_array( $barcelona_f, array( 'header_ad_1', 'header_ad_2' ) ) ) {
-
-				if ( $barcelona_cat_option['add_header_ad'] == 'custom' ) {
-					return $barcelona_cat_option[ $barcelona_f ];
-				}
-
-			} else if ( isset( $barcelona_cat_option[ $barcelona_f ] ) ) {
-
-				return $barcelona_cat_option[ $barcelona_f ];
-
-			}
-
-		} else if ( in_array( $barcelona_f, array( 'add_header_ad', 'set_background' ) ) ) {
-			return 'inherit';
-		}
-
-	}
-
-	/* Whether to check the field more spesific or not */
-	$barcelona_check_affix = true;
-	if ( in_array( $field, array( 'header_ad_1', 'header_ad_2' ) ) && barcelona_get_option( 'add_header_ad' ) == 'inherit' ) {
-		$barcelona_check_affix = false;
-	}
-
-	if ( $barcelona_check_affix && isset( $barcelona_affix ) && ! preg_match( '#_' . $barcelona_affix . '$#is', $field ) ) {
-
-		$barcelona_field = 'barcelona_' . $field . '_' . $barcelona_affix;
-		$barcelona_opt = barcelona_get_option( $barcelona_field, false, true );
-		if ( $barcelona_opt ) {
-			return $barcelona_opt;
-		}
-
-	}
-
-	// Default values of theme options
 	$barcelona_defaults = array(
 		'header_custom_code'               => '',
 		'footer_custom_code'               => '',
@@ -608,6 +555,13 @@ function barcelona_get_option( $field, $is_default=FALSE, $affix_check=FALSE ) {
 		'header_dark_retina_logo_url'      => '',
 		'header_light_logo_url'            => '',
 		'header_light_retina_logo_url'     => '',
+		'sticky_nav_logo'                  => 'inherit',
+		'show_sticky_nav_logo_as_text'     => 'on',
+		'sticky_nav_logo_text'             => get_bloginfo( 'name' ),
+		'sticky_nav_dark_logo_url'         => '',
+		'sticky_nav_dark_retina_logo_url'  => '',
+		'sticky_nav_light_logo_url'        => '',
+		'sticky_nav_light_retina_logo_url' => '',
 		'show_footer_logo_as_text'         => 'off',
 		'footer_logo_text'                 => get_bloginfo( 'name' ),
 		'footer_dark_logo_url'             => '',
@@ -619,22 +573,36 @@ function barcelona_get_option( $field, $is_default=FALSE, $affix_check=FALSE ) {
 		'apple_touch_icon_ipad'            => '',
 		'apple_touch_icon_retina'          => '',
 		'default_sidebar'                  => 'barcelona-default-sidebar',
+		'default_sidebar__buddypress'      => 'barcelona-buddypress-sidebar',
+		'default_sidebar__bbpress'         => 'barcelona-bbpress-sidebar',
+		'default_sidebar__woocommerce'     => 'barcelona-woocommerce-sidebar',
 		'sidebar_position'                 => 'right',
 		'header_style'                     => 'a',
+		'header_cover_image'               => '',
 		'show_top_bar_menu'                => 'on',
 		'show_header_social_icons'         => 'on',
+		'show_footer'                      => 'on',
 		'show_footer_sidebars'             => 'on',
 		'show_footer_logo'                 => 'on',
 		'show_footer_menu'                 => 'on',
 		'footer_copyright_text'            => '',
 		'mm_orderby'                       => 'date',
 		'mm_order'                         => 'desc',
+		'mm_post_meta_choices'             => array(),
 		'show_tags_under_mm'               => 'on',
 		'boxed_layout'                     => 'off',
 		'sticky_nav_bar'                   => 'on',
 		'sticky_sidebars'                  => 'on',
+		'show_search_button'               => 'on',
+		'show_title'                       => 'on',
+		'show_content'                     => 'on',
 		'show_breadcrumb'                  => 'on',
+		'show_breadcrumb__page'            => 'off',
+		'show_breadcrumb__woocommerce'     => 'off',
+		'show_breadcrumb__buddypress'      => 'off',
+		'show_breadcrumb__bbpress'         => 'off',
 		'show_cat_title'                   => 'on',
+		'zoom_in_post_on_hover'            => 'on',
 		'disqus_comments'                  => 'off',
 		'disqus_sitename'                  => '',
 		'posts_layout'                     => 'c',
@@ -642,26 +610,33 @@ function barcelona_get_option( $field, $is_default=FALSE, $affix_check=FALSE ) {
 		'posts_layout__author'             => 'd',
 		'fp_style__category'               => 'none',
 		'fp_max_number_of_posts__category' => 3,
+		'fp_post_meta_choices__category'   => '',
 		'fp_filter_tag__category'          => '',
 		'fp_filter_post__category'         => '',
 		'fp_orderby__category'             => 'date',
 		'fp_order__category'               => 'desc',
+		'fp_prevent_duplication__category' => 'off',
 		'featured_image_style'             => 'fw',
+		'featured_image_credit'            => '',
+		'pagination'                       => 'numeric',
 		'show_comments'                    => 'on',
 		'show_comments__page'              => 'on',
+		'show_comment_voting'              => 'on',
 		'show_tags'                        => 'on',
 		'show_social_sharing'              => 'on',
 		'show_social_sharing__page'        => 'off',
 		'show_author_box'                  => 'on',
+		'show_author_box__page'            => 'off',
 		'show_voting'                      => 'on',
 		'show_voting__page'                => 'off',
-		'voting_login_req'                 => 'on',
+		'post_voting_login_req'            => 'off',
+		'comment_voting_login_req'         => 'off',
 		'show_post_nav'                    => 'on',
 		'show_related_posts'               => 'on',
 		'related_posts_columns'            => '3',
 		'related_posts_num'                => '9',
-		'related_posts_meta'               => array( 'date' ),
-		'post_meta_choices'                => array( 'date', 'views', 'likes', 'comments' ),
+		'related_posts_meta'               => array(),
+		'post_meta_choices'                => array(),
 		'use_yt_video_cover'               => 'off',
 		'sidebars'                         => '',
 		'social_rss_feed_url'              => '',
@@ -704,51 +679,225 @@ function barcelona_get_option( $field, $is_default=FALSE, $affix_check=FALSE ) {
 		'post_content_ad_2'                => '',
 		'override_options'                 => 'off'
 	);
+	$barcelona_dependencies = array(
+		'add_header_ad' => array(
+			'header_ad_1',
+			'header_ad_2'
+		),
+		'set_background' => array(
+			'custom_background'
+		)
+	);
 
-	$barcelona_pattern = '#__(home|category|tag|author|search|archive|single|page)$#is';
+	$barcelona_field_raw = $barcelona_field;
 
-	if ( ! array_key_exists( $field, $barcelona_defaults ) ) {
+	$barcelona_pattern_parent_affix = '#__(home|tag|author|search|archive|category|single|page|woocommerce|bbpress|buddypress)$#is';
+	$barcelona_pattern_cat_id_affix = '#__category_([0-9]+)$#is';
 
-		if ( preg_match( $barcelona_pattern, $field ) ) {
+	if ( $barcelona_is_parent_field = preg_match( $barcelona_pattern_parent_affix, $barcelona_field, $barcelona_match_parent_affix ) ) {
+		$barcelona_field_raw = preg_replace( $barcelona_pattern_parent_affix, '', $barcelona_field );
+	}
 
-			$barcelona_default_field = preg_replace( $barcelona_pattern, '', $field );
+	if ( $barcelona_is_implicit_category = preg_match( $barcelona_pattern_cat_id_affix, $barcelona_field, $barcelona_match_cat_id_affix ) ) {
+		$barcelona_field_raw = preg_replace( $barcelona_pattern_cat_id_affix, '', $barcelona_field );
+	}
 
-			if ( ! array_key_exists( $barcelona_default_field, $barcelona_defaults ) ) {
-				return false;
-			}
+	foreach ( $barcelona_dependencies as $k => $v ) {
+		if ( in_array( $barcelona_field_raw, $v ) ) {
+			$barcelona_dep_field = $k;
+			break;
+		}
+	}
 
-			$barcelona_default_option = $barcelona_defaults[ $barcelona_default_field ];
+	if ( $barcelona_get_default ) {
+
+		if ( array_key_exists( $barcelona_field, $barcelona_defaults ) ) {
+
+			return $barcelona_defaults[ $barcelona_field ];
+
+		} else if ( array_key_exists( $barcelona_field_raw, $barcelona_defaults ) ) {
+
+			return $barcelona_defaults[ $barcelona_field_raw ];
 
 		} else {
 
-			return false;
+			return '';
 
 		}
 
 	}
 
-	if ( ! isset( $barcelona_default_option ) ) {
+	if ( class_exists( 'Woocommerce' ) && barcelona_is_woocommerce() && ! $barcelona_is_parent_field ) {
 
-		$barcelona_default_option = $barcelona_defaults[ $field ];
+		return barcelona_get_option( $barcelona_field_raw .'__woocommerce' );
 
-	} else if ( isset( $barcelona_default_field ) && $is_default ) {
+	} else if ( function_exists( 'bbpress' ) && is_bbpress() && ! $barcelona_is_parent_field ) {
 
-		return barcelona_get_option( $barcelona_default_field );
+		return barcelona_get_option( $barcelona_field_raw .'__bbpress' );
 
-	}
+	} else if ( function_exists( 'buddypress' ) && is_buddypress() && ! $barcelona_is_parent_field ) {
 
-	if ( function_exists( 'ot_get_option' ) ) {
+		return barcelona_get_option( $barcelona_field_raw .'__buddypress' );
 
-		$barcelona_result = ot_get_option( 'barcelona_'. $field );
-		if ( empty( $barcelona_result ) ) {
-			return ( preg_match( $barcelona_pattern, $field ) && $affix_check ) ? false : $barcelona_default_option;
+	} else if ( is_singular() && ! $barcelona_is_parent_field ) {
+
+		global $post;
+
+		$barcelona_parent_affix = is_page() ? '_page' : '_single';
+
+		if ( ! $barcelona_ignore_override && barcelona_get_option( 'barcelona_override_options_'. $barcelona_parent_affix ) == 'on' ) {
+			return barcelona_get_option( $barcelona_field_raw .'_'. $barcelona_parent_affix );
 		}
 
-		return $barcelona_result;
+		if ( isset( $barcelona_dep_field ) ) {
+
+			$barcelona_option = get_post_meta( $post->ID, 'barcelona_'. $barcelona_dep_field, true );
+
+			if ( $barcelona_option == 'inherit' ) {
+				return barcelona_get_option( $barcelona_field_raw .'_'. $barcelona_parent_affix );
+			}
+
+		}
+
+		$barcelona_option = get_post_meta( $post->ID, 'barcelona_' . $barcelona_field_raw );
+
+		if ( ! empty( $barcelona_option ) ) {
+
+			return $barcelona_option[0];
+
+		} else {
+
+			return barcelona_get_option( $barcelona_field_raw .'_'. $barcelona_parent_affix );
+
+		}
+
+	} else if ( ( is_category() || $barcelona_is_implicit_category ) && ! $barcelona_is_parent_field ) {
+
+		if ( $barcelona_is_implicit_category ) {
+			$barcelona_cat_id = end( $barcelona_match_cat_id_affix );
+		} else {
+			global $wp_query;
+			$barcelona_cat_id = $wp_query->get_queried_object_id();
+		}
+
+		if ( ! $barcelona_ignore_override && barcelona_get_option( 'barcelona_override_options__category' ) == 'on' ) {
+			return barcelona_get_option( $barcelona_field_raw .'__category' );
+		}
+
+		$barcelona_cat_option = get_option( '_barcelona_category_'. $barcelona_cat_id );
+
+		if ( ! is_array( $barcelona_cat_option ) ) {
+			return barcelona_get_option( $barcelona_field_raw .'__category' );
+		}
+
+		if ( isset( $barcelona_dep_field ) ) {
+
+			$barcelona_option = array_key_exists( $barcelona_dep_field, $barcelona_cat_option ) ? $barcelona_cat_option[ $barcelona_dep_field ] : '';
+
+			if ( $barcelona_option == 'inherit' ) {
+				return barcelona_get_option( $barcelona_field_raw .'__category' );
+			}
+
+		}
+
+		if ( array_key_exists( $barcelona_field_raw, $barcelona_cat_option ) ) {
+
+			return $barcelona_cat_option[ $barcelona_field_raw ];
+
+		} else {
+
+			return barcelona_get_option( $barcelona_field_raw .'__category' );
+
+		}
+
+	} else {
+
+		if ( ! $barcelona_is_parent_field ) {
+
+			$barcelona_is_parent_field = true;
+
+			if ( is_home() ) {
+				$barcelona_parent_affix = '_home';
+			} else if ( is_tag() ) {
+				$barcelona_parent_affix = '_tag';
+			} else if ( is_author() ) {
+				$barcelona_parent_affix = '_author';
+			} else if ( is_search() ) {
+				$barcelona_parent_affix = '_search';
+			} else if ( is_archive() ) {
+				$barcelona_parent_affix = '_archive';
+			} else {
+				$barcelona_is_parent_field = false;
+			}
+
+			if ( isset( $barcelona_parent_affix ) && $barcelona_is_parent_field ) {
+				$barcelona_field = $barcelona_field_raw .'_'. $barcelona_parent_affix;
+			}
+
+		} else {
+
+			$barcelona_parent_affix = '_'. end( $barcelona_match_parent_affix );
+
+		}
+
+		// Get all theme options
+		$barcelona_ot_options = get_option( ot_options_id() );
+
+		if ( ! is_array( $barcelona_ot_options ) ) {
+
+			return barcelona_get_option( $barcelona_field, false, true );
+
+		} else {
+
+			foreach( $barcelona_ot_options as $k => $v ) {
+				$pk = preg_replace( '#^barcelona_#is', '', $k );
+				$barcelona_ot_options[ $pk ] = $v;
+				unset( $barcelona_ot_options[ $k ] );
+			}
+
+		}
+
+		if ( isset( $barcelona_dep_field ) && isset( $barcelona_parent_affix ) && $barcelona_is_parent_field ) {
+
+			$barcelona_dep_field .= '_'. $barcelona_parent_affix;
+
+			$barcelona_option = array_key_exists( $barcelona_dep_field, $barcelona_ot_options ) ? $barcelona_ot_options[ $barcelona_dep_field ] : '';
+
+			if ( $barcelona_option == 'inherit' ) {
+
+				if ( array_key_exists( $barcelona_field_raw, $barcelona_ot_options ) ) {
+
+					return $barcelona_ot_options[ $barcelona_field_raw ];
+
+				} else {
+
+					return barcelona_get_option( $barcelona_field_raw, false, true );
+
+				}
+
+			}
+
+		}
+
+		if ( array_key_exists( $barcelona_field, $barcelona_ot_options ) ) {
+
+			return $barcelona_ot_options[ $barcelona_field ];
+
+		} else if ( $barcelona_is_parent_field && array_key_exists( $barcelona_field, $barcelona_defaults ) ) {
+
+			return $barcelona_defaults[ $barcelona_field ];
+
+		} else if ( array_key_exists( $barcelona_field_raw, $barcelona_ot_options ) ) {
+
+			return $barcelona_ot_options[ $barcelona_field_raw ];
+
+		} else {
+
+			return barcelona_get_option( $barcelona_field, false, true );
+
+		}
 
 	}
-
-	return $barcelona_default_option;
 
 }
 
@@ -797,7 +946,8 @@ function barcelona_nav_class( $classes=array() ) {
 		'top_nav_color_scheme',
 		'megamenu_color_scheme',
 		'sticky_nav_bar',
-		'header_style'
+		'header_style',
+		'sticky_nav_logo'
 	) );
 
 	$barcelona_options['has_nav'] = has_nav_menu( 'main' );
@@ -807,7 +957,8 @@ function barcelona_nav_class( $classes=array() ) {
 		'navbar-static-top',
 		'navbar-'. sanitize_html_class( $barcelona_options['top_nav_color_scheme'] ),
 		'mega-menu-'. sanitize_html_class( $barcelona_options['megamenu_color_scheme'] ),
-		'header-style-'. sanitize_html_class( $barcelona_options['header_style'] )
+		'header-style-'. sanitize_html_class( $barcelona_options['header_style'] ),
+		'sticky-logo-'. sanitize_html_class( $barcelona_options['sticky_nav_logo'] )
 	);
 
 	if ( $barcelona_options['sticky_nav_bar'] == 'on' && $barcelona_options['has_nav'] ) {
@@ -1141,32 +1292,36 @@ function barcelona_get_featured_posts_query( $id, $type ) {
 	if ( $type == 'page' ) {
 
 		$barcelona_opts = array(
-			'style'   => get_post_meta( $id, 'barcelona_fp_style', true ),
-			'number'  => get_post_meta( $id, 'barcelona_fp_max_number_of_posts', true ),
-			'offset'  => get_post_meta( $id, 'barcelona_fp_posts_offset', true ),
-			'cat'     => get_post_meta( $id, 'barcelona_fp_filter_category', true ),
-			'tag'     => get_post_meta( $id, 'barcelona_fp_filter_tag', true ),
-			'post'    => get_post_meta( $id, 'barcelona_fp_filter_post', true ),
-			'orderby' => get_post_meta( $id, 'barcelona_fp_orderby', true ),
-			'order'   => get_post_meta( $id, 'barcelona_fp_order', true )
+			'style'               => get_post_meta( $id, 'barcelona_fp_style', true ),
+			'number'              => get_post_meta( $id, 'barcelona_fp_max_number_of_posts', true ),
+			'offset'              => get_post_meta( $id, 'barcelona_fp_posts_offset', true ),
+			'cat'                 => get_post_meta( $id, 'barcelona_fp_filter_category', true ),
+			'tag'                 => get_post_meta( $id, 'barcelona_fp_filter_tag', true ),
+			'post'                => get_post_meta( $id, 'barcelona_fp_filter_post', true ),
+			'orderby'             => get_post_meta( $id, 'barcelona_fp_orderby', true ),
+			'order'               => get_post_meta( $id, 'barcelona_fp_order', true ),
+			'post_meta_choices'   => get_post_meta( $id, 'barcelona_fp_post_meta_choices', true ),
+			'prevent_duplication' => get_post_meta( $id, 'barcelona_fp_prevent_duplication', true )
 		);
 
 	} else if ( $type == 'category' ) {
 
 		$barcelona_opts = array(
-			'style'   => barcelona_get_option( 'fp_style__category_' . $id ),
-			'number'  => barcelona_get_option( 'fp_max_number_of_posts__category_' . $id ),
-			'offset'  => barcelona_get_option( 'fp_posts_offset__category_' . $id ),
-			'cat'     => array( $id ),
-			'tag'     => barcelona_get_option( 'fp_filter_tag__category_' . $id ),
-			'post'    => barcelona_get_option( 'fp_filter_post__category_' . $id ),
-			'orderby' => barcelona_get_option( 'fp_orderby__category_' . $id ),
-			'order'   => barcelona_get_option( 'fp_order__category_' . $id )
+			'style'               => barcelona_get_option( 'fp_style__category_' . $id ),
+			'number'              => barcelona_get_option( 'fp_max_number_of_posts__category_' . $id ),
+			'offset'              => barcelona_get_option( 'fp_posts_offset__category_' . $id ),
+			'cat'                 => array( $id ),
+			'tag'                 => barcelona_get_option( 'fp_filter_tag__category_' . $id ),
+			'post'                => barcelona_get_option( 'fp_filter_post__category_' . $id ),
+			'orderby'             => barcelona_get_option( 'fp_orderby__category_' . $id ),
+			'order'               => barcelona_get_option( 'fp_order__category_' . $id ),
+			'post_meta_choices'   => barcelona_get_option( 'fp_post_meta_choices__category_' . $id ),
+			'prevent_duplication' => barcelona_get_option( 'fp_prevent_duplication__category_' . $id )
 		);
 
 	}
 
-	if ( ! isset( $barcelona_opts ) || $barcelona_opts['style'] == 'none' ) {
+	if ( ! isset( $barcelona_opts ) || empty( $barcelona_opts['style'] ) || $barcelona_opts['style'] == 'none' ) {
 		return false;
 	}
 
@@ -1262,6 +1417,8 @@ function barcelona_get_featured_posts_query( $id, $type ) {
 	$barcelona_query = new WP_Query( $barcelona_params );
 
 	$barcelona_query->fp_style = $barcelona_opts['style'];
+	$barcelona_query->post_meta_choices = $barcelona_opts['post_meta_choices'];
+	$barcelona_query->prevent_duplication = array_key_exists( 'prevent_duplication', $barcelona_opts ) ? $barcelona_opts['prevent_duplication'] : 'off';
 
 	return $barcelona_query;
 
@@ -1280,12 +1437,37 @@ function barcelona_get_youtube_video_thumbnail( $embed_code, $thumbnail_size = '
 
 			$barcelona_match = explode( '?', end( $barcelona_match ) );
 
-			return 'https://i.ytimg.com/vi/'. $barcelona_match[0] .'/maxresdefault.jpg';
+			if ( in_array( $thumbnail_size, array( 'thumbnail' ) ) ) {
+				$barcelona_yt_thumb_name = 'default';
+			} else if ( in_array( $thumbnail_size, array( 'medium', 'barcelona-sq', 'barcelona-xs' ) ) ) {
+				$barcelona_yt_thumb_name = 'mqdefault';
+			} else if ( in_array( $thumbnail_size, array( 'barcelona-sm' ) ) ) {
+				$barcelona_yt_thumb_name = 'hqdefault';
+			} else if ( in_array( $thumbnail_size, array( 'large', 'barcelona-md', 'barcelona-md-vertical' ) ) ) {
+				$barcelona_yt_thumb_name = 'sddefault';
+			} else {
+				$barcelona_yt_thumb_name = 'maxresdefault';
+			}
+
+			return 'https://i.ytimg.com/vi/'. $barcelona_match[0] .'/'. $barcelona_yt_thumb_name .'.jpg';
 
 		}
 
 	}
 
 	return null;
+
+}
+
+/*
+ * Is Woocommerce pages
+ */
+function barcelona_is_woocommerce() {
+
+	if ( class_exists( 'Woocommerce' ) && ( is_woocommerce() || is_cart() || is_account_page() || is_order_received_page() || is_checkout() ) ) {
+		return true;
+	} else {
+		return false;
+	}
 
 }

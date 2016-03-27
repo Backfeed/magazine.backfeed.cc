@@ -42,7 +42,10 @@ while ( $barcelona_q->have_posts() ): $barcelona_q->the_post();
 		<div class="post-image">
 
 			<a href="<?php echo esc_url( get_the_permalink() ); ?>" title="<?php echo esc_attr( get_the_title() ); ?>">
-				<?php barcelona_psum_overlay(); barcelona_thumbnail( 'barcelona-md' ); ?>
+				<?php
+				barcelona_psum_overlay();
+				barcelona_thumbnail( barcelona_get_option( 'sidebar_position' ) == 'none' ? 'barcelona-lg' : 'barcelona-md' );
+				?>
 			</a>
 
 		</div><!-- .post-image -->
@@ -59,7 +62,7 @@ while ( $barcelona_q->have_posts() ): $barcelona_q->the_post();
 
 			<?php
 			if ( isset( $barcelona_mod_post_meta ) ) {
-				barcelona_post_meta( $barcelona_mod_post_meta, true );
+				barcelona_post_meta( $barcelona_mod_post_meta );
 			}
 			?>
 
