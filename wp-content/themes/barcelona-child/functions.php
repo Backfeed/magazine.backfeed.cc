@@ -42,5 +42,5 @@ add_filter('gform_rich_text_editor_options', function($editor_settings) {
 
 
 add_action('init', function() {
-	add_rewrite_rule('^content-mine$', 'index.php?post_type=post&orderby=date', 'top');
+	add_rewrite_rule('^unfiltered$', 'index.php?post_type=post&orderby=date', 'top');
 });
