@@ -3,18 +3,6 @@ require_once('lib/login.php');
 require_once('lib/ajax.php');
 
 add_action('after_setup_theme', function() {
-	add_action('wp_enqueue_scripts', function() {
-		if (!is_admin()) {
-			wp_register_style( 'barcelona-main-child', trailingslashit( get_stylesheet_directory_uri() ).'style.css', [], BARCELONA_THEME_VERSION, 'all' );
-			wp_enqueue_style( 'barcelona-main-child' );
-
-			wp_enqueue_script( 'mailchimp', '//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js', [], false, true);
-			wp_enqueue_script( 'bf-main', get_stylesheet_directory_uri().'/main.js', [], false, true);
-		}
-	}, 99);
-}, 99);
-
-add_action('after_setup_theme', function() {
 	remove_action('wp_head', 'rsd_link'); //removes EditURI/RSD (Really Simple Discovery) link.
 	remove_action('wp_head', 'wlwmanifest_link'); //removes wlwmanifest (Windows Live Writer) link.
 	remove_action('wp_head', 'wp_generator'); //removes meta name generator.
@@ -29,8 +17,18 @@ add_action('after_setup_theme', function() {
 	remove_filter('the_content_feed', 'wp_staticize_emoji');
 	remove_filter('comment_text_rss', 'wp_staticize_emoji');
 	// filter to remove TinyMCE emojis
-//	add_filter('tiny_mce_plugins', 'disable_emojicons_tinymce');
-});
+	//	add_filter('tiny_mce_plugins', 'disable_emojicons_tinymce');
+
+	add_action('wp_enqueue_scripts', function() {
+		if (!is_admin()) {
+			wp_register_style( 'barcelona-main-child', trailingslashit( get_stylesheet_directory_uri() ).'style.css', [], BARCELONA_THEME_VERSION, 'all' );
+			wp_enqueue_style( 'barcelona-main-child' );
+
+			wp_enqueue_script( 'mailchimp', '//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js', [], false, true);
+			wp_enqueue_script( 'bf-main', get_stylesheet_directory_uri().'/main.js', [], false, true);
+		}
+	}, 99);
+}, 99);
 
 add_action('widgets_init', function() {
 	global $wp_widget_factory;
@@ -40,4 +38,9 @@ add_action('widgets_init', function() {
 add_filter('gform_rich_text_editor_options', function($editor_settings) {
 	$editor_settings['media_buttons'] = true;
 	return $editor_settings;
+});
+
+
+add_action('init', function() {
+	add_rewrite_rule('^content-mine$', 'index.php?post_type=post&orderby=date', 'top');
 });

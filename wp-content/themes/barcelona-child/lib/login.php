@@ -7,9 +7,9 @@ add_filter('login_message', function($message) {
     $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : 'login';
 
     if ($action == 'register')
-        return '<h1>Register</h1><h2>Micro-copy</h2>';
+        return '<h1>Register</h1>';
     else if ($action == 'login')
-        return '<h1>Login</h1><h2>Micro-copy</h2>';
+        return '<h1>Login</h1>';
     else
         return $message;
 });
