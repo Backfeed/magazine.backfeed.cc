@@ -64,4 +64,43 @@
     border-color: #e71d1d;
     background-color: #e71d1d; }
 
+.panel-group .panel-heading {
+  padding-bottom: 0; }
+
+.post-summary .post-meta,
+.posts-box-3 .post-summary,
+.type-page .post-content {
+  margin-bottom: 0; }
+
+.post-content a:link {
+  color: #f2132d; }
+.post-content a:visited {
+  color: #AC0E21; }
+.post-content a:hover {
+  text-decoration: underline; }
+
+body:not(.barcelona-fimg-cl) .sidebar-right .post-content .barcelona-sc-accordion h4:first-child {
+  margin-bottom: 0;
+  transform: translateY(6px); }
+
+body.home h1.post-title {
+  display: none !important; }
+
+.posts-box-5.posts-box-related-posts {
+  padding-right: 15px;
+  padding-left: 15px; }
+
+@media only screen and (min-width: 768px) {
+  .navbar-logo {
+    height: 180px;
+    line-height: 180px;
+    width: 400px; }
+
+  #menu-main-menu #menu-item-396,
+  #menu-main-menu #menu-item-405 {
+    float: right; }
+
+  .panel-title a .inner {
+    width: 100%; } }
+
 /*# sourceMappingURL=barcelona-child.css.map */

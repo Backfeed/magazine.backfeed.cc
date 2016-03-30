@@ -1,17 +1,7 @@
 #!/bin/bash
 
-cd /c/WTServer/WWW/magazine/wp-content/plugins
-git add -A
-git commit -m "MANUAL"
-git push
-
-cd /c/WTServer/WWW/magazine
-git add -A
-git commit -m "MANUAL"
-git push
-
 #DMag Staging
-ssh dms << REMOTE
+ssh ore@159.203.172.115 << REMOTE
 	cd /var/www/html
 	git pull
 
