@@ -16,8 +16,6 @@ add_action('after_setup_theme', function() {
 	remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
 	remove_filter('the_content_feed', 'wp_staticize_emoji');
 	remove_filter('comment_text_rss', 'wp_staticize_emoji');
-	// filter to remove TinyMCE emojis
-	//	add_filter('tiny_mce_plugins', 'disable_emojicons_tinymce');
 
 	add_action('wp_enqueue_scripts', function() {
 		if (!is_admin()) {
@@ -39,7 +37,6 @@ add_filter('gform_rich_text_editor_options', function($editor_settings) {
 	$editor_settings['media_buttons'] = true;
 	return $editor_settings;
 });
-
 
 add_action('init', function() {
 	add_rewrite_rule('^unfiltered$', 'index.php?post_type=post&orderby=date', 'top');
