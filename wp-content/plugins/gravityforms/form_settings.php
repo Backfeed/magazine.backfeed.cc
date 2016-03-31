@@ -1486,29 +1486,20 @@ class GFFormSettings {
 			$confirmation['id'] = uniqid();
 		}
 
-		$name =  sanitize_text_field( rgpost( 'form_confirmation_name' ) );
+		$name = sanitize_text_field( rgpost( 'form_confirmation_name' ) );
 		$confirmation['name'] = $name;
-		$type = rgpost( 'form_confirmation' );
+		$type  = rgpost( 'form_confirmation' );
 		if ( ! in_array( $type, array( 'message', 'page', 'redirect' ) ) ) {
 			$type = 'message';
 		}
-		$confirmation['type']              = $type;
+		$confirmation['type'] = $type;
 
 		// Filter HTML for users without the unfiltered_html capability
 		$confirmation_message = self::maybe_wp_kses( rgpost( 'form_confirmation_message' ) );
-		// Filter confirmation message. Checks the gform_sanitize_confirmation_message filter
-		$confirmation_message_safe = GFCommon::sanitize_confirmation_message( $confirmation_message );
 
 		$failed_validation = false;
 
-		if ( $confirmation_message !== $confirmation_message_safe ) {
-			$failed_validation = true;
-			$failed_message    = esc_html__( 'The confirmation message is not valid. For security reasons some characters are not allowed.', 'gravityforms' );
-			$script            = 'jQuery("#form_confirmation_message").val(jQuery(this).data("safe"));';
-			$failed_message .= sprintf( " <a href='javascript:void(0);' onclick='%s' data-safe='%s'>%s</a>", esc_attr( $script ), esc_attr( htmlspecialchars( $confirmation_message_safe, ENT_QUOTES ) ), esc_html__( 'Fix it', 'gravityforms' ) );
-			GFCommon::add_error_message( $failed_message );
-		}
-		$confirmation['message'] = $confirmation_message;
+		$confirmation['message']           = $confirmation_message;
 		$confirmation['disableAutoformat'] = (bool) rgpost( 'form_disable_autoformatting' );
 		$confirmation['pageId']            = absint( rgpost( 'form_confirmation_page' ) );
 		$confirmation['url']               = rgpost( 'form_confirmation_url' );

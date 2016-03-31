@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: http://www.gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.0-beta-1
+Version: 2.0-beta-2
 Author: rocketgenius
 Author URI: http://www.rocketgenius.com
 Text Domain: gravityforms
@@ -116,7 +116,7 @@ register_deactivation_hook( __FILE__, array( 'GFForms', 'deactivation_hook' ) );
 
 class GFForms {
 
-	public static $version = '2.0-beta-1';
+	public static $version = '2.0-beta-2';
 
 	public static function loaded() {
 
@@ -279,9 +279,17 @@ class GFForms {
 			}
 			add_action( 'admin_init', array( 'RGForms', 'ajax_parse_request' ), 10 );
 
-			add_action( "load-forms_page_gf_entries", array( 'GFForms', 'load_screen_options' ) );
-			add_filter( 'set-screen-option', array( 'GFForms', 'set_screen_options' ), 10, 3 );
-
+			if ( self::get_page() == 'entry_list' && ! isset( $_GET['filter'] ) ) {
+				require_once( GFCommon::get_base_path() . '/entry_list.php' );
+				$default_filter = GFEntryList::get_default_filter();
+				if ( $default_filter !== 'all' ) {
+					$url = add_query_arg( array( 'filter' => $default_filter ) );
+					$url = esc_url_raw( $url );
+					wp_safe_redirect( $url );
+				}
+				add_filter( 'set-screen-option', array( 'GFForms', 'set_screen_options' ), 10, 3 );
+				add_filter( 'screen_settings', array( 'GFForms', 'show_screen_options' ), 10, 2 );
+			}
 		} else {
 			add_action( 'wp_enqueue_scripts', array( 'RGForms', 'enqueue_scripts' ), 11 );
 			add_action( 'wp', array( 'RGForms', 'ajax_parse_request' ), 10 );
@@ -1357,11 +1365,13 @@ class GFForms {
 			$tabindex = isset( $tabindex ) ? absint( $tabindex ) : 1;
 			require_once( GFCommon::get_base_path() . '/form_display.php' );
 
-			$form_id = absint( $form_id );
-			$display_title = (bool) $title;
+			$form_id             = absint( $form_id );
+			$display_title       = (bool) $title;
 			$display_description = (bool) $description;
 
-			$result = GFFormDisplay::get_form( $form_id, $display_title, $display_description, false, $_POST['gform_field_values'], true, $tabindex );
+			parse_str( $_POST['gform_field_values'], $field_values );
+
+			$result = GFFormDisplay::get_form( $form_id, $display_title, $display_description, false, $field_values, true, $tabindex );
 			die( $result );
 		}
 	}
@@ -2510,7 +2520,20 @@ class GFForms {
 	}
 
 	public static function form_switcher() {
-		$forms = RGFormsModel::get_forms( null, 'title' );
+		
+		// Get all forms.
+		$all_forms = RGFormsModel::get_forms( null, 'title' );
+		
+		// Sort forms by active state.
+		$forms = array( 'active' => array(), 'inactive' => array(), );
+		foreach ( $all_forms as $form ) {
+			if ( '1' === $form->is_active ) {
+				$forms['active'][] = $form;
+			} else if ( '0' === $form->is_active ) {
+				$forms['inactive'][] = $form;
+			}
+		}
+		
 		?>
 		<script type="text/javascript">
 			function GF_ReplaceQuery(key, newValue) {
@@ -2604,11 +2627,23 @@ class GFForms {
 		<select name="form_switcher" id="form_switcher" onchange="GF_SwitchForm(jQuery(this).val());" style="display:none;">
 			<option value=""><?php esc_html_e( 'Select Form', 'gravityforms' ) ?></option>
 			<?php
-			foreach ( $forms as $form_info ) {
-				?>
-				<option value="<?php echo absint( $form_info->id ); ?>"><?php echo esc_html( $form_info->title )?></option>
-				<?php
-			}
+				// Display active forms.
+				if ( ! empty( $forms['active'] ) ) {
+					echo '<optgroup label="' . esc_attr__( 'Active Forms', 'gravityforms' ) . '">';
+					foreach ( $forms['active'] as $form_info ) {
+						echo '<option value="' . absint( $form_info->id ) . '">' . esc_html( $form_info->title ) . '</option>';
+					}
+					echo '</optgroup>';
+				}
+				
+				// Display inactive forms.
+				if ( ! empty( $forms['inactive'] ) ) {
+					echo '<optgroup label="' . esc_attr__( 'Inactive Forms', 'gravityforms' ) . '">';
+					foreach ( $forms['inactive'] as $form_info ) {
+						echo '<option value="' . absint( $form_info->id ) . '">' . esc_html( $form_info->title ) . '</option>';
+					}
+					echo '</optgroup>';
+				}
 			?>
 		</select>
 
@@ -3214,37 +3249,25 @@ class GFForms {
 		}
 	}
 
-
-	public static function load_screen_options() {
-		$screen = get_current_screen();
-
-		if ( ! is_object( $screen ) ){
-			return;
+	public static function set_screen_options( $status, $option, $value ) {
+		$return = $value;
+		if ( $option == 'gform_entries_screen_options' ) {
+			$return                   = array();
+			$return['default_filter'] = sanitize_key( rgpost( 'gform_default_filter' ) );
+			$return['per_page']       = sanitize_key( rgpost( 'gform_per_page' ) );
 		}
 
-		$page = GFForms::get_page();
-
-		if ( $page == 'entry_list' ) {
-			$args = array(
-				'label' => __('Entries per page', 'gravityforms'),
-				'default' => 20,
-				'option' => 'gform_entries_per_page'
-			);
-			add_screen_option( 'per_page', $args );
-		} elseif ( in_array( $page, array( 'entry_detail', 'entry_detail_edit' ) ) ) {
-
-			require_once( GFCommon::get_base_path() . '/entry_detail.php' );
-
-			GFEntryDetail::add_meta_boxes();
-		}
+		return $return;
 	}
 
-	public function set_screen_options( $status, $option, $value ) {
-		if ( $option == 'gform_entries_per_page' ) {
-			return $value;
+	public static function show_screen_options( $status, $args ) {
+
+		$return = $status;
+		if ( $args->base == 'forms_page_gf_entries' ) {
+			$return = GFEntryList::get_screen_options_markup( $status, $args );
 		}
 
-		return $status;
+		return $return;
 	}
 
 	/**

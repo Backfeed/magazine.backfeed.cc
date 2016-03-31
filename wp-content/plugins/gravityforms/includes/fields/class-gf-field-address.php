@@ -868,7 +868,18 @@ class GF_Field_Address extends GF_Field {
 			$zip_value     = trim( rgget( $this->id . '.5', $value ) );
 			$country_value = trim( rgget( $this->id . '.6', $value ) );
 
-			$line_break = $format == 'html' ? '<br />' : "\n";
+			if ( $format === 'html' ) {
+				$street_value = esc_html( $street_value );
+				$street2_value = esc_html( $street2_value );
+				$city_value = esc_html( $city_value );
+				$state_value = esc_html( $state_value );
+				$zip_value = esc_html( $zip_value );
+				$country_value = esc_html( $country_value );
+
+				$line_break = '<br />';
+			} else {
+				$line_break = "\n";
+			}
 
 			$address_display_format = apply_filters( 'gform_address_display_format', 'default', $this );
 			if ( $address_display_format == 'zip_before_city' ) {
@@ -971,7 +982,6 @@ class GF_Field_Address extends GF_Field {
 			return rgar( $entry, $input_id );
 		}
 	}
-
 }
 
 GF_Fields::register( new GF_Field_Address() );

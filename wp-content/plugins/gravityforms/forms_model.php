@@ -2238,7 +2238,16 @@ class GFFormsModel {
 			$ary_rows = array();
 			if ( ! empty( $rows ) ) {
 				foreach ( $rows as $row ) {
-					$ary_rows = array_merge( $ary_rows, rgexplode( '|', $row, $column_count ) );
+					/**
+					 * Allow modification of the delimiter used to parse List field URL parameters.
+					 *
+					 * $delimiter Defaults to '|';
+					 * $field GF_Field object for the current field.
+					 * $name Name of the current dynamic population parameter.
+					 * $field_values Array of values provided for pre-population into the form.
+					 */
+					$delimiter = apply_filters( 'gform_list_field_parameter_delimiter', '|', $field, $name, $field_values );
+					$ary_rows = array_merge( $ary_rows, rgexplode( $delimiter, $row, $column_count ) );
 				}
 
 				$value = $ary_rows;
@@ -4780,7 +4789,7 @@ class GFFormsModel {
 		return strtolower( $search_mode ) == 'any' ? 'OR' : 'AND';
 	}
 
-	private static function get_lead_db_columns() {
+	public static function get_lead_db_columns() {
 		return array( 'id', 'form_id', 'post_id', 'date_created', 'is_starred', 'is_read', 'ip', 'source_url', 'user_agent', 'currency', 'payment_status', 'payment_date', 'payment_amount', 'transaction_id', 'is_fulfilled', 'created_by', 'transaction_type', 'status', 'payment_method' );
 	}
 

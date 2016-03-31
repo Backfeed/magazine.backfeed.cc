@@ -207,6 +207,8 @@ abstract class GFFeedAddOn extends GFAddOn {
 			$feeds = $this->get_feeds( $form['id'] );
 		}
 
+		$feeds = $this->pre_process_feeds( $feeds, $entry, $form );
+
 		if ( empty( $feeds ) ) {
 			// no feeds to process
 			return $entry;
@@ -320,7 +322,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	public function is_feed_condition_met( $feed, $form, $entry ) {
 
 		$feed_meta            = $feed['meta'];
-		$is_condition_enabled = rgar( $feed_meta, 'feed_condition_conditional_logic' ) === true;
+		$is_condition_enabled = rgar( $feed_meta, 'feed_condition_conditional_logic' ) == true;
 		$logic                = rgars( $feed_meta, 'feed_condition_conditional_logic_object/conditionalLogic' );
 
 		if ( ! $is_condition_enabled || empty( $logic ) ) {
@@ -536,6 +538,27 @@ abstract class GFFeedAddOn extends GFAddOn {
 		}
 
 		return rgar( $processed_feeds, $this->_slug );
+	}
+
+	public function pre_process_feeds( $feeds, $entry, $form ) {
+
+		/**
+		 * Modify feeds before they are processed.
+		 *
+		 * @param array $feeds An array of $feed objects
+		 * @param array $entry Current entry for which feeds will be processed
+		 * @param array $form Current form object.
+		 *
+		 * @since 2.0
+		 *
+		 * @return array An array of $feeds
+		 */
+		$feeds = apply_filters( 'gform_addon_pre_process_feeds', $feeds, $entry, $form );
+		$feeds = apply_filters( "gform_addon_pre_process_feeds_{$form['id']}", $feeds, $entry, $form );
+		$feeds = apply_filters( "gform_{$this->_slug}_pre_process_feeds", $feeds, $entry, $form );
+		$feeds = apply_filters( "gform_{$this->_slug}_pre_process_feeds_{$form['id']}", $feeds, $entry, $form );
+
+		return $feeds;
 	}
 
 	public function get_default_feed_name(){
@@ -1241,6 +1264,10 @@ abstract class GFFeedAddOn extends GFAddOn {
 		$checkbox_field = $this->get_feed_condition_checkbox( $field );
 		$this->validate_checkbox_settings( $checkbox_field, $settings );
 
+		if ( ! isset( $settings['feed_condition_conditional_logic_object'] ) ) {
+			return;
+		}
+
 		$conditional_logic_object = $settings['feed_condition_conditional_logic_object'];
 		if ( ! isset( $conditional_logic_object['conditionalLogic'] ) ) {
 			return;
@@ -1359,6 +1386,8 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$feed_to_process = '';
 		$feeds = $this->get_feeds( $entry['form_id'] );
+		$feeds = $this->pre_process_feeds( $feeds, $entry, $form  );
+
 		foreach ( $feeds as $feed ){
 			if ( $feed['is_active'] && $this->is_feed_condition_met( $feed, $form, $entry ) ) {
 				$feed_to_process = $feed;

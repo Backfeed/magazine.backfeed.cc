@@ -81,11 +81,48 @@ $min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] 
 		    }
 		});
 
-		jQuery( '.hidenotice' ).click(function() {
-	  		jQuery( '#preview_note' ).remove();
+	});
+	</script>
+
+	<?php /* dismiss the alerts and set a cookie so they're not annoying */ ?>
+
+	<script>
+
+	jQuery(document).ready(function () {
+	    if (GetCookie("dismissed-notifications")) {
+	        jQuery(GetCookie("dismissed-notifications")).hide();
+	    }
+	    jQuery(".hidenotice").click(function () {
+	        var alertId = jQuery(this).closest(".preview_notice").attr("id");
+	        var dismissedNotifications = GetCookie("dismissed-notifications") + ",#" + alertId;
+	        jQuery(this).closest(".preview_notice").slideToggle('slow');
+	      SetCookie("dismissed-notifications",dismissedNotifications.replace('null,',''))
+	    });
+
+      // Create the cookie
+		function SetCookie(sName, sValue)
+		{
+		  document.cookie = sName + "=" + escape(sValue);
+		  // Expires the cookie after a month
+		  var date = new Date();
+		  date.setMonth(date.getMonth()+1);
+		  document.cookie += ("; expires=" + date.toUTCString());
+		}
+
+      // Retrieve the value of the cookie.
+		function GetCookie(sName)
+		{
+		  var aCookie = document.cookie.split("; ");
+		  for (var i=0; i < aCookie.length; i++)
+		  {
+		    var aCrumb = aCookie[i].split("=");
+		    if (sName == aCrumb[0])
+		      return unescape(aCrumb[1]);
+		  	}
+		  	return null;
+			}
 		});
 
-	});
 	</script>
 
 	<?php /* now display the current viewport size */ ?>
@@ -120,7 +157,7 @@ $min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] 
 			<h2><?php esc_html_e( 'Form Preview', 'gravityforms' ) ?> : ID <?php echo $form_id; ?></h2>
 		</div>
 	</div>
-	<div id="preview_note">
+	<div id="preview_note" class="preview_notice">
 		<?php esc_html_e( 'Note: This is a simple form preview. This form may display differently when added to your page based on normal inheritance from parent theme styles.', 'gravityforms' ) ?> <i class="fa fa-times hidenotice" title="<?php esc_html_e( 'dismiss', 'gravityforms' ) ?>"></i>
 	</div>
 </div>

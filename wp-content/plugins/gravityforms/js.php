@@ -666,6 +666,8 @@ if ( ! class_exists( 'GFForms' ) ) {
 				break;
 			case "date" :
 				field.inputs = GetDateFieldInputs(field);
+				field.dateType = 'datepicker';
+				field.calendarIconType = 'none';
 				if (!field.label)
 					field.label = <?php echo json_encode( esc_html__( 'Date', 'gravityforms' ) ); ?>;
 				break;

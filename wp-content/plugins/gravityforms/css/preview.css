@@ -4,7 +4,7 @@
 preview.css
 Gravity Forms Form Preview Styles
 http://www.gravityforms.com
-updated: February 26, 2016 3:00 PM GMT-5
+updated: March 18, 2016 12:25 PM GMT-5
 
 Gravity Forms is a Rocketgenius project
 copyright 2008-2016 Rocketgenius Inc.
@@ -69,6 +69,11 @@ div#preview_hdr span.toggle_helpers {
 	font-weight: normal;
 	letter-spacing: normal;
 	font-size: 12px;
+	vertical-align: middle;
+}
+
+div#preview_hdr span.toggle_helpers label {
+	line-height: 1;
 }
 
 div#preview_hdr a {
@@ -116,7 +121,7 @@ div#preview_form_container.showgrid {
 	border: 1px solid #E6E6E6;
 	border-bottom: 4px solid #D3D3D3;
 	background-image:url(../images/preview_grid.gif);
-	background-position: -24px 0;
+	background-position: 20px 0;
 }
 
 .gform_wrapper {
@@ -441,10 +446,9 @@ div#browser_size_info {
 
 }
 
-@media only screen and (max-width: 761px)  {
-
+@media only screen and (max-width: 640px) {
 	span.toggle_helpers {
-		display: none;
+		display: none !important;
 	}
 
 }

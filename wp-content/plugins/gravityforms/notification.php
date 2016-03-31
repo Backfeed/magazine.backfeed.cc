@@ -607,12 +607,7 @@ Class GFNotification {
 		ob_clean(); ?>
 
 		<?php
-		$notification_events = array( 'form_submission' => esc_html__( 'Form is submitted', 'gravityforms' ) );
-		if ( rgars( $form, 'save/enabled' ) ) {
-			$notification_events['form_saved']                = esc_html__( 'Form is saved', 'gravityforms' );
-			$notification_events['form_save_email_requested'] = esc_html__( 'Save and continue email is requested', 'gravityforms' );
-		}
-		$notification_events = apply_filters( 'gform_notification_events', $notification_events, $form );
+		$notification_events = self::get_notification_events( $form );
 		$event_style         = count( $notification_events ) == 1 || rgar( $notification, 'isDefault' ) ? "style='display:none'" : '';
 		?>
 		<tr valign="top" <?php echo $event_style ?>>
@@ -992,6 +987,29 @@ Class GFNotification {
 		
 	}
 
+	/**
+	 * Get the notification events for the current form.
+	 * 
+	 * @param array $form The current Form
+	 *
+	 * @return array $notification_events
+	 */
+	public static function get_notification_events( $form ) {
+		$notification_events = array( 'form_submission' => esc_html__( 'Form is submitted', 'gravityforms' ) );
+		if ( rgars( $form, 'save/enabled' ) ) {
+			$notification_events['form_saved']                = esc_html__( 'Form is saved', 'gravityforms' );
+			$notification_events['form_save_email_requested'] = esc_html__( 'Save and continue email is requested', 'gravityforms' );
+		}
+
+		/**
+		 * Allow custom notification events to be added.
+		 * 
+		 * @param array $notification_events The notification events.
+		 * @param array $form The current form.
+		 */
+		return apply_filters( 'gform_notification_events', $notification_events, $form );
+	}
+
 	private static function validate_notification() {
 		$is_valid = self::is_valid_notification_to() && ! rgempty( 'gform_notification_subject' ) && ! rgempty( 'gform_notification_message' );
 
@@ -1215,18 +1233,31 @@ Class GFNotification {
 class GFNotificationTable extends WP_List_Table {
 
 	public $form;
+	public $notification_events;
+	public $notification_services;
 
 	function __construct( $form ) {
 
-		$this->form = $form;
+		$this->form                  = $form;
+		$this->notification_events   = GFNotification::get_notification_events( $form );
+		$this->notification_services = GFNotification::get_notification_services();
 
+		$columns = array(
+			'cb'      => '',
+			'name'    => esc_html__( 'Name', 'gravityforms' ),
+			'subject' => esc_html__( 'Subject', 'gravityforms' ),
+		);
+
+		if ( count( $this->notification_events ) > 1 ) {
+			$columns['event'] = esc_html__( 'Event', 'gravityforms' );
+		}
+
+		if ( count( $this->notification_services ) > 1 ) {
+			$columns['service'] = esc_html__( 'Service', 'gravityforms' );
+		}
+		
 		$this->_column_headers = array(
-			array(
-				'cb'      => '',
-				'name'    => esc_html__( 'Name', 'gravityforms' ),
-				'subject' => esc_html__( 'Subject', 'gravityforms' ),
-				'service' => esc_html__( 'Service', 'gravityforms' )
-			),
+			$columns,
 			array(),
 			array(),
 			'name',
@@ -1336,7 +1367,7 @@ class GFNotificationTable extends WP_List_Table {
 	
 	function column_service( $notification ) {
 		
-		$services = GFNotification::get_notification_services();
+		$services = $this->notification_services;
 		
 		if ( ! rgar( $notification, 'service' ) ) {
 			esc_html_e( 'WordPress', 'gravityforms' );
@@ -1347,6 +1378,10 @@ class GFNotificationTable extends WP_List_Table {
 			esc_html_e( 'Undefined Service', 'gravityforms' );
 		}
 		
+	}
+
+	function column_event( $notification ) {
+		echo rgar( $this->notification_events, rgar( $notification, 'event' ) );
 	}
 
 	function no_items() {

@@ -806,7 +806,9 @@ class GFFormDisplay {
 				$form_css_classes = explode( ' ', $form_css_class );
 				
 				// Append _wrapper to each class.
-				array_walk( $form_css_classes, function( &$class ) { $class .= '_wrapper'; } );
+				foreach ( $form_css_classes as &$wrapper_class ) {
+					$wrapper_class .= '_wrapper';
+				}
 				
 				// Merge back into a string.
 				$custom_wrapper_css_class = ' ' . implode( ' ', $form_css_classes );
@@ -817,7 +819,7 @@ class GFFormDisplay {
                 <div class='{$wrapper_css_class}{$custom_wrapper_css_class}' id='gform_wrapper_$form_id' " . $style . '>';
 
 			$default_anchor = $has_pages || $ajax ? true : false;
-			$use_anchor     = gf_apply_filters( array( 'gform_confirmation_anchor', $form_id ), $default_anchor );
+			$use_anchor     = gf_apply_filters( array( 'gform_confirmation_anchor', $form_id ), $default_anchor, $form );
 			if ( $use_anchor !== false ) {
 				$form_string .= "<a id='gf_$form_id' class='gform_anchor' ></a>";
 				$action .= "#gf_$form_id";
@@ -1379,12 +1381,12 @@ class GFFormDisplay {
 
 		if ( $form['confirmation']['type'] == 'message' ) {
 			$default_anchor = self::has_pages( $form ) ? 1 : 0;
-			$anchor         = gf_apply_filters( array( 'gform_confirmation_anchor', $form_id ), $default_anchor ) ? "<a id='gf_{$form_id}' class='gform_anchor' ></a>" : '';
+			$anchor         = gf_apply_filters( array( 'gform_confirmation_anchor', $form_id ), $default_anchor, $form ) ? "<a id='gf_{$form['id']}' class='gform_anchor' ></a>" : '';
 			$nl2br          = rgar( $form['confirmation'], 'disableAutoformat' ) ? false : true;
 			$cssClass       = esc_attr( rgar( $form, 'cssClass' ) );
 			$confirmation_message = GFCommon::replace_variables( $form['confirmation']['message'], $form, $lead, false, true, $nl2br );
 
-			$confirmation_message = self::sanitize_confirmation_message( $confirmation_message );
+			$confirmation_message = self::maybe_sanitize_confirmation_message( $confirmation_message );
 			$confirmation   = empty( $form['confirmation']['message'] ) ? "{$anchor} " : "{$anchor}<div id='gform_confirmation_wrapper_{$form_id}' class='gform_confirmation_wrapper {$cssClass}'><div id='gform_confirmation_message_{$form_id}' class='gform_confirmation_message_{$form_id} gform_confirmation_message'>" . $confirmation_message . '</div></div>';
 		} else {
 			if ( ! empty( $form['confirmation']['pageId'] ) ) {
@@ -1448,8 +1450,8 @@ class GFFormDisplay {
 	 *
 	 * @return string
 	 */
-	private static function sanitize_confirmation_message( $confirmation_message ) {
-		return GFCommon::sanitize_confirmation_message( $confirmation_message );
+	private static function maybe_sanitize_confirmation_message( $confirmation_message ) {
+		return GFCommon::maybe_sanitize_confirmation_message( $confirmation_message );
 	}
 
 	private static function get_js_redirect_confirmation( $url, $ajax ) {
@@ -2125,7 +2127,7 @@ class GFFormDisplay {
 	 * @param array $field_values
 	 * @param bool  $is_ajax
 	 */
-	private static function register_form_init_scripts( $form, $field_values = array(), $is_ajax = false ) {
+	public static function register_form_init_scripts( $form, $field_values = array(), $is_ajax = false ) {
 
 		if ( rgars( $form, 'save/enabled' ) ) {
 			$save_script = "jQuery('#gform_save_{$form['id']}').val('');";
@@ -2295,17 +2297,17 @@ class GFFormDisplay {
 		$script = '';
 		foreach ( $form['fields'] as $field ) {
 			$max_length = $field->maxLength;
-			$field_id   = "input_{$form['id']}_{$field->id}";
+			$input_id   = "input_{$form['id']}_{$field->id}";
 			if ( ! empty( $max_length ) && ! $field->adminOnly ) {
 				$field_script =
-					"jQuery('#{$field_id}').textareaCount(" .
+					"jQuery('#{$input_id}').textareaCount(" .
 					"    {" .
 					"    'maxCharacterSize': {$max_length}," .
 					"    'originalStyle': 'ginput_counter'," .
 					"    'displayFormat' : '#input " . esc_js( __( 'of', 'gravityforms' ) ) . ' #max ' . esc_js( __( 'max characters', 'gravityforms' ) ) . "'" .
 					"    } );";
 
-				$script .= gf_apply_filters( array( 'gform_counter_script', $form['id'] ), $field_script, $form['id'], $field_id, $max_length );
+				$script .= gf_apply_filters( array( 'gform_counter_script', $form['id'] ), $field_script, $form['id'], $input_id, $max_length, $field );
 			}
 		}
 
@@ -2997,7 +2999,7 @@ class GFFormDisplay {
 
 		$default_anchor = $has_pages || $ajax ? true : false;
 
-		$use_anchor     = gf_apply_filters( array( 'gform_confirmation_anchor', $form_id ), $default_anchor );
+		$use_anchor     = gf_apply_filters( array( 'gform_confirmation_anchor', $form_id ), $default_anchor, $form );
 		if ( $use_anchor !== false ) {
 			$action .= "#gf_$form_id";
 		}
@@ -3061,7 +3063,7 @@ class GFFormDisplay {
 		$save_email_confirmation = GFCommon::replace_variables( $save_email_confirmation, $form, $entry, false, true, $nl2br );
 		$save_email_confirmation = GFCommon::gform_do_shortcode( $save_email_confirmation );
 
-		$save_email_confirmation = self::sanitize_confirmation_message( $save_email_confirmation );
+		$save_email_confirmation = self::maybe_sanitize_confirmation_message( $save_email_confirmation );
 
 		$form_id = absint( $form['id'] );
 
@@ -3069,7 +3071,7 @@ class GFFormDisplay {
 
 		$default_anchor = $has_pages || $ajax ? true : false;
 
-		$use_anchor     = gf_apply_filters( array( 'gform_confirmation_anchor', $form_id ), $default_anchor );
+		$use_anchor     = gf_apply_filters( array( 'gform_confirmation_anchor', $form_id ), $default_anchor, $form );
 
 		if ( $use_anchor !== false ) {
 			$save_email_confirmation = "<a id='gf_$form_id' class='gform_anchor' ></a>" . $save_email_confirmation;
@@ -3087,7 +3089,7 @@ class GFFormDisplay {
 	public static function handle_save_confirmation( $form, $resume_token, $confirmation_message, $ajax ) {
 		$resume_email         = isset( $_POST['gform_resume_email'] ) ? $_POST['gform_resume_email'] : null;
 
-		$confirmation_message = self::sanitize_confirmation_message( $confirmation_message );
+		$confirmation_message = self::maybe_sanitize_confirmation_message( $confirmation_message );
 
 		$confirmation_message = self::replace_save_variables( $confirmation_message, $form, $resume_token, $resume_email );
 
@@ -3101,7 +3103,7 @@ class GFFormDisplay {
 
 		$default_anchor = $has_pages || $ajax ? true : false;
 
-		$use_anchor     = gf_apply_filters( array( 'gform_confirmation_anchor', $form_id ), $default_anchor );
+		$use_anchor     = gf_apply_filters( array( 'gform_confirmation_anchor', $form_id ), $default_anchor, $form );
 
 		if ( $use_anchor !== false ) {
 			$confirmation_message = "<a id='gf_{$form_id}' class='gform_anchor' ></a>" . $confirmation_message;

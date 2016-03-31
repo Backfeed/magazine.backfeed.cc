@@ -386,11 +386,15 @@ class GF_Field_Name extends GF_Field {
 			$name .= ! empty( $name ) && ! empty( $last ) ? " $last" : $last;
 			$name .= ! empty( $name ) && ! empty( $suffix ) ? " $suffix" : $suffix;
 
-			return $name;
+			$return = $name;
 		} else {
-			return $value;
+			$return = $value;
 		}
 
+		if ( $format === 'html' ) {
+			$return = esc_html( $return );
+		}
+		return $return;
 	}
 
 	public function get_input_property( $input_id, $property_name ) {

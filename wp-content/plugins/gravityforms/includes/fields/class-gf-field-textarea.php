@@ -38,7 +38,7 @@ class GF_Field_Textarea extends GF_Field {
 		return true;
 	}
 
-	public function allow_html(){
+	public function allow_html() {
 		return $this->useRichTextEditor;
 	}
 
@@ -47,6 +47,8 @@ class GF_Field_Textarea extends GF_Field {
 		$form_id         = absint( $form['id'] );
 		$is_entry_detail = $this->is_entry_detail();
 		$is_form_editor  = $this->is_form_editor();
+
+		$is_admin = $is_entry_detail || $is_form_editor;
 
 		$id            = intval( $this->id );
 		$field_id      = $is_entry_detail || $is_form_editor || $form_id == 0 ? "input_$id" : 'input_' . $form_id . "_$id";
@@ -66,7 +68,7 @@ class GF_Field_Textarea extends GF_Field {
 		$value = esc_textarea( $value );
 
 		//see if the field is set to use the rich text editor
-		if ( $this->useRichTextEditor && ! is_admin() ) {
+		if ( $this->useRichTextEditor && ! $is_admin ) {
 			//placeholders cannot be used with the rte; message displayed in admin when this occurs
 			//field cannot be used in conditional logic by another field; message displayed in admin and field removed from conditional logic drop down
 			$tabindex = GFCommon::$tab_index > 0 ? GFCommon::$tab_index ++ : '';
@@ -98,7 +100,7 @@ class GF_Field_Textarea extends GF_Field {
 			$editor_settings = apply_filters( sprintf( 'gform_rich_text_editor_options_%d', $form['id'] ),               $editor_settings, $this, $form, $entry );
 			$editor_settings = apply_filters( sprintf( 'gform_rich_text_editor_options_%d_%d', $form['id'], $this->id ), $editor_settings, $this, $form, $entry );
 
-			if( ! has_action( 'wp_tiny_mce_init', array( __class__, 'start_wp_tiny_mce_init_buffer' ) ) ) {
+			if ( ! has_action( 'wp_tiny_mce_init', array( __class__, 'start_wp_tiny_mce_init_buffer' ) ) ) {
 				add_action( 'wp_tiny_mce_init', array( __class__, 'start_wp_tiny_mce_init_buffer' ) );
 			}
 
@@ -106,16 +108,14 @@ class GF_Field_Textarea extends GF_Field {
 			wp_editor( esc_html( wp_unslash( $value ) ), $field_id, $editor_settings );
 			$input = ob_get_clean();
 
-			remove_filter( 'mce_buttons', array( $this, 'filter_mce_buttons' ), 10, 2 );
-
-		}
-		else {
+			remove_filter( 'mce_buttons', array( $this, 'filter_mce_buttons' ), 10 );
+		} else {
 
 			$input       = '';
 			$input_style = '';
 
 			// RTE preview
-			if( $this->is_form_editor() ) {
+			if ( $this->is_form_editor() ) {
 				$display     = $this->useRichTextEditor ? 'block' : 'none';
 				$input_style = $this->useRichTextEditor ? 'style="display:none;"' : '';
 				$size        = $this->size ? $this->size : 'medium';
@@ -141,7 +141,7 @@ class GF_Field_Textarea extends GF_Field {
 
 		preg_match_all( $pattern, $script, $matches, PREG_SET_ORDER );
 
-		foreach( $matches as $match ) {
+		foreach ( $matches as $match ) {
 
 			list( $search, $open_tag, $guts, $close_tag ) = $match;
 
@@ -155,32 +155,28 @@ class GF_Field_Textarea extends GF_Field {
 
 	}
 
-    public function filter_mce_buttons( $mce_buttons, $editor_id ) {
+	public function filter_mce_buttons( $mce_buttons, $editor_id ) {
 
 		$remove_key = array_search( 'wp_more', $mce_buttons );
-		if( $remove_key !== false ) {
+		if ( $remove_key !== false ) {
 			unset( $mce_buttons[ $remove_key ] );
 		}
-        /**
-         * Filters the buttons within the TinyMCE editor
-         *
-         * @since 2.0.0
-         *
-         * @param array  $mce_buttons Buttons to be included.
-         * @param string $editor_id   HTML ID of the field.
-         * @param object $this        The field object
-         *
-         * Additional filters for specific form and fields IDs.
-         */
+		/**
+		 * Filters the buttons within the TinyMCE editor
+		 *
+		 * @since 2.0.0
+		 *
+		 * @param array  $mce_buttons Buttons to be included.
+		 * @param string $editor_id   HTML ID of the field.
+		 * @param object $this        The field object
+		 *
+		 * Additional filters for specific form and fields IDs.
+		 */
 		$mce_buttons = apply_filters( 'gform_rich_text_editor_buttons',                                            $mce_buttons, $editor_id, $this );
 		$mce_buttons = apply_filters( sprintf( 'gform_rich_text_editor_buttons_%d', $this->formId ),               $mce_buttons, $editor_id, $this );
 		$mce_buttons = apply_filters( sprintf( 'gform_rich_text_editor_buttons_%d_%d', $this->formId, $this->id ), $mce_buttons, $editor_id, $this );
 
 		return $mce_buttons;
-	}
-
-	public function get_value_merge_tag( $value, $input_id, $entry, $form, $modifier, $raw_value, $url_encode, $esc_html, $format, $nl2br ) {
-		return $format == 'html' && ! $nl2br ? nl2br( $value ) : $value;
 	}
 
 }

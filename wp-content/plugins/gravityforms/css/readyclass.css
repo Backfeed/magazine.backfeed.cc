@@ -4,7 +4,7 @@
 readyclass.css
 Gravity Forms Ready Class Pre-Set Helper Styles
 http://www.gravityforms.com
-updated: February 28, 2016 11:57 AM GMT-5
+updated: March 18, 2016 12:23 PM GMT-5
 
 Gravity Forms is a Rocketgenius project
 copyright 2008-2016 Rocketgenius Inc.
@@ -97,7 +97,23 @@ to no.
         display: -moz-inline-stack;
         display: inline-block;
         vertical-align: top;
-        width:50%;
+        width: 50%;
+    }
+
+    .gform_wrapper .top_label li.gfield.gf_left_half {
+        padding-right: 16px;
+    }
+
+    .gform_wrapper .top_label li.gfield.gf_right_half {
+        padding-right: 16;
+    }
+
+    .gform_wrapper .top_label li.gfield.gf_left_half .ginput_container,
+    .gform_wrapper .top_label li.gfield.gf_right_half .ginput_container {
+        width: 100% !important;
+        margin: 8px 0 0 0;
+        padding-left: 0;
+        padding-right: 0;
     }
 
     .gform_wrapper .top_label li.gfield.gf_left_half:before {
@@ -172,13 +188,23 @@ to no.
         clear: both;
     }
 
+    /* 3 columns */
+
     .gform_wrapper .top_label li.gfield.gf_left_third,
     .gform_wrapper .top_label li.gfield.gf_middle_third,
     .gform_wrapper .top_label li.gfield.gf_right_third {
-        width: 33.3%;
         display: -moz-inline-stack;
         display: inline-block;
         vertical-align: top;
+    }
+
+    .gform_wrapper .top_label li.gfield.gf_left_third,
+    .gform_wrapper .top_label li.gfield.gf_middle_third {
+        width: 33.3%;
+    }
+
+    .gform_wrapper .top_label li.gfield.gf_right_third {
+        width: 33.4%;
     }
 
     .gform_wrapper .top_label li.gfield.gf_left_third,
@@ -187,9 +213,12 @@ to no.
         margin-bottom: 8px;
     }
 
-    .gform_wrapper .top_label li.gfield.gf_left_third input,
-    .gform_wrapper .top_label li.gfield.gf_middle_third input,
-    .gform_wrapper .top_label li.gfield.gf_right_third input {
+    .gform_wrapper .top_label li.gfield.gf_left_third input:not([type='radio']):not([type='checkbox']),
+    .gform_wrapper .top_label li.gfield.gf_middle_third input:not([type='radio']):not([type='checkbox']),
+    .gform_wrapper .top_label li.gfield.gf_right_third input:not([type='radio']):not([type='checkbox']),
+    .gform_wrapper .top_label li.gfield.gf_left_third select,
+    .gform_wrapper .top_label li.gfield.gf_middle_third select,
+    .gform_wrapper .top_label li.gfield.gf_right_third select {
         width:100% !important;
     }
 
@@ -233,6 +262,86 @@ to no.
     .gform_wrapper .top_label li.gfield.gf_right_third+.gform_footer {
         clear: both;
     }
+
+    /* 4 columns - quarters */
+
+    .gform_wrapper .top_label li.gfield.gf_first_quarter,
+    .gform_wrapper .top_label li.gfield.gf_second_quarter,
+    .gform_wrapper .top_label li.gfield.gf_third_quarter,
+    .gform_wrapper .top_label li.gfield.gf_fourth_quarter {
+        width: 25%;
+        display: -moz-inline-stack;
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    .gform_wrapper .top_label li.gfield.gf_first_quarter,
+    .gform_wrapper .top_label li.gfield.gf_second_quarter,
+    .gform_wrapper .top_label li.gfield.gf_third_quarter,
+    .gform_wrapper .top_label li.gfield.gf_fourth_quarter {
+        margin-bottom: 8px;
+    }
+
+    .gform_wrapper .top_label li.gfield.gf_first_quarter input:not([type='radio']):not([type='checkbox']),
+    .gform_wrapper .top_label li.gfield.gf_second_quarter input:not([type='radio']):not([type='checkbox']),
+    .gform_wrapper .top_label li.gfield.gf_third_quarter input:not([type='radio']):not([type='checkbox']),
+    .gform_wrapper .top_label li.gfield.gf_fourth_quarter input:not([type='radio']):not([type='checkbox']),
+    .gform_wrapper .top_label li.gfield.gf_first_quarter select,
+    .gform_wrapper .top_label li.gfield.gf_second_quarter select,
+    .gform_wrapper .top_label li.gfield.gf_third_quarter select,
+    .gform_wrapper .top_label li.gfield.gf_fourth_quarter select {
+        width:100% !important;
+    }
+
+    .gform_wrapper .top_label li.gfield.gfield_error.gf_first_quarter,
+    .gform_wrapper .top_label li.gfield.gfield_error.gf_second_quarter,
+    .gform_wrapper .top_label li.gfield.gfield_error.gf_third_quarter,
+    .gform_wrapper .top_label li.gfield.gfield_error.gf_fourth_quarter {
+        width: 24.5%;
+    }
+
+    .gform_wrapper .top_label li.gfield.gf_fourth_quarter:after {
+        content:"";
+        display: block;
+        clear: both;
+    }
+
+    .gform_wrapper .top_label li.gfield.gf_first_quarter input.medium,
+    .gform_wrapper .top_label li.gfield.gf_first_quarter input.large,
+    .gform_wrapper .top_label li.gfield.gf_first_quarter select.medium,
+    .gform_wrapper .top_label li.gfield.gf_first_quarter select.large,
+    .gform_wrapper .top_label li.gfield.gf_second_quarter input.medium,
+    .gform_wrapper .top_label li.gfield.gf_second_quarter input.large,
+    .gform_wrapper .top_label li.gfield.gf_second_quarter select.medium,
+    .gform_wrapper .top_label li.gfield.gf_second_quarter select.large,
+    .gform_wrapper .top_label li.gfield.gf_third_quarter input.medium,
+    .gform_wrapper .top_label li.gfield.gf_third_quarter input.large,
+    .gform_wrapper .top_label li.gfield.gf_third_quarter select.medium,
+    .gform_wrapper .top_label li.gfield.gf_third_quarter select.large,
+    .gform_wrapper .top_label li.gfield.gf_fourth_quarter input.medium,
+    .gform_wrapper .top_label li.gfield.gf_fourth_quarter input.large,
+    .gform_wrapper .top_label li.gfield.gf_fourth_quarter select.medium,
+    .gform_wrapper .top_label li.gfield.gf_fourth_quarter select.large {
+        width: 97.5%;
+    }
+
+    .gform_wrapper .top_label li.gfield.gf_first_quarter+li.gsection,
+    .gform_wrapper .top_label li.gfield.gf_fourth_quarter+li.gsection {
+        padding: 16px 0 8px 0;
+    }
+
+    .gform_wrapper .top_label li.gfield.gf_first_quarter+li.gfield,
+    .gform_wrapper .top_label li.gfield.gf_second_quarter+li.gfield,
+    .gform_wrapper .top_label li.gfield.gf_third_quarter+li.gfield,
+    .gform_wrapper .top_label li.gfield.gf_fourth_quarter+li.gfield,
+    .gform_wrapper .top_label li.gfield.gf_first_quarter+.gform_footer,
+    .gform_wrapper .top_label li.gfield.gf_second_quarter+.gform_footer,
+    .gform_wrapper .top_label li.gfield.gf_third_quarter+.gform_footer,
+    .gform_wrapper .top_label li.gfield.gf_fourth_quarter+.gform_footer {
+        clear: both;
+    }
+
+    /* list columns */
 
     .gform_wrapper li.gfield.gf_list_2col ul.gfield_checkbox li,
     .gform_wrapper li.gfield.gf_list_2col ul.gfield_radio li {
@@ -564,6 +673,7 @@ to no.
         background: -ms-linear-gradient(top,  rgba(219,242,183,1) 0%,rgba(180,208,136,1) 100%);
         background: linear-gradient(to bottom,  rgba(219,242,183,1) 0%,rgba(180,208,136,1) 100%);
     }
+
     div.gform_confirmation_wrapper.gf_confirmation_yellow_gradient:before,
     div.gform_confirmation_wrapper.gf_confirmation_yellow_gradient:after,
     div.gform_confirmation_wrapper.gf_confirmation_green_gradient:before,
@@ -598,93 +708,124 @@ to no.
         left: auto;
     }
 
-    div.gf_simple_horizontal_wrapper {
-        max-width: 100%;
+
+    /* simple horizontal form ready class - very rudimentary */
+
+    form.gf_simple_horizontal {
+        width: 95%;
+        margin: 0 auto;
     }
 
-    div.gf_simple_horizontal_wrapper div.gform_body,
-    div.gf_simple_horizontal div.gform_body,
-    div.gf_simple_horizontal_wrapper div.gform_footer,
-    div.gf_simple_horizontal div.gform_footer {
+    form.gf_simple_horizontal div.gform_body,
+    form.gf_simple_horizontal div.gform_footer.top_label {
         display: -moz-inline-stack;
         display: inline-block;
-        vertical-align: top;
+        vertical-align: bottom;
+        margin: 0;
+        padding: 0;
+        position: relative;
     }
-    div.gf_simple_horizontal_wrapper div.gform_body,
-    div.gf_simple_horizontal div.gform_body {
+
+    form.gf_simple_horizontal div.gform_body {
         width: 75%;
-        margin: 0 !important;
-        padding: 0 0 16px 0;
-    }
-    div.gf_simple_horizontal_wrapper div.gform_footer,
-    div.gf_simple_horizontal div.gform_footer {
-        width: auto;
-        max-width: 25%;
-        margin: 0 !important;
-        padding: 0 !important;
     }
 
-    div.gf_simple_horizontal_wrapper div.gform_body ul li.gfield input.small,
-    div.gf_simple_horizontal_wrapper div.gform_body ul li.gfield input.medium,
-    div.gf_simple_horizontal_wrapper div.gform_body ul li.gfield input.large,
-    div.gf_simple_horizontal div.gform_body ul li.gfield input.small,
-    div.gf_simple_horizontal div.gform_body ul li.gfield input.medium,
-    div.gf_simple_horizontal div.gform_body ul li.gfield input.large {
-        width: 97.5%;
+    form.gf_simple_horizontal div.gform_footer.top_label {
+        width: calc(25% - 16px);
+        padding: 0;
+        margin: 0;
     }
 
-    div.gf_simple_horizontal_wrapper div.gform_body ul li.gfield label.gfield_label,
-    div.gf_simple_horizontal div.gform_body ul li.gfield label.gfield_label {
-        position: absolute;
-        left: -9000px;
+    body:not(rtl) form.gf_simple_horizontal div.gform_footer.top_label {
+        text-align: left
     }
 
-    .gform_wrapper .left_label li.gfield.gsection.gf_section_right,
-    .gform_wrapper .right_label li.gfield.gsection.gf_section_right {
-        margin-left: 30% !important;
-        width: 64%;
-    }
-
-    div.gf_form_inline_wrapper form div.gform_body,
-    div.gf_form_inline form div.gform_body,
-    div.gf_form_inline_wrapper form div.gform_footer,
-    div.gf_form_inline form div.gform_footer {
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield {
         display: -moz-inline-stack;
         display: inline-block;
-        vertical-align: middle;
+        padding-right: 16px;
+        height: auto;
     }
 
-    div.gf_form_inline_wrapper form div.gform_body ul li.gfield,
-    div.gf_form_inline form div.gform_body ul li.gfield {
-        display: -moz-inline-stack;
-        display: inline-block;
-    }
+    /* simple horizontal form - set a width for one field */
 
-    div.gf_form_inline_wrapper form div.gform_body ul.form_sublabel_below li.gfield,
-    div.gf_form_inline form div.gform_body ul.form_sublabel_below li.gfield {
-            vertical-align: top;
-    }
-
-    div.gf_form_inline_wrapper form div.gform_body ul.form_sublabel_above li.gfield,
-    div.gf_form_inline form div.gform_body ul.form_sublabel_above li.gfield{
-            vertical-align: baseline;
-    }
-
-    div.gf_form_inline_wrapper div.gform_body ul li.gfield input.small,
-    div.gf_form_inline_wrapper div.gform_body ul li.gfield input.medium,
-    div.gf_form_inline_wrapper div.gform_body ul li.gfield input.large,
-    div.gf_form_inline div.gform_body ul li.gfield input.small,
-    div.gf_form_inline div.gform_body ul li.gfield input.medium,
-    div.gf_form_inline div.gform_body ul li.gfield input.large {
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(1):nth-last-child(1) {
         width: 100%;
     }
 
-    div.gf_form_hidesubs_wrapper ul li.gfield span > label,
-    div.gf_form_hidesubs ul li.gfield span > label {
-        position: absolute;
-        top: 0;
-        left: -9999px;
+    /* simple horizontal form - set a width for two fields */
 
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(1):nth-last-child(2),
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(2):nth-last-child(1) {
+        width: 50%;
+    }
+
+    /* simple horizontal form - set a width for three fields */
+
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(1):nth-last-child(3),
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(2):nth-last-child(2),
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(3):nth-last-child(1) {
+        width: 33.3333%;
+    }
+
+    /* simple horizontal form - set a width for four fields */
+
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(1):nth-last-child(4),
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(2):nth-last-child(3),
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(3):nth-last-child(2),
+    lform.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(4):nth-last-child(1) {
+        width: 25%;
+    }
+
+    /* simple horizontal form - simple horizontal form - set a width for five fields */
+
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(1):nth-last-child(5),
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(2):nth-last-child(4),
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(3):nth-last-child(3),
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(4):nth-last-child(2),
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(5):nth-last-child(1) {
+        width: 20%;
+    }
+
+    /* simple horizontal form - set a width for six fields */
+
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(1):nth-last-child(6),
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(2):nth-last-child(5),
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(3):nth-last-child(4),
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(4):nth-last-child(3),
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(5):nth-last-child(2),
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield:nth-child(6):nth-last-child(1) {
+        width: 16.6%;
+    }
+
+    form.gf_simple_horizontal div.gform_body ul.top_label.form_sublabel_below li.gfield {
+        vertical-align: top;
+    }
+
+    form.gf_simple_horizontal div.gform_body ul.top_label.form_sublabel_above li.gfield {
+        vertical-align: baseline;
+    }
+
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield input.small,
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield input.medium,
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield input.large {
+        width: 100%
+    }
+
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield select.small,
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield select.medium,
+    form.gf_simple_horizontal div.gform_body ul.top_label li.gfield select.large {
+        width: 100%
+    }
+
+    form.gf_simple_horizontal div.gform_footer.top_label input[type="submit"],
+    form.gf_simple_horizontal div.gform_footer.top_label input[type="button"],
+    form.gf_simple_horizontal div.gform_footer.top_label input[type="image"] {
+        height: auto;
+    }
+
+    .gform_wrapper form.gf_simple_horizontal .top_label .gfield_error {
+        margin-bottom: 0;
     }
 
 /* end media query */

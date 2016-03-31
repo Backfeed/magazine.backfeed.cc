@@ -1007,7 +1007,7 @@ class GFAPI {
 	 *
 	 *
 	 * @param int $form_id The Form ID
-	 * @param array $input_values An array of values.
+	 * @param array $input_values An array of values. Not $_POST, that will be automatically merged with the $input_values.
 	 * @param array $field_values Optional.
 	 * @param int $target_page Optional.
 	 * @param int $source_page Optional.

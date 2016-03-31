@@ -391,7 +391,7 @@ function InitializeFieldSettings(){
 	});
 
 	jQuery('#field_maxlen')
-		.on('keypress', function(){
+		.on('keypress', function(event){
 			return ValidateKeyPress(event, GetMaxLengthPattern(), false)
 		})
 		.on('change keyup', function(){
@@ -793,9 +793,14 @@ function LoadFieldSettings(){
 
 	jQuery("#field_rich_text_editor").prop("checked", field.useRichTextEditor ? true : false);
 
+	if(has_entry(field.id)){
+		jQuery('#field_rich_text_editor').prop("disabled", true);
+	} else{
+		jQuery('#field_rich_text_editor').prop("disabled", false);
+	}
+
     CreateInputNames(field);
     ToggleInputName(true);
-
 
 
     var canHaveConditionalLogic = GetFirstRuleField() > 0;
@@ -3266,12 +3271,26 @@ function SetFieldSubLabelPlacement(subLabelPlacement){
     RefreshSelectedFieldPreview();
 }
 
-function SetFieldAdminOnly(isAdminOnly){
-    SetFieldProperty('adminOnly', isAdminOnly);
-    if(isAdminOnly)
-        jQuery(".field_selected").addClass("field_admin_only");
-    else
-        jQuery(".field_selected").removeClass("field_admin_only");
+function SetFieldAdminOnly( isAdminOnly ) {
+
+    var setProp = true;
+
+    if( isAdminOnly && HasConditionalLogicDependency( field.id ) ) {
+        if( ! confirm( gf_vars.conditionalLogicDependencyAdminOnly ) ) {
+            setProp = false;
+        }
+    }
+
+    if( setProp ) {
+        SetFieldProperty( 'adminOnly', isAdminOnly );
+        if( isAdminOnly ) {
+            jQuery( '.field_selected' ).addClass( 'field_admin_only' );
+        } else {
+            jQuery( '.field_selected' ).removeClass( 'field_admin_only' );
+        }
+    }
+
+    return setProp;
 }
 
 function SetFieldDefaultValue(defaultValue){
@@ -3614,3 +3633,17 @@ jQuery.fn.gfSlide = function(direction) {
     return this;
 };
 
+/**
+ * Form Editor conditional logic should not allow adminOnly fields to be selectable. Also exclude the current field from being
+ * set in conditional logic for itself.
+ */
+gform.addFilter( 'gform_is_conditional_logic_field', function( isConditionalLogicField, field ) {
+
+    if( field.adminOnly ) {
+        isConditionalLogicField = false;
+    } else if( field.id == GetSelectedField().id ) {
+        isConditionalLogicField = false;
+    }
+
+    return isConditionalLogicField;
+} );

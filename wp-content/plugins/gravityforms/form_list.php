@@ -200,7 +200,7 @@ class GFFormList {
 			}
 		</script>
 
-		<link rel="stylesheet" href="<?php echo esc_url( GFCommon::get_base_url() ); ?>/css/admin<?php echo $min; ?>.css"/>
+		<link rel="stylesheet" href="<?php echo esc_url( GFCommon::get_base_url() ); ?>/css/admin<?php echo $min; ?>.css?ver=<?php echo GFForms::$version ?>"/>
 		<div class="wrap <?php echo sanitize_html_class( GFCommon::get_browser_class() ); ?>">
 
 		<h2>

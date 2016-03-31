@@ -1,4 +1,51 @@
 ------------------------------------------------------------------------------------------------------------------
+Version 2.0-beta-2
+    - Added an Event column to the Notifications list if the form has multiple notification events registered.
+    - Added support for preventing Admin Only fields from being selected in Form Editor conditional logic; changing field already used in conditional logic to Admin Only will result in a confirmation prompt (like deleting a field used in conditional logic)
+    - Added support for excluding current field from conditional logic; prevents field from applying conditional logic against itself
+    - Added the entry filters to the screen options.
+    - Added 'gform_list_field_parameter_delimiter' filter:
+        add_filter( 'gform_list_field_parameter_delimiter', function( $delimiter, $field, $name, $field_values ) {
+            return '||';
+        }, 10, 4 );
+
+    - Updated form switcher to display active and inactive forms in separate option groups.
+    - Updated the default value for the confirmation sanitization filter to false. Return true to sanitize the complete confirmation.
+        Example: add_filter( 'gform_sanitize_confirmation_message', '__return_true' );
+    - Updated GFFormDisplay::register_form_init_scripts to be public.
+    - Updated Chinese (China) translation. Credit: Edi Michael.
+    - Updated the rich editor setting in the Paragraph field to prevent switching on or off if the field has entries.
+    - Updated the way the Paragraph field saves values - fields that expect HTML will save safe values. Paragraph fields that don't expect HTML will accept values exactly as they are submitted.
+
+    - Removed the sanitization validation for the confirmation settings for users with the unfiltered_html capability. The confirmation will pass through wp_kses_post() for all users without unfiltered_html.
+
+    - Fixed a typo in the Hungarian choice of the Captcha field language setting.
+    - Fixed an issue which could prevent the default meta boxes being added to the entry detail page if an update was available for GF.
+    - Fixed an issue with the entry detail actions which can prevent third-party content from displaying properly.
+    - Fixed an issue with the font size for the Total field value.
+    - Fixed an issue with the styles for the List field add/delete row buttons on the entry detail edit page.
+    - Fixed an issue with the styles on some admin pages that get stuck in the browser cache after upgrade.
+    - Fixed an issue with the Rich Text Editor in forms on WordPress admin pages.
+    - Fixed a parse error when displaying a form on versions of PHP below 5.3.
+    - Fixed issue where Single Product quantity input displayed on initial load in admin even when quantity was disabled
+    - Fixed issue where default Date field has a single input but no Datepicker
+    - Fixed a JavaScript error in the form editor when configuring the max chars setting.
+    - Fixed issue with the output values of the Paragraph field in the merge tags, entry list and entry detail.
+
+    - API: Updated GF_Field:sanitize_entry_value() to sanitize the value only if HTML is enabled for the field or activated using the gform_allowable_tags filter. Fields should override this method to implement field-specific sanitization.
+    - API: Updated the way GF_Field handles input and output values. Input values are now not sanitized on input unless the HTML tags are allowed, in which case values are passed through wp_kses_post() and then through gform_allowable_tags filter and then through strip_tags() if required. Updated the way the Address, Checkbox, Multiselect, Name, Radio, Select, Text and Textarea fields handle input and output to account for the change.
+
+    - AF: Added GFAddon::pre_process_feeds() method to handle applying new 'gform_addon_pre_process_feeds' filter
+        add_filter( 'gform_addon_pre_process_feeds', function( $feeds, $entry, $form ) {
+            // modify $feeds
+            return $feeds;
+        }, 10, 3 );
+    - AF: Fixed an issue validating checkbox type fields when the choice name used array notation.
+    - AF: Fixed an issue validating the select_custom field type when using optgroups.
+    - AF: Fixed an issue validating choice based fields if the choice value property is not set.
+    - AF: Fixed an issue with GFFeedAddOn::is_feed_condition_met().
+
+------------------------------------------------------------------------------------------------------------------
 Version 2.0-beta-1
 
     - Security enhancement: Updated the confirmation message to pass through wp_kses_post() before being displayed after submission and before being saved in the form confirmation settings. Use the gform_sanitize_confirmation_message to disable. Validation will fail for users with the unfiltered_html capability if the gform_sanitize_confirmation_message filter returns true and a 'fix it' button will be displayed.
@@ -89,6 +136,45 @@ Version 2.0-beta-1
 			)
 
 ------------------------------------------------------------------------------------------------------------------
+Version 1.9.17.14
+    - AF: Fixed a PHP notice which could occur if the is_authorized property was not set by the payment add-on.
+
+------------------------------------------------------------------------------------------------------------------
+Version 1.9.17.13
+    - Fixed an issue with the merge tag for the Multi Select field returning the choice values when not using the :value modifier.
+
+------------------------------------------------------------------------------------------------------------------
+Version 1.9.17.12
+    - Updated the gform_confirmation_anchor filter to include $form as the second parameter.
+
+------------------------------------------------------------------------------------------------------------------
+Version 1.9.17.11
+    - Fixed an issue with the $field_values parameter of the gform_pre_render hook where it would change from an array to a string when processing AJAX form submissions.
+
+------------------------------------------------------------------------------------------------------------------
+Version 1.9.17.10
+    - Add the $field object to the parameter list of the gform_counter_script filter.
+
+------------------------------------------------------------------------------------------------------------------
+Version 1.9.17.9
+    - Add the provisional filter gform_sanitize_entry_value to allow site administrators to bypass the default input sanitization of the entry value before it's saved.
+
+------------------------------------------------------------------------------------------------------------------
+Version 1.9.17.8
+    - Added GFExport::prepare_forms_for_export().
+    - Updated GFFormsModel::get_lead_db_columns() to public.
+    - Updated Chinese (China) translation. Credit: Edi Michael.
+
+------------------------------------------------------------------------------------------------------------------
+Version 1.9.17.7
+    - Updated GFFormsModel::media_handle_upload() to be a public method.
+
+------------------------------------------------------------------------------------------------------------------
+Version 1.9.17.6
+    - AF: Fixed GFAddOn::get_save_button() not retrieving last section's fields when sections are using custom array keys.
+    - AF: Fixed an issue with the payment status not being updated when a subscription payment is successful if a previous attempt failed.
+
+------------------------------------------------------------------------------------------------------------------
 Version 1.9.17.5
     - Fixed an issue with gformCleanNumber() which for some currencies caused an incorrect value to be returned.
 
@@ -114,9 +200,6 @@ Version 1.9.17
     - Added {admin_url} and {logout_url} merge tags.
 	- Added the GF_MIN_WP_VERSION_SUPPORT_TERMS constant and a message on the settings page when the site is not eligible for support.
 	- Added the GFEntryDetail::maybe_display_empty_fields() helper to determine if empty fields should be displayed when the lead detail grid is processed.
-	- Fixed issue with new reCAPTCHA API when two forms with CAPTCHA field are placed in the same page.
-	- Added CSS class for the label of complex fields to support better alignment.
-	- Fixed issue with TinyMCE where entry value was cutting off HTML
 
     - Updated save and continue confirmations to support shortcodes.
     - Updated form view count and lead count so that they are cached to improve performance.

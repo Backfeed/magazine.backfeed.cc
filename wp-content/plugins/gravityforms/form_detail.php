@@ -2184,7 +2184,7 @@ class GFFormDetail {
 				<option value="el"><?php esc_html_e( 'Greek', 'gravityforms' ); ?></option>
 				<option value="iw"><?php esc_html_e( 'Hebrew', 'gravityforms' ); ?></option>
 				<option value="hi"><?php esc_html_e( 'Hindi', 'gravityforms' ); ?></option>
-				<option value="hu"><?php esc_html_e( 'Hungarain', 'gravityforms' ); ?></option>
+				<option value="hu"><?php esc_html_e( 'Hungarian', 'gravityforms' ); ?></option>
 				<option value="id"><?php esc_html_e( 'Indonesian', 'gravityforms' ); ?></option>
 				<option value="it"><?php esc_html_e( 'Italian', 'gravityforms' ); ?></option>
 				<option value="ja"><?php esc_html_e( 'Japanese', 'gravityforms' ); ?></option>
@@ -2262,12 +2262,12 @@ class GFFormDetail {
 			<label><?php esc_html_e( 'Visibility', 'gravityforms' ); ?> <?php gform_tooltip( 'form_field_visibility' ) ?></label>
 
 			<div>
-				<input type="radio" name="field_visibility" id="field_visibility_everyone" size="10" onclick="SetFieldAdminOnly(!this.checked);" onkeypress="SetFieldAdminOnly(!this.checked);" />
+				<input type="radio" name="field_visibility" id="field_visibility_everyone" size="10" onclick="return SetFieldAdminOnly(!this.checked);" onkeypress="return SetFieldAdminOnly(!this.checked);" />
 				<label for="field_visibility_everyone" class="inline">
 					<?php esc_html_e( 'Everyone', 'gravityforms' ); ?>
 				</label>
 				&nbsp;&nbsp;
-				<input type="radio" name="field_visibility" id="field_visibility_admin" size="10" onclick="SetFieldAdminOnly(this.checked);" onkeypress="SetFieldAdminOnly(this.checked);" />
+				<input type="radio" name="field_visibility" id="field_visibility_admin" size="10" onclick="return SetFieldAdminOnly(this.checked);" onkeypress="return SetFieldAdminOnly(this.checked);" />
 				<label for="field_visibility_admin" class="inline">
 					<?php esc_html_e( 'Admin Only', 'gravityforms' ); ?>
 				</label>

@@ -2854,7 +2854,7 @@ abstract class GFAddOn {
 		}
 
 		foreach( $field['choices'] as $choice ) {
-			if ( $choice['value'] == $field_setting ) {
+			if ( $this->is_choice_valid( $choice, $field_setting ) ) {
 				return; // Choice is valid
 			}
 		}
@@ -2882,12 +2882,12 @@ abstract class GFAddOn {
 			foreach( $field['choices'] as $choice ) {
 				if ( isset( $choice['choices'] ) ) {
 					foreach( $choice['choices'] as $optgroup_choice ) {
-						if ( in_array( $optgroup_choice['value'], $field_setting ) ) {
+						if ( $this->is_choice_valid( $optgroup_choice, $field_setting ) ) {
 							$selected++;
 						}
 					}
 				} else {
-					if ( in_array( $choice['value'], $field_setting ) ) {
+					if ( $this->is_choice_valid( $choice, $field_setting ) ) {
 						$selected++;
 					}
 				}
@@ -2905,12 +2905,12 @@ abstract class GFAddOn {
 			foreach( $field['choices'] as $choice ) {
 				if ( isset( $choice['choices'] ) ) {
 					foreach( $choice['choices'] as $optgroup_choice ) {
-						if ( $optgroup_choice['value'] == $field_setting ) {
+						if ( $this->is_choice_valid( $optgroup_choice, $field_setting ) ) {
 							return;
 						}
 					}
 				} else {
-					if ( $choice['value'] == $field_setting ) {
+					if ( $this->is_choice_valid( $choice, $field_setting ) ) {
 						return; // Choice is valid
 					}
 				}
@@ -2929,12 +2929,7 @@ abstract class GFAddOn {
 		$selected = 0;
 
 		foreach ( $field['choices'] as $choice ) {
-			if ( ! isset( $settings[ $choice[ 'name' ] ] ) ) {
-				$this->set_field_error( $field, esc_html__( 'Invalid value', 'gravityforms' ) );
-				return;
-			}
-
-			$value = $settings[ $choice[ 'name' ] ];
+			$value = $this->get_setting( $choice['name'], '', $settings );
 			if ( ! in_array( $value, array( '1', '0' ) ) ) {
 				$this->set_field_error( $field, esc_html__( 'Invalid value', 'gravityforms' ) );
 				return;
@@ -2974,8 +2969,16 @@ abstract class GFAddOn {
 
 		if ( $select_value != 'gf_custom' ) {
 			foreach( $field['choices'] as $choice ) {
-				if ( $choice['value'] == $select_value ) {
-					return;
+				if ( isset( $choice['choices'] ) ) {
+					foreach ( $choice['choices'] as $optgroup_choice ) {
+						if ( $this->is_choice_valid( $optgroup_choice, $select_value ) ) {
+							return;
+						}
+					}
+				} else {
+					if ( $this->is_choice_valid( $choice, $select_value ) ) {
+						return;
+					}
 				}
 			}
 			$this->set_field_error( $field, esc_html__( 'Invalid value', 'gravityforms' ) );
@@ -3021,6 +3024,20 @@ abstract class GFAddOn {
 
 		$this->validate_checkbox_settings( $checkbox_field, $settings );
 		$this->validate_select_settings( $select_field, $settings );
+	}
+
+	/**
+	 * Helper to determine if the current choice is a match for the submitted field value.
+	 *
+	 * @param array $choice The choice properties.
+	 * @param string|array $value The submitted field value.
+	 *
+	 * @return bool
+	 */
+	public function is_choice_valid( $choice, $value ) {
+		$choice_value = isset( $choice['value'] ) ? $choice['value'] : $choice['label'];
+
+		return is_array( $value ) ? in_array( $choice_value, $value ) : $choice_value == $value;
 	}
 
 	/**

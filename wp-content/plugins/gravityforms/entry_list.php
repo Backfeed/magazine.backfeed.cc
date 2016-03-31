@@ -8,12 +8,6 @@ class GFEntryList {
 
 	public static function all_entries_page() {
 
-
-		/**
-		 * Todo: gform_entry_apply_button filter
-		 * todo: confirmation messages
-		 */
-
 		if ( ! GFCommon::ensure_wp_version() ) {
 			return;
 		}
@@ -54,6 +48,148 @@ class GFEntryList {
 		}
 	}
 
+	/**
+	 * Returns the default filter for the form ID specified in the URL. If no form ID is specified then the first form is used.
+	 * @since 2.0
+	 * @return string
+	 */
+	public static function get_default_filter() {
+
+		$forms   = GFFormsModel::get_forms( null, 'title' );
+		$form_id = rgget( 'id' );
+
+		if ( sizeof( $forms ) == 0 ) {
+			return '';
+		} else {
+			if ( empty( $form_id ) ) {
+				$form_id = $forms[0]->id;
+			}
+		}
+
+		$form = GFAPI::get_form( $form_id );
+
+		$filters = self::get_filter_links( $form, false );
+
+		$option_values = self::get_screen_options_values();
+
+		// If the filter is not available for the form then use 'all'
+		$selected_filter = 'all';
+		foreach ( $filters as $filter ) {
+			if ( $option_values['default_filter'] == $filter['id'] ) {
+				$selected_filter = $option_values['default_filter'];
+				break;
+			}
+		}
+
+		return $selected_filter;
+	}
+
+	/**
+	 * Returns the markup for the screen options.
+	 *
+	 * @since 2.0
+	 *
+	 * @param $status
+	 * @param $args
+	 *
+	 * @return string
+	 */
+	public static function get_screen_options_markup( $status, $args ) {
+
+		$return = $status;
+		if ( ! GFForms::get_page() == 'entry_list' ) {
+			return $return;
+		}
+
+		$screen_options = self::get_screen_options_values();
+
+		$per_page = $screen_options['per_page'];
+
+		$forms   = GFFormsModel::get_forms( null, 'title' );
+		$form_id = rgget( 'id' );
+
+		if ( sizeof( $forms ) == 0 ) {
+			return '';
+		} else {
+			if ( empty( $form_id ) ) {
+				$form_id = $forms[0]->id;
+			}
+		}
+
+		$form = GFAPI::get_form( $form_id );
+
+		$filters = self::get_filter_links( $form, false );
+
+		$option_values = self::get_screen_options_values();
+
+		// If the filter is not available for the form then use 'all'
+		$selected_filter = 'all';
+		foreach ( $filters as $filter ) {
+			if ( $option_values['default_filter'] == $filter['id'] ) {
+				$selected_filter = $option_values['default_filter'];
+				break;
+			}
+		}
+
+		$radios_arr = array();
+		foreach ( $filters as $filter ) {
+			$id           = esc_attr( $filter['id'] );
+			$label        = esc_attr( $filter['label'] );
+			$checked      = checked( $filter['id'], $selected_filter, false );
+			$radios_arr[] = sprintf( '<input type="radio" name="gform_default_filter" value="%s" id="gform_default_filter_%s" %s /><label for="gform_default_filter_%s">%s</label>', $id, $id, $checked, $id, $label );
+		}
+
+		$radios_str = join( "\n", $radios_arr );
+
+		$filter_title  = esc_html__( 'Default Filter', 'gravityforms' );
+		$pagination_title = esc_html__( 'Pagination', 'gravityforms' );
+		$entries_label = esc_html__( 'Number of entries per page:', 'gravityforms' );
+
+		$button = get_submit_button( esc_html__( 'Apply', 'gravityforms' ), 'button button-primary', 'screen-options-apply', false );
+		$return .= "
+			<fieldset class='screen-options'>
+            <legend>{$filter_title}</legend>
+            <div>
+				{$radios_str}
+            </div>
+            </fieldset>
+            <fieldset class='screen-options'>
+			<h5>{$pagination_title}</h5>
+
+            	<label for='gform_per_page%s'>{$entries_label}</label>
+            	<input type='number' step='1' min='1' max='100' class='screen-per-page' name='gform_per_page'
+					id='gform_per_page' maxlength='3' value='{$per_page}' />
+            	<input type='hidden' name='wp_screen_options[option]' value='gform_entries_screen_options' />
+            	<input type='hidden' name='wp_screen_options[value]' value='yes' />
+			</fieldset>
+			<p class='submit'>
+			$button
+			</p>";
+		return $return;
+	}
+
+	/**
+	 * Returns the values for the user-specific screen options. If not saved by the current user, the default values are returned.
+	 *
+	 * @since 2.0
+	 * @return array
+	 */
+	public static function get_screen_options_values() {
+		$default_values = array(
+			'per_page'       => 20,
+			'default_filter' => 'all',
+		);
+
+		$option_values = get_user_option( 'gform_entries_screen_options' );
+
+		if ( empty( $option_values ) ) {
+			$option_values = array();
+		}
+		$option_values = array_merge( $default_values, $option_values );
+
+		return $option_values;
+	}
+
 	public static function leads_page( $form_id ) {
 		global $wpdb;
 
@@ -64,7 +200,7 @@ class GFEntryList {
 
 		$form = GFFormsModel::get_form_meta( $form_id );
 
-		$table = new GF_Entry_List( array( 'form_id' => $form_id, 'form' => $form ) );
+		$table = new GF_Entry_List_Table( array( 'form_id' => $form_id, 'form' => $form ) );
 		$table->prepare_items();
 		$table->output_styles();
 		$table->output_scripts();
@@ -275,17 +411,53 @@ class GFEntryList {
 	}
 }
 
-final class GF_Entry_List extends WP_List_Table {
+/**
+ * Class GF_Entry_List_Table
+ *
+ * @since 2.0
+ */
+final class GF_Entry_List_Table extends WP_List_Table {
+
+	/**
+	 * The current filter e.g. trash, spam, unread
+	 *
+	 * @var string
+	 */
 	public $filter = '';
 
+	/**
+	 * The name of the primary column. The primary column will not get collapsed on narrower displays.
+	 *
+	 * @var null|string
+	 */
 	public $primary_column_name = null;
 
+	/**
+	 * The locking mechanism for the entry list.
+	 *
+	 * @var GFEntryLocking
+	 */
 	public $locking_info;
 
+	/**
+	 * The Form array.
+	 *
+	 * @var array
+	 */
 	private $_form;
 
+	/**
+	 * Tracks the cuurent row during output.
+	 *
+	 * @var int
+	 */
 	public $row_index = 0;
 
+	/**
+	 * GF_Entry_List constructor.
+	 *
+	 * @param array $args
+	 */
 	public function __construct( $args = array() ) {
 		$this->_form = isset( $args['form'] ) ?  $args['form'] : null;
 		if ( ! isset( $this->_form ) ) {
@@ -310,6 +482,9 @@ final class GF_Entry_List extends WP_List_Table {
 		$this->locking_info = new GFEntryLocking();
 	}
 
+	/**
+	 * Set the hidden, sortable and primary columns.
+	 */
 	public function set_columns() {
 		$columns               = $this->get_columns();
 		$hidden                = array();
@@ -318,19 +493,39 @@ final class GF_Entry_List extends WP_List_Table {
 		$this->_column_headers = array( $columns, $hidden, $sortable, $primary );
 	}
 
+	/**
+	 * Returns the curent filter.
+	 *
+	 * @return string
+	 */
 	public function get_filter() {
 		return $this->filter;
 	}
 
+	/**
+	 * Returns the current form array.
+	 *
+	 * @return array
+	 */
 	public function get_form() {
 		return $this->_form;
 	}
 
+	/**
+	 * Returns the current form ID.
+	 *
+	 * @return int
+	 */
 	public function get_form_id() {
 		$form_id = isset( $this->_form ) ? $this->_form['id'] : rgget( 'id' );
 		return absint( $form_id );
 	}
 
+	/**
+	 * Returns an associative array of views.
+	 *
+	 * @return array
+	 */
 	function get_views() {
 		$views = array();
 
@@ -357,77 +552,23 @@ final class GF_Entry_List extends WP_List_Table {
 		return $views;
 	}
 
+	/**
+	 * Returns the array of filter links.
+	 *
+	 * @param bool $include_counts
+	 *
+	 * @return array|mixed|void
+	 */
 	public function get_filter_links( $include_counts = true ) {
 
 		$form = $this->get_form();
 
-		$form_id = absint( $form['id'] );
-
-		$summary = $include_counts ? GFFormsModel::get_form_counts( $form_id ) : array();
-
-		$active_entry_count = rgar( $summary, 'total' );
-		$unread_count      = rgar( $summary, 'unread' );
-		$starred_count     = rgar( $summary, 'starred' );
-		$spam_count        = rgar( $summary,'spam' );
-		$trash_count       = rgar( $summary,'trash' );
-
-		$filter_links = array(
-			array(
-				'id' => 'all',
-				'field_filters' => array(),
-				'count' => $active_entry_count,
-				'label'   => esc_html_x( 'All', 'Entry List', 'gravityforms' ),
-			),
-			array(
-				'id' => 'unread',
-				'field_filters' => array(
-					array( 'key' => 'is_read', 'value' => false ),
-				),
-				'count' => $unread_count,
-				'label'   => esc_html_x( 'Unread', 'Entry List', 'gravityforms' ),
-			),
-			array(
-				'id' => 'star',
-				'field_filters' => array(
-					array( 'key' => 'is_starred', 'value' => true ),
-				),
-				'count' => $starred_count,
-				'label'   => esc_html_x( 'Starred', 'Entry List', 'gravityforms' ),
-			),
-		);
-		if ( GFCommon::spam_enabled( $form_id ) ) {
-			$filter_links[] = array(
-				'id' => 'spam',
-				'field_filters' => array(),
-				'count' => $spam_count,
-				'label'   => esc_html__( 'Spam', 'gravityforms' ),
-			);
-		}
-		$filter_links[] = array(
-			'id' => 'trash',
-			'field_filters' => array(),
-			'count' => $trash_count,
-			'label'   => esc_html__( 'Trash', 'gravityforms' ),
-		);
-
-		/**
-		 * ---Provisional and may be subject to change---
-		 *
-		 * Allow the row of filter links to be modified.
-		 *
-		 * Array elements:
-		 * selected - bool
-		 * filter   - string
-		 * label    - string
-		 *
-		 * @param array $filter_links The filter links.
-		 *
-		 */
-		$filter_links = apply_filters( 'gform_filter_links_entry_list', $filter_links, $form, $include_counts );
-
-		return $filter_links;
+		return GFEntryList::get_filter_links( $form, $include_counts );
 	}
 
+	/**
+	 * Performs the search and prepares the entries for display.
+	 */
 	function prepare_items() {
 
 		$this->process_action();
@@ -448,7 +589,8 @@ final class GF_Entry_List extends WP_List_Table {
 
 		$is_numeric      = $sort_field_meta instanceof GF_FIeld ? $sort_field_meta->type == 'number' : $sort_field_meta['type'];
 
-		$page_size = $this->get_items_per_page( 'gform_entries_per_page', 20 );
+		$screen_options = get_user_option( 'gform_entries_screen_options' );
+		$page_size = isset( $screen_options['per_page'] ) ? absint( $screen_options['per_page'] ) : 20;
 
 		$page_size        = gf_apply_filters( array( 'gform_entry_page_size', $form_id ), $page_size, $form_id );
 		$first_item_index = $page_index * $page_size;
@@ -472,6 +614,11 @@ final class GF_Entry_List extends WP_List_Table {
 		$this->items = $entries;
 	}
 
+	/**
+	 * Returns the array of search criteria.
+	 *
+	 * @return array
+	 */
 	function get_search_criteria() {
 
 		$search_criteria = array();
@@ -537,6 +684,11 @@ final class GF_Entry_List extends WP_List_Table {
 		return $search_criteria;
 	}
 
+	/**
+	 * Returns the associative array of columns for the table.
+	 *
+	 * @return array
+	 */
 	function get_columns() {
 		$table_columns = array(
 			'cb' => '<input type="checkbox" />',
@@ -555,6 +707,11 @@ final class GF_Entry_List extends WP_List_Table {
 		return $table_columns;
 	}
 
+	/**
+	 * Returns the associative array of sortable columns for the table.
+	 *
+	 * @return array
+	 */
 	function get_sortable_columns() {
 		$form_id = $this->get_form_id();
 		$columns = GFFormsModel::get_grid_columns( $form_id, true );
@@ -565,6 +722,11 @@ final class GF_Entry_List extends WP_List_Table {
 		return $table_columns;
 	}
 
+	/**
+	 * Displays the checkbox column.
+	 *
+	 * @param array $entry
+	 */
 	function column_cb( $entry ) {
 		$entry_id = $entry['id'];
 		?>
@@ -574,10 +736,25 @@ final class GF_Entry_List extends WP_List_Table {
 		$this->locking_info->lock_indicator();
 	}
 
+	/**
+	 * Displays an empty cell for the column selector column.
+	 *
+	 * @param $entry
+	 *
+	 * @return string
+	 */
 	function column_column_selector( $entry ) {
 		return '';
 	}
 
+	/**
+	 * Displays the is_starred row for the given entry.
+	 *
+	 * @param $entry
+	 * @param $classes
+	 * @param $data
+	 * @param $primary
+	 */
 	function _column_is_starred( $entry, $classes, $data, $primary ) {
 		echo '<th scope="row" class="manage-column column-is_starred">';
 		if ( $this->filter !== 'trash' ) {
@@ -588,6 +765,12 @@ final class GF_Entry_List extends WP_List_Table {
 		echo '</th>';
 	}
 
+	/**
+	 * Displays the entry value.
+	 *
+	 * @param object $entry
+	 * @param string $field_id
+	 */
 	function column_default( $entry, $field_id ) {
 		$field_id = (string) str_replace( 'field_id-', '', $field_id );
 		$form = $this->get_form();
@@ -648,24 +831,31 @@ final class GF_Entry_List extends WP_List_Table {
 		echo $value;
 	}
 
+	/**
+	 * Returns the entry detail query string.
+	 *
+	 * @param $entry
+	 *
+	 * @return string
+	 */
 	function get_detail_query_string( $entry ) {
 		$form_id = $this->get_form_id();
 
-		$search     = stripslashes( rgget( 's' ) );
+		$search = stripslashes( rgget( 's' ) );
 
 		$search_field_id = rgget( 'field_id' );
 		$search_operator = rgget( 'operator' );
 
 		$orderby = $this->get_order();
-		$order = $this->get_orderby();
+		$order   = $this->get_orderby();
 
-		$search_qs                  = empty( $search ) ? '' : '&s=' . esc_attr( urlencode( $search ) );
-		$orderby_qs                    = empty( $orderby ) ? '' : '&orderby=' . esc_attr( $orderby );
-		$order_qs                     = empty( $order ) ? '' : '&order=' . esc_attr( $order );
-		$filter_qs                  = '&filter=' . esc_attr( $this->filter );
+		$search_qs  = empty( $search ) ? '' : '&s=' . esc_attr( urlencode( $search ) );
+		$orderby_qs = empty( $orderby ) ? '' : '&orderby=' . esc_attr( $orderby );
+		$order_qs   = empty( $order ) ? '' : '&order=' . esc_attr( $order );
+		$filter_qs  = '&filter=' . esc_attr( $this->filter );
 
-		$page_size = $this->get_pagination_arg( 'per_page' );
-		$page_num = $this->get_pagenum();
+		$page_size  = $this->get_pagination_arg( 'per_page' );
+		$page_num   = $this->get_pagenum();
 		$page_index = $page_num - 1;
 
 		$position = ( $page_size * $page_index ) + $this->row_index;
@@ -674,14 +864,24 @@ final class GF_Entry_List extends WP_List_Table {
 		return $edit_url;
 	}
 
+	/**
+	 * Returns the entry detail url.
+	 *
+	 * @param $entry
+	 *
+	 * @return string|void
+	 */
 	function get_detail_url( $entry ) {
 		$query_string = $this->get_detail_query_string( $entry );
 		$url = admin_url( 'admin.php?' . $query_string );
 		return $url;
 	}
 
-	function column_selector( $entry, $column ) { }
-
+	/**
+	 * Displays a single row.
+	 *
+	 * @param array $entry
+	 */
 	public function single_row( $entry ) {
 		$class = 'entry_row';
 		$class .= $entry['is_read'] ? '' : ' entry_unread';
@@ -693,6 +893,9 @@ final class GF_Entry_List extends WP_List_Table {
 		echo '</tr>';
 	}
 
+	/**
+	 * Displays the no items message according to the context.
+	 */
 	function no_items() {
 
 		switch ( $this->filter ) {
@@ -719,6 +922,15 @@ final class GF_Entry_List extends WP_List_Table {
 		echo $message;
 	}
 
+	/**
+	 * Displays the row action if the column if primary.
+	 *
+	 * @param array $entry
+	 * @param string $column_name
+	 * @param string $primary
+	 *
+	 * @return string
+	 */
 	protected function handle_row_actions( $entry, $column_name, $primary ) {
 
 		if ( $primary !== $column_name ) {
@@ -841,6 +1053,11 @@ final class GF_Entry_List extends WP_List_Table {
 		return $column_name === $primary ? '<button type="button" class="toggle-row"><span class="screen-reader-text">' . __( 'Show more details' ) . '</span></button>' : '';
 	}
 
+	/**
+	 * Returns the name of the primary column.
+	 *
+	 * @return string
+	 */
 	function get_primary_column_name() {
 		if ( ! isset( $this->primary_column_name ) ) {
 			$columns = $this->get_columns();
@@ -852,6 +1069,11 @@ final class GF_Entry_List extends WP_List_Table {
 		return $this->primary_column_name;
 	}
 
+	/**
+	 * Returns the options for the bulk actions menu.
+	 *
+	 * @return array
+	 */
 	function get_bulk_actions() {
 		$actions = array();
 
@@ -883,6 +1105,11 @@ final class GF_Entry_List extends WP_List_Table {
 		return $actions;
 	}
 
+	/**
+	 * Displays the bulk actions.
+	 *
+	 * @param string $which
+	 */
 	function bulk_actions( $which = '' ) {
 		parent::bulk_actions( $which );
 
@@ -899,6 +1126,9 @@ final class GF_Entry_List extends WP_List_Table {
 		}
 	}
 
+	/**
+	 * Processes a bulk or single action.
+	 */
 	function process_action() {
 
 		$single_action = rgpost( 'single_action' );
@@ -1008,6 +1238,11 @@ final class GF_Entry_List extends WP_List_Table {
 		};
 	}
 
+	/**
+	 * Displays additional fields required by FORM and displays the modals.
+	 *
+	 * @param string $which
+	 */
 	function extra_tablenav( $which ) {
 		if ( $which !== 'top' ) {
 			return;
@@ -1022,36 +1257,19 @@ final class GF_Entry_List extends WP_List_Table {
 		$this->modals();
 	}
 
+	/**
+	 * Output the styles
+	 */
 	function output_styles() {
 		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
 		?>
-		<link rel="stylesheet" href="<?php echo GFCommon::get_base_url() ?>/css/admin<?php echo $min; ?>.css" type="text/css" />
-		<style>
-			/*#TB_window { height: 400px !important; }
-			#TB_ajaxContent[style] { height: 370px !important; }*/
-			.entry_unread a, .entry_unread td {
-				font-weight: bold;
-			}
-
-			.entry_spam_trash a, .entry_spam_trash td {
-				font-weight: normal;
-			}
-
-			.row-actions a {
-				font-weight: normal;
-			}
-
-			.entry_nowrap {
-				overflow: hidden;
-				white-space: nowrap;
-			}
-			.gform-filter-operator {
-				width: 100px
-			}
-		</style>
+		<link rel="stylesheet" href="<?php echo GFCommon::get_base_url() ?>/css/admin<?php echo $min; ?>.css?ver=<?php echo GFForms::$version ?>" type="text/css" />
 		<?php
 	}
 
+	/**
+	 * Output scripts
+	 */
 	function output_scripts() {
 
 		$form_id = $this->get_form_id();
@@ -1077,9 +1295,6 @@ final class GF_Entry_List extends WP_List_Table {
 				),
 			),
 		);
-
-		$per_page = $this->get_pagination_arg( 'per_page' );
-		$total = $this->get_pagination_arg( 'total_items' );
 
 		?>
 
@@ -1249,7 +1464,6 @@ final class GF_Entry_List extends WP_List_Table {
 			}
 
 			function BulkResendNotifications() {
-
 
 				var selectedNotifications = new Array();
 				jQuery(".gform_notifications:checked").each(function () {
@@ -1558,6 +1772,9 @@ final class GF_Entry_List extends WP_List_Table {
 
 	}
 
+	/**
+	 * Output modals.
+	 */
 	public function modals() {
 		$form = $this->get_form();
 		?>

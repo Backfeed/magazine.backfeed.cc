@@ -403,7 +403,40 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 * @return string
 	 */
 	public function get_value_merge_tag( $value, $input_id, $entry, $form, $modifier, $raw_value, $url_encode, $esc_html, $format, $nl2br ) {
-		return $value;
+
+		if ( $format === 'html' ) {
+			$form_id = absint( $form['id'] );
+			$allowable_tags = $this->get_allowable_tags( $form_id );
+
+			if ( $allowable_tags === false ) {
+				// The value is unsafe so encode the value.
+				if ( is_array( $value ) ) {
+					foreach ( $value as &$v ) {
+						$v = esc_html( $v );
+					}
+					$return = $value;
+				} else {
+					$return = esc_html( $value );
+				}
+			} else {
+				// The value contains HTML but the value was sanitized before saving.
+				$return = $raw_value;
+			}
+
+			if ( $nl2br ) {
+				if ( is_array( $return ) ) {
+					foreach ( $return as &$r ) {
+						$r = nl2br( $r );
+					}
+				} else {
+					$return = nl2br( $return );
+				}
+			}
+		} else {
+			$return = $value;
+		}
+
+		return $return;
 	}
 
 	/**
@@ -419,7 +452,17 @@ class GF_Field extends stdClass implements ArrayAccess {
 	 * @return string
 	 */
 	public function get_value_entry_list( $value, $entry, $field_id, $columns, $form ) {
-		return esc_html( $value );
+		$allowable_tags = $this->get_allowable_tags( $form['id'] );
+
+		if ( $allowable_tags === false ) {
+			// The value is unsafe so encode the value.
+			$return = esc_html( $value );
+		} else {
+			// The value contains HTML but the value was sanitized before saving.
+			$return = $value;
+		}
+
+		return $return;
 	}
 
 	/**
@@ -441,12 +484,23 @@ class GF_Field extends stdClass implements ArrayAccess {
 			return $value;
 		}
 
-		if ( $format == 'html' ) {
-			$value = esc_html( $value );
+		if ( $format === 'html' ) {
 			$value = nl2br( $value );
+
+			$allowable_tags = $this->get_allowable_tags();
+
+			if ( $allowable_tags === false ) {
+				// The value is unsafe so encode the value.
+				$return = esc_html( $value );
+			} else {
+				// The value contains HTML but the value was sanitized before saving.
+				$return = $value;
+			}
+		} else {
+			$return = $value;
 		}
 
-		return $value;
+		return $return;
 	}
 
 	/**
@@ -840,10 +894,9 @@ class GF_Field extends stdClass implements ArrayAccess {
 	}
 
 	/**
-	 * Override this method to implement the appropriate sanitization specific to the field type before the value is saved.
+	 * Fields should override this method to implement the appropriate sanitization specific to the field type before the value is saved.
 	 *
-	 * This base method provides a generic sanitization similar to wp_kses but values are not encoded.
-	 * Scripts are stripped out leaving allowed tags if HTMl is allowed.
+	 * This base method will only strip HTML tags if the field or the gform_allowable_tags filter allows HTML.
 	 *
 	 * @param string $value The field value to be processed.
 	 * @param int $form_id The ID of the form currently being processed.
@@ -856,21 +909,28 @@ class GF_Field extends stdClass implements ArrayAccess {
 			return '';
 		}
 
-		//allow HTML for certain field types
-		$allow_html = $this->allow_html();
+		$allowable_tags = $this->get_allowable_tags( $form_id );
 
-		$allowable_tags = gf_apply_filters( array( 'gform_allowable_tags', $form_id ), $allow_html, $this, $form_id );
+		if ( $allowable_tags === true ) {
 
-		if ( $allowable_tags !== true ) {
-			$value = strip_tags( $value, $allowable_tags );
+			// HTML is expected. Output will not be encoded so the value will stripped of scripts and some tags and encoded.
+			$return = wp_kses_post( $value );
+
+		} elseif ( $allowable_tags === false ) {
+
+			// HTML is not expected. Output will be encoded.
+			$return = $value;
+
+		} else {
+
+			// Some HTML is expected. Output will not be encoded so the value will stripped of scripts and some tags and encoded.
+			$value = wp_kses_post( $value );
+
+			// Strip all tags except those allowed by the gform_allowable_tags filter.
+			$return = strip_tags( $value, $allowable_tags );
 		}
 
-		$allowed_protocols = wp_allowed_protocols();
-		$value = wp_kses_no_null( $value, array( 'slash_zero' => 'keep' ) );
-		$value = wp_kses_hook( $value, 'post', $allowed_protocols );
-		$value = wp_kses_split( $value, 'post', $allowed_protocols );
-
-		return $value;
+		return $return;
 	}
 
 	/**
@@ -1030,7 +1090,50 @@ class GF_Field extends stdClass implements ArrayAccess {
 
 		return $logic;
 	}
+
+	/**
+	 * Applies wp_kses() if the current user doesn't have the unfiltered_html capability
+	 *
+	 * @param $html
+	 * @param string $allowed_html
+	 * @param array $allowed_protocols
+	 *
+	 * @return string
+	 */
 	public function maybe_wp_kses( $html, $allowed_html = 'post', $allowed_protocols = array() ) {
 		return GFCommon::maybe_wp_kses( $html, $allowed_html, $allowed_protocols );
+	}
+
+	/**
+	 * Returns the allowed HTML tags for the field value.
+	 *
+	 * FALSE disallows HTML tags.
+	 * TRUE allows all HTML tags allowed by wp_kses_post().
+	 * A string of HTML tags allowed. e.g. '<p><a><strong><em>'
+	 *
+	 * @param null|int $form_id If not specified the form_id field property is used.
+	 *
+	 * @return mixed|void TRUE, FALSE or a string of tags.
+	 */
+	public function get_allowable_tags( $form_id = null ) {
+		if ( empty( $form_id ) ) {
+			$form_id = $this->form_id;
+		}
+		$form_id = absint( $form_id );
+		$allow_html = $this->allow_html();
+
+		/**
+		 * Allows the list of tags allowed in the field value to be modified.
+		 * Return FALSE to disallow HTML tags.
+		 * Return TRUE to allow all HTML tags allowed by wp_kses_post().
+		 * Return a string of HTML tags allowed. e.g. '<p><a><strong><em>'
+		 *
+		 * @param bool $allow_html
+		 * @param GF_Field $this
+		 * @param int $form_id
+		 */
+		$allowable_tags = apply_filters( 'gform_allowable_tags', $allow_html, $this, $form_id );
+		$allowable_tags = apply_filters( "gform_allowable_tags_{$form_id}", $allowable_tags, $this, $form_id );
+		return $allowable_tags;
 	}
 }

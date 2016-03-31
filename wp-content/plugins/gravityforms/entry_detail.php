@@ -154,6 +154,8 @@ class GFEntryDetail {
 
 			return;
 		}
+		
+		self::add_meta_boxes();
 
 		RGFormsModel::update_lead_property( $lead['id'], 'is_read', 1 );
 
@@ -283,7 +285,7 @@ class GFEntryDetail {
 		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
 
 		?>
-		<link rel="stylesheet" href="<?php echo GFCommon::get_base_url() ?>/css/admin<?php echo $min; ?>.css" />
+		<link rel="stylesheet" href="<?php echo GFCommon::get_base_url() ?>/css/admin<?php echo $min; ?>.css?ver=<?php echo GFForms::$version ?>" />
 		<script type="text/javascript">
 
 			jQuery(document).ready(function () {
@@ -487,18 +489,17 @@ class GFEntryDetail {
 							?>
 						</div>
 
-
-						<?php
-						/**
-						 * Fires before the entry detail sidebar is generated
-						 *
-						 * @param array $form The Form object
-						 * @param array $lead The Entry object
-						 */
-						do_action( 'gform_entry_detail_sidebar_before', $form, $lead );
-						?>
-
 						<div id="postbox-container-1" class="postbox-container">
+
+							<?php
+							/**
+							 * Fires before the entry detail sidebar is generated
+							 *
+							 * @param array $form The Form object
+							 * @param array $lead The Entry object
+							 */
+							do_action( 'gform_entry_detail_sidebar_before', $form, $lead );
+							?>
 							<?php do_meta_boxes( 'forms_page_gf_entries', 'side', array( 'form' => $form, 'entry' => $lead, 'mode' => $mode ) ); ?>
 
 							<?php
@@ -521,6 +522,15 @@ class GFEntryDetail {
 								<?php } ?>
 							</div>
 							<!-- end print button -->
+							<?php
+							/**
+							 * Fires after the entry detail sidebar information.
+							 *
+							 * @param array $form The Form object
+							 * @param array $lead The Entry object
+							 */
+							do_action( 'gform_entry_detail_sidebar_after', $form, $lead );
+							?>
 						</div>
 
 						<?php
@@ -534,31 +544,19 @@ class GFEntryDetail {
 							self::payment_details_box( $lead, $form );
 						}
 						?>
-
-						<?php
-						/**
-						 * Fires after the entry detail sidebar information.
-						 *
-						 * @param array $form The Form object
-						 * @param array $lead The Entry object
-						 */
-						do_action( 'gform_entry_detail_sidebar_after', $form, $lead );
-						?>
-
-
 						<div id="postbox-container-2" class="postbox-container">
 							<?php do_meta_boxes( 'forms_page_gf_entries', 'normal', array( 'form' => $form, 'entry' => $lead, 'mode' => $mode ) ); ?>
-						</div>
-						<?php
+							<?php
 
-						/**
-						 * Fires after the entry detail content is displayed
-						 *
-						 * @param array $form The Form object
-						 * @param array $lead The Entry object
-						 */
-						do_action( 'gform_entry_detail_content_after', $form, $lead );
-						?>
+							/**
+							 * Fires after the entry detail content is displayed
+							 *
+							 * @param array $form The Form object
+							 * @param array $lead The Entry object
+							 */
+							do_action( 'gform_entry_detail_content_after', $form, $lead );
+							?>
+						</div>
 					</div>
 				</div>
 			</div>

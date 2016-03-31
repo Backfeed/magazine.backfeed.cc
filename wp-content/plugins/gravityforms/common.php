@@ -3712,6 +3712,7 @@ class GFCommon {
 		$gf_vars['conditionalLogicDependency']           = __( "This form contains conditional logic dependent upon this field. Are you sure you want to delete this field? 'OK' to delete, 'Cancel' to abort.", 'gravityforms' );
 		$gf_vars['conditionalLogicDependencyChoice']     = __( "This form contains conditional logic dependent upon this choice. Are you sure you want to delete this choice? 'OK' to delete, 'Cancel' to abort.", 'gravityforms' );
 		$gf_vars['conditionalLogicDependencyChoiceEdit'] = __( "This form contains conditional logic dependent upon this choice. Are you sure you want to modify this choice? 'OK' to delete, 'Cancel' to abort.", 'gravityforms' );
+		$gf_vars['conditionalLogicDependencyAdminOnly'] = __( "This form contains conditional logic dependent upon this field. Are you sure you want to mark this field as Admin Only? 'OK' to confirm, 'Cancel' to abort.", 'gravityforms' );
 
 		$gf_vars['mergeTagsTooltip'] = '<h6>' . esc_html__( 'Merge Tags', 'gravityforms' ) . '</h6>' . esc_html__( 'Merge tags allow you to dynamically populate submitted field values in your form content wherever this merge tag icon is present.', 'gravityforms' );
 
@@ -3836,7 +3837,7 @@ class GFCommon {
 		$exclude_types = array( 'rank', 'page', 'html' );
 
 		$operators_by_input_type = array(
-			'default'     => array( 'is', 'isnot', '>', '<', ),
+			'default'     => array( 'is', 'isnot', '>', '<' ),
 			'name'        => array( 'is', 'isnot', '>', '<', 'contains' ),
 			'address'     => array( 'is', 'isnot', '>', '<', 'contains' ),
 			'text'        => array( 'is', 'isnot', '>', '<', 'contains' ),
@@ -4499,12 +4500,12 @@ class GFCommon {
 	 *
 	 * @return string
 	 */
-	public static function sanitize_confirmation_message( $confirmation_message ) {
+	public static function maybe_sanitize_confirmation_message( $confirmation_message ) {
 		// Default during deprecation period = false
-		$sanitize_confirmation_nessage = true;
+		$sanitize_confirmation_nessage = false;
 
 		/**
-		 * Allows sanitization to be turned off for the confirmation message. Not recommended. Only turn off if you're sure you know what you're doing.
+		 * Allows sanitization to be turned on or off for the confirmation message. Only turn off if you're sure you know what you're doing.
 		 *
 		 * @since 2.0.0
 		 *
