@@ -65,6 +65,8 @@
 }
 
 .gform_wrapper {
+  margin-bottom: 0 !important;
+
   .gfield_description {
     font-size: 13px;
     color: grey;
@@ -134,8 +136,7 @@ body.home h1.post-title {
     width: 400px;
   }
 
-  #menu-main-menu #menu-item-396,
-  #menu-main-menu #menu-item-405 {
+  #menu-main-menu .alternate-hierarchy {
     float: right;
   }
 

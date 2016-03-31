@@ -4,6 +4,7 @@
 ssh ore@159.203.172.115 << REMOTE
 	cd /var/www/html
 	git pull
+    git submodule update --recursive
 
 	cd /var/www/html/wp-content/plugins/d-magazine
 	npm install

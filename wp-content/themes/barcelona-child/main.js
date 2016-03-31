@@ -28,9 +28,10 @@
 
 	var featuredSection = $('.backfeed-featured-section');
 	if (featuredSection) {
+		if ('hideFeaturedSection' in localStorage) featuredSection.hide();
 		featuredSection.find('.bf-fa-close').on('click', function(e) {
 			featuredSection.slideUp();
+			localStorage.hideFeaturedSection = '';
 		});
 	}
 }(jQuery));
-
