@@ -1,4 +1,6 @@
 <?php
+use Backfeed\Api;
+
 remove_action('wp_ajax_barcelona_pb', 'barcelona_get_module_posts');
 remove_action('wp_ajax_nopriv_barcelona_pb', 'barcelona_get_module_posts');
 add_action('wp_ajax_barcelona_pb', 'backfeed_get_module_posts');
@@ -15,6 +17,10 @@ function backfeed_get_module_posts() {
 
         $paged = (array_key_exists('barcelona_paged', $_POST) && is_numeric($_POST['barcelona_paged'])) ? $_POST['barcelona_paged'] : 1;
 
+        $contributions = Api::get_all_contributions();
+        usort($contributions, function($a, $b) { return $b->score - $a->score; });
+        $contribution_ids = array_column($contributions, 'id');
+
         $barcelona_q = new WP_Query([
             'posts_per_page'        => 8,
             'post_type'             => 'post',
@@ -22,8 +28,13 @@ function backfeed_get_module_posts() {
             'ignore_sticky_posts'   => true,
             'no_found_rows'         => false,
             'paged'                 => $paged,
-            //'orderby'               => 'meta_value_num',
-            //'meta_key'              => 'backfeed_contribution_score'
+            'meta_query' => [
+                [
+                    'key' => 'backfeed_contribution_id',
+                    'value' => $contribution_ids,
+                    'compare' => 'IN'
+                ]
+            ]
         ]);
 
         include(locate_template('bunch-of-articles.php'));

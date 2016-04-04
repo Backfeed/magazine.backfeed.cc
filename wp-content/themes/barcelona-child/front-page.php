@@ -4,6 +4,8 @@ use Backfeed\Api;
 get_header();
 
 $contributions = Api::get_all_contributions();
+usort($contributions, function($a, $b) { return $b->score - $a->score; });
+$contribution_ids = array_column($contributions, 'id');
 
 $barcelona_q = new WP_Query([
 	'posts_per_page'        => 8,
@@ -12,8 +14,13 @@ $barcelona_q = new WP_Query([
 	'ignore_sticky_posts'   => true,
 	'no_found_rows'         => false,
 	'paged'                 => 1,
-	//'orderby'               => 'meta_value_num',
-	//'meta_key'              => 'backfeed_contribution_score'
+	'meta_query' => [
+		[
+			'key' => 'backfeed_contribution_id',
+			'value' => $contribution_ids,
+			'compare' => 'IN'
+		]
+	]
 ]);
 
 $barcelona_async = false;
