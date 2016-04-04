@@ -21,7 +21,7 @@ add_action('login_footer', function() {
     if ($action == 'register')
         echo '<div class="login-footer">Already a member? <a href="'.esc_url(wp_login_url()).'">Login</a></div>';
     else if ($action == 'login')
-        echo '<div class="login-footer">Not a member? <a href="'.esc_url(wp_registration_url()).'">Register</a></div>';
+        echo '<div class="login-footer">Not a member? <a href="'.esc_url(wp_registration_url()).'">Register</a><br /><a href="'.esc_url(wp_lostpassword_url()).'">Lost your password</a></div>';
 });
 
 add_filter('login_redirect', function() {

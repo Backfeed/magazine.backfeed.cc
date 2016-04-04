@@ -1,5 +1,9 @@
 <?php
+use Backfeed\Api;
+
 get_header();
+
+$contributions = Api::get_all_contributions();
 
 $barcelona_q = new WP_Query([
 	'posts_per_page'        => 8,
