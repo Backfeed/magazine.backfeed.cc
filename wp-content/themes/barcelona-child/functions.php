@@ -1,6 +1,7 @@
 <?php
 require_once('lib/login.php');
 require_once('lib/ajax.php');
+require_once('lib/template-tags.php');
 
 add_action('after_setup_theme', function() {
 	remove_action('wp_head', 'rsd_link'); //removes EditURI/RSD (Really Simple Discovery) link.

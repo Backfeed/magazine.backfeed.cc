@@ -31,7 +31,7 @@ while ($barcelona_q->have_posts()): $barcelona_q->the_post(); ?>
 					<?=esc_html(barcelona_get_excerpt(20))?>
 				</p>
 
-				<?php barcelona_post_meta(['date', 'views', 'likes', 'comments']); ?>
+				<?php backfeed_post_meta(['date', 'score', 'votedrep', 'comments']); ?>
 
 			</div><!-- .post-details -->
 
