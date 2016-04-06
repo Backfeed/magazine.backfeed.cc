@@ -12,7 +12,7 @@ $barcelona_q = new WP_Query([
 	'paged'                 => 1
 ]);
 
-$contributions = Api::get_all_contributions();
+if (isset(Api)) $contributions = Api::get_all_contributions();
 
 if (is_array($contributions)) {
 	usort($contributions, function($a, $b) { return $b->score - $a->score; });

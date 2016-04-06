@@ -122,11 +122,11 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
     
     $barcelona_meta = array(
         'date' => array( 'clock-o', esc_html( get_the_date() ) ),
-        'author' => array( 'user', $barcelona_author_html ),
+        'author' => array( 'user', $barcelona_author_html , get_author_posts_url( $post->post_author ) ),
 //        'views' => array( 'eye', esc_html( barcelona_get_post_views() ) ),
-        'score' => array( 'star', $backfeed_contribution_score ),
+        'score' => array( 'star', $backfeed_contribution_score, '', 'tooltip content' ),
 //        'likes' => array( 'thumbs-up', '<span class="post_vote_up_val">'. esc_html( barcelona_get_post_vote( $post->ID ) ) .'</span>' ),
-        'votedrep' => array( 'users', $backfeed_voted_reputation ),
+        'votedrep' => array( 'users', $backfeed_voted_reputation, '', 'tooltip content' ),
         'comments' => array( 'comments', intval( get_comments_number() ) ),
         'categories' => array( 'bars', $barcelona_categories_html )
     );
