@@ -41,6 +41,10 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
             $barcelona_html .= '<li class="post-comments"><span class="fa fa-comments"></span>'. intval( $post->comment_count ) .'</li>';
         }
 
+        if ( in_array( 'author', $barcelona_opt ) ) {
+            $barcelona_html .= '<li><a href="'. get_author_posts_url( $post->post_author ) .'" rel="author"><span class="fa fa-comments"></span>'. get_the_author_meta( 'display_name', $post->post_author ) .'</a>';
+        }
+
         $barcelona_html .= '</ul>';
 
     }
@@ -55,6 +59,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
 
 /*
  * Featured image
+ * Only changed code next to $barcelona_meta
  */
 function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
 
@@ -112,16 +117,22 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
 
     $barcelona_author_html = '<a href="'. get_author_posts_url( $post->post_author ) .'" rel="author">'. get_the_author_meta( 'display_name', $post->post_author ) .'</a>';
 
+    $backfeed_contribution_score = Backfeed\get_contribution_field($post->ID, 'score');
+    $backfeed_voted_reputation = Backfeed\get_contribution_field($post->ID, 'engagedRepPercentage');
+    
     $barcelona_meta = array(
         'date' => array( 'clock-o', esc_html( get_the_date() ) ),
         'author' => array( 'user', $barcelona_author_html ),
-        'views' => array( 'eye', esc_html( barcelona_get_post_views() ) ),
-        'likes' => array( 'thumbs-up', '<span class="post_vote_up_val">'. esc_html( barcelona_get_post_vote( $post->ID ) ) .'</span>' ),
+//        'views' => array( 'eye', esc_html( barcelona_get_post_views() ) ),
+        'score' => array( 'star', $backfeed_contribution_score ),
+//        'likes' => array( 'thumbs-up', '<span class="post_vote_up_val">'. esc_html( barcelona_get_post_vote( $post->ID ) ) .'</span>' ),
+        'votedrep' => array( 'users', $backfeed_voted_reputation ),
         'comments' => array( 'comments', intval( get_comments_number() ) ),
         'categories' => array( 'bars', $barcelona_categories_html )
     );
 
     $barcelona_post_meta_choices = barcelona_get_option( 'post_meta_choices' );
+    $barcelona_post_meta_choices = ["date", "author", "score", "votedrep", "comments"];
 
     if ( ! is_array( $barcelona_post_meta_choices ) ) {
         $barcelona_post_meta_choices = array();
@@ -137,7 +148,12 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
     if ( ! empty( $barcelona_meta ) ) {
         $barcelona_post_meta = '<ul class="post-meta">';
         foreach ( $barcelona_meta as $k => $v ) {
-            $barcelona_post_meta .= '<li class="post-'. sanitize_html_class( $k ) .'"><span class="fa fa-'. sanitize_html_class( $v[0] ) .'"></span>'. $v[1] .'</li>';
+            $barcelona_post_meta .= '<li class="post-'. sanitize_html_class( $k ) .' backfeed-tooltip">';
+            if (isset($v[2])) $barcelona_post_meta .= '<a href="'. esc_url_raw($v[2]) .'">';
+            if (isset($v[3])) $barcelona_post_meta .= '<div class="backfeed-tooltip-content">'. $v[3] .'</div>';
+            $barcelona_post_meta .= '<span class="fa fa-'. sanitize_html_class( $v[0] ) .'"></span>'. $v[1];
+            if (isset($v[2])) $barcelona_post_meta .= '</a>';
+            $barcelona_post_meta .= '</li>';
         }
         $barcelona_post_meta .= '</ul>';
     }
