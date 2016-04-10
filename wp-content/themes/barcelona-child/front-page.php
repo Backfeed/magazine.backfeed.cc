@@ -1,30 +1,7 @@
 <?php
-use Backfeed\Api;
-
 get_header();
 
-$barcelona_q = new WP_Query([
-	'posts_per_page'        => 8,
-	'post_type'             => 'post',
-	'post_status'           => 'publish',
-	'ignore_sticky_posts'   => false,
-	'no_found_rows'         => false,
-	'paged'                 => 1
-]);
-
-if (isset(Api)) $contributions = Api::get_all_contributions();
-
-if (is_array($contributions)) {
-	usort($contributions, function($a, $b) { return $b->score - $a->score; });
-	$contribution_ids = array_column($contributions, 'id');
-	$barcelona_q->meta_query = [
-		[
-			'key' => 'backfeed_contribution_id',
-			'value' => $contribution_ids,
-			'compare' => 'IN'
-		]
-	];
-}
+if (function_exists('Backfeed\front_page_query')) $barcelona_q = Backfeed\front_page_query();
 
 $barcelona_async = false;
 
