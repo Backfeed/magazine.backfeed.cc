@@ -84,10 +84,8 @@ class GF_Field_Text extends GF_Field {
 				$value = nl2br( $value );
 			}
 
-			$allow_html = $this->allow_html();
-			$form_id = absint( $form['id'] );
-			$allowable_tags = apply_filters( 'gform_allowable_tags', $allow_html, $this, $form_id );
-			$allowable_tags = apply_filters( "gform_allowable_tags_{$form_id}", $allowable_tags, $this, $form_id );
+			$form_id        = absint( $form['id'] );
+			$allowable_tags = $this->get_allowable_tags( $form_id );
 
 			if ( $allowable_tags === false ) {
 				// The value is unsafe so encode the value.
@@ -100,45 +98,6 @@ class GF_Field_Text extends GF_Field {
 			$return = $value;
 		}
 
-		return $return;
-	}
-
-	/**
-	 * Sanitizes the value before saving if HTML is enabled or by allowing tags using the gform_allowable_tags filter.
-	 *
-	 * @param string $value
-	 * @param int $form_id
-	 *
-	 * @return string
-	 */
-	public function sanitize_entry_value( $value, $form_id ) {
-		if ( is_array( $value ) ) {
-			return '';
-		}
-
-		$allow_html = $this->allow_html();
-
-		$allowable_tags = apply_filters( 'gform_allowable_tags', $allow_html, $this, $form_id );
-		$allowable_tags = apply_filters( "gform_allowable_tags_{$form_id}", $allowable_tags, $this, $form_id );
-
-
-		switch ( $allowable_tags ) {
-			case false :
-				// HTML is not expected so return the value as submitted.
-				$return = $value;
-				break;
-			case true :
-				// HTML is expected. Value will stripped of scripts and some tags and encoded.
-				$return = wp_kses_post( $value );
-				break;
-			default:
-				// Some HTML is expected. Value will stripped of scripts and some tags and encoded.
-				$value = wp_kses_post( $value );
-
-				// Strip all tags except those allowed by the gform_allowable_tags filter.
-				$return = strip_tags( $value, $allowable_tags );
-
-		}
 		return $return;
 	}
 
@@ -159,10 +118,8 @@ class GF_Field_Text extends GF_Field {
 			return '';
 		}
 
-		$allow_html = $this->allow_html();
 		$form_id = absint( $form['id'] );
-		$allowable_tags = apply_filters( 'gform_allowable_tags', $allow_html, $this, $form_id );
-		$allowable_tags = apply_filters( "gform_allowable_tags_{$form_id}", $allowable_tags, $this, $form_id );
+		$allowable_tags = $this->get_allowable_tags( $form_id );
 
 		if ( $allowable_tags === false ) {
 			// The value is unsafe so encode the value.
@@ -195,8 +152,7 @@ class GF_Field_Text extends GF_Field {
 		if ( $format === 'html' ) {
 			$value = nl2br( $value );
 
-			$allow_html = $this->allow_html();
-			$allowable_tags = apply_filters( 'gform_allowable_tags', $allow_html, $this, null );
+			$allowable_tags = $this->get_allowable_tags();
 
 			if ( $allowable_tags === false ) {
 				// The value is unsafe so encode the value.

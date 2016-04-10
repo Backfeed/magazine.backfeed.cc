@@ -411,6 +411,10 @@ class GFEntryList {
 	}
 }
 
+if ( ! class_exists( 'WP_List_Table' ) ) {
+	require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
+}
+
 /**
  * Class GF_Entry_List_Table
  *

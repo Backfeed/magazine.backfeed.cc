@@ -369,9 +369,9 @@ class GF_Field_Checkbox extends GF_Field {
 		}
 
 		$allowed_protocols = wp_allowed_protocols();
-		$value = wp_kses_no_null( $value, array( 'slash_zero' => 'keep' ) );
-		$value = wp_kses_hook( $value, 'post', $allowed_protocols );
-		$value = wp_kses_split( $value, 'post', $allowed_protocols );
+		$value             = wp_kses_no_null( $value, array( 'slash_zero' => 'keep' ) );
+		$value             = wp_kses_hook( $value, 'post', $allowed_protocols );
+		$value             = wp_kses_split( $value, 'post', $allowed_protocols );
 
 		return $value;
 	}

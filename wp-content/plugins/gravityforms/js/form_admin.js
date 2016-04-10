@@ -21,6 +21,28 @@ jQuery(document).ready(function($){
 			FormatCurrency(this);
 		});
 	});
+
+
+	/**
+	 * Dismiss GF dimissible messages.
+	 */
+	$(document).on( "click", ".notice-dismiss", function(){
+		var $div = $(this).closest('div.notice');
+		if ( $div.length > 0 ) {
+			var messageKey = $div.data('gf_dismissible_key');
+			var nonce = $div.data('gf_dismissible_nonce');
+			if ( messageKey  ) {
+				jQuery.ajax({
+					url: ajaxurl,
+					data: {
+						action: 'gf_dismiss_message',
+						message_key: messageKey,
+						nonce: nonce
+					}
+				})
+			}
+		}
+	});
 });
 
 function FormatCurrency(element){
@@ -1485,3 +1507,4 @@ function makeArray( object ) {
 function isSet( $var ) {
     return typeof $var != 'undefined';
 }
+

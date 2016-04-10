@@ -12,6 +12,13 @@ class GFCommon {
 	public static $errors = array();
 	public static $messages = array();
 
+	/**
+	 * An array of dimissible messages to display on the page.
+	 *
+	 * @var array $dismissible_messages
+	 */
+	public static $dismissible_messages = array();
+
 	public static function get_selection_fields( $form, $selected_field_id ) {
 
 		$str = '';
@@ -3760,6 +3767,21 @@ class GFCommon {
 		self::add_message( $message, true );
 	}
 
+	/**
+	 * Add a dismissible message to the array of dismissable messages.
+	 *
+	 * @param string $text
+	 * @param string $key
+	 * @param string $type
+	 */
+	public static function add_dismissible_message( $text, $key, $type = 'warning' ) {
+		$message['type'] = $type;
+		$message['text'] = $text;
+		$message['key']   = $key;
+
+		self::$dismissible_messages[] = $message;
+	}
+
 	public static function display_admin_message( $errors = false, $messages = false ) {
 
 		if ( ! $errors ) {
@@ -3799,6 +3821,73 @@ class GFCommon {
 		<?php
 		}
 
+	}
+
+	/**
+	 * Outputs dismissible messages on the page.
+	 *
+	 * @param bool $messages
+	 */
+	public static function display_dismissible_message( $messages = false ) {
+
+		if ( ! $messages ) {
+			$messages = self::$dismissible_messages;
+		}
+
+		if ( ! empty( $messages ) ) {
+			foreach ( $messages as $message ) {
+				if ( empty( $message['key'] ) || self::is_message_dismissed( $message['key'] ) ) {
+					continue;
+				}
+				$class = in_array( $message['key'], array(
+					'warning',
+					'error',
+					'updated',
+				) ) ? $message['key'] : 'error';
+				?>
+				<div class="notice below-h2 notice-<?php echo $class; ?> is-dismissible"
+				     data-gf_dismissible_key="<?php echo $message['key'] ?>"
+				     data-gf_dismissible_nonce="<?php echo wp_create_nonce( 'gf_dismissible_nonce' ) ?>">
+					<p>
+						<?php echo $message['text']; ?>
+					</p>
+				</div>
+				<?php
+			}
+		}
+	}
+
+	/**
+	 * Adds a dismissible message to the user meta of the current user so it's not displayed again.
+	 *
+	 * @param $key
+	 */
+	public static function dismiss_message( $key ) {
+		$db_key = self::get_dismissed_message_db_key( $key );
+		update_user_meta( get_current_user_id(), $db_key, true, true );
+	}
+
+	/**
+	 * Has the dismissible message been dismissed by the current user?
+	 *
+	 * @param $key
+	 *
+	 * @return bool
+	 */
+	public static function is_message_dismissed( $key ) {
+		$db_key = self::get_dismissed_message_db_key( $key );
+		return (bool) get_user_meta( get_current_user_id(), $db_key, true );
+	}
+
+	/**
+	 * Returns the database key for the message.
+	 *
+	 * @param $key
+	 *
+	 * @return string
+	 */
+	public static function get_dismissed_message_db_key( $key ) {
+		return 'gf_dimissed_' . substr( md5( $key ), 0, 40 );
 	}
 
 	private static function requires_gf_vars() {

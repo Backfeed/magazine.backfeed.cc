@@ -1475,18 +1475,42 @@ td.entry-view-field-value ul.bulleted li {
 	list-style-type: disc;
 }
 
+div.note-meta-container {
+	white-space: nowrap;
+	font-size: 0;
+}
+
 div.note-avatar {
 	width: 48px;
 	height: 48px;
-	float: left;
-	margin-right: 6px;
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 8px;
+}
+
+.note-has-email div.note-avatar {
+	vertical-align: top;
+}
+
+div.note-meta {
+	display: inline-block;
+	vertical-align: middle;
+	white-space: normal;
+	/* hack to keep all content visible on the smallest screen sizes */
+	margin-left: 48px;
+	position: relative;
+	left: -48px;
+}
+
+span.note-divider {
+	opacity: 0.25;
 }
 
 h6.note-author {
 	font-weight: bold;
 	font-size: 1.1rem;
 	line-height: 1;
-	margin: 0;
+	margin: 0 0 2px;
 	padding: 0;
 }
 
@@ -1942,7 +1966,6 @@ li.gfield_html label.gfield_label {
 table.entry-products {
 	border: 1px solid #DFDFDF;
 	border-right: none;
-	border-bottom: none;
 	margin: 10px 0;
 }
 

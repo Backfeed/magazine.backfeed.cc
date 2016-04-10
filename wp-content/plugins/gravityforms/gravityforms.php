@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: http://www.gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.0-beta-2
+Version: 2.0-beta-2.2
 Author: rocketgenius
 Author URI: http://www.rocketgenius.com
 Text Domain: gravityforms
@@ -116,7 +116,7 @@ register_deactivation_hook( __FILE__, array( 'GFForms', 'deactivation_hook' ) );
 
 class GFForms {
 
-	public static $version = '2.0-beta-2';
+	public static $version = '2.0-beta-2.2';
 
 	public static function loaded() {
 
@@ -163,7 +163,6 @@ class GFForms {
 
 		add_filter( 'auto_update_plugin', array( 'GFForms', 'maybe_auto_update' ), 10, 2 );
 
-
 		if ( IS_ADMIN ) {
 
 			global $current_user;
@@ -206,14 +205,9 @@ class GFForms {
 					// Support modifying the admin page title for settings
 					add_filter( 'admin_title', array( __class__, 'modify_admin_title' ), 10, 2 );
 
-					//Adding "embed form" button
-					add_action( 'media_buttons', array( 'RGForms', 'add_form_button' ), 20 );
+
 
 					require_once( GFCommon::get_base_path() . '/includes/locking/locking.php' );
-
-					if ( self::page_supports_add_form_button() ) {
-						add_action( 'admin_footer', array( 'RGForms', 'add_mce_popup' ) );
-					}
 
 					if ( self::is_gravity_page() ) {
 						require_once( GFCommon::get_base_path() . '/tooltips.php' );
@@ -268,6 +262,9 @@ class GFForms {
 						// Export
 						add_filter( 'wp_ajax_gf_process_export', array( 'GFForms', 'ajax_process_export' ) );
 						add_filter( 'wp_ajax_gf_download_export', array( 'GFForms', 'ajax_download_export' ) );
+
+						// Dismiss message
+						add_action( 'wp_ajax_gf_dismiss_message', array( 'GFForms', 'ajax_dismiss_message' ) );
 					}
 
 
@@ -307,6 +304,14 @@ class GFForms {
 
 		// Push Gravity Forms to the top of the list of plugins to make sure it's loaded before any add-ons
 		add_action( 'activated_plugin', array( 'GFForms', 'load_first' ) );
+
+		// Add the "Add Form" button to the editor. The customizer doesn't run in the admin context.
+		if ( GFForms::page_supports_add_form_button() ) {
+			// Adding "embed form" button to the editor
+			add_action( 'media_buttons', array( 'GFForms', 'add_form_button' ), 20 );
+			// Adding the modal
+			add_action( 'admin_print_footer_scripts', array( 'GFForms', 'add_mce_popup' ) );
+		}
 	}
 
 	public static function load_first() {
@@ -1141,7 +1146,7 @@ class GFForms {
 			'gf_delete_custom_choice', 'gf_save_custom_choice', 'gf_get_notification_post_categories',
 			'rg_update_lead_property', 'delete-gf_entry', 'rg_update_form_active', 'rg_update_notification_active',
 			'rg_update_confirmation_active', 'gf_resend_notifications', 'rg_dismiss_upgrade', 'gf_save_confirmation',
-			'gf_process_export', 'gf_download_export'
+			'gf_process_export', 'gf_download_export', 'gf_dismiss_message'
 		);
 
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX && in_array( $current_action, $gf_ajax_actions ) ) {
@@ -1380,7 +1385,7 @@ class GFForms {
 	//------------- PAGE/POST EDIT PAGE ---------------------
 
 	public static function page_supports_add_form_button() {
-		$is_post_edit_page = in_array( RG_CURRENT_PAGE, array( 'post.php', 'page.php', 'page-new.php', 'post-new.php' ) );
+		$is_post_edit_page = in_array( RG_CURRENT_PAGE, array( 'post.php', 'page.php', 'page-new.php', 'post-new.php', 'customize.php' ) );
 
 		$display_add_form_button = apply_filters( 'gform_display_add_form_button', $is_post_edit_page );
 
@@ -2019,6 +2024,22 @@ class GFForms {
 		require_once( GFCommon::get_base_path() . '/export.php' );
 		GFExport::ajax_download_export();
 	}
+
+	/**
+	 * Target for the wp_ajax_gf_dismiss_message ajax action requested from the Gravity Forms admin pages.
+	 * @since 2.0.0
+	 */
+	public static function ajax_dismiss_message() {
+
+		check_admin_referer( 'gf_dismissible_nonce', 'nonce' );
+
+		$key = rgget( 'message_key' );
+		$key = sanitize_key( $key );
+
+
+		GFCommon::dismiss_message( $key );
+	}
+
 
 	public static function update_page() {
 		require_once( GFCommon::get_base_path() . '/update.php' );
@@ -3275,6 +3296,7 @@ class GFForms {
 	 * - Performs self-healing
 	 * - Adds empty index files
 	 * - Deletes unclaimed export files.
+	 * - Deleted old log files.
 	 * - Deletes orphaned entry rows from the lead table.
 	 *
 	 * @since 2.0.0
@@ -3286,6 +3308,8 @@ class GFForms {
 		self::add_security_files();
 
 		self::delete_old_export_files();
+
+		self::delete_old_log_files();
 
 		self::do_self_healing();
 
@@ -3316,6 +3340,35 @@ class GFForms {
 			$timestamp = filemtime( $filename );
 			if ( $timestamp < time() - DAY_IN_SECONDS ) {
 				// Delete files over a day old
+				GFCommon::log_debug( __METHOD__ . '(): Proceeding to delete ' . $filename );
+				$success = unlink( $filename );
+				GFCommon::log_debug( __METHOD__ . '(): Delete successful: ' . ( $success ? 'yes' : 'no' ) );
+			}
+		}
+	}
+
+	/**
+	 * Deletes any log files that are older than one month.
+	 *
+	 * @since 2.0.0
+	 */
+	public static function delete_old_log_files() {
+		GFCommon::log_debug( __METHOD__ . '(): Starting.' );
+		$uploads_folder = RGFormsModel::get_upload_root();
+		if ( ! is_dir( $uploads_folder ) || is_link( $uploads_folder ) ) {
+			GFCommon::log_debug( __METHOD__ . '(): No upload root - bailing.' );
+			return;
+		}
+		$logs_folder = $uploads_folder . 'logs';
+		if ( ! is_dir( $logs_folder ) || is_link( $logs_folder ) ) {
+			GFCommon::log_debug( __METHOD__ . '():  No logs folder - bailing.' );
+			return;
+		}
+		GFCommon::log_debug( __METHOD__ . '(): Start deleting old log files' );
+		foreach ( glob( $logs_folder . DIRECTORY_SEPARATOR . '*.txt', GLOB_BRACE ) as $filename ) {
+			$timestamp = filemtime( $filename );
+			if ( $timestamp < time() - MONTH_IN_SECONDS ) {
+				// Delete files over one month old
 				GFCommon::log_debug( __METHOD__ . '(): Proceeding to delete ' . $filename );
 				$success = unlink( $filename );
 				GFCommon::log_debug( __METHOD__ . '(): Delete successful: ' . ( $success ? 'yes' : 'no' ) );

@@ -65,7 +65,7 @@ class GF_Field_Address extends GF_Field {
 
 	public function get_value_submission( $field_values, $get_from_post_global_var = true ) {
 
-		$value = parent::get_value_submission( $field_values, $get_from_post_global_var );
+		$value                                         = parent::get_value_submission( $field_values, $get_from_post_global_var );
 		$value[ $this->id . '_copy_values_activated' ] = (bool) rgpost( 'input_' . $this->id . '_copy_values_activated' );
 
 		return $value;
@@ -75,7 +75,7 @@ class GF_Field_Address extends GF_Field {
 
 		$is_entry_detail = $this->is_entry_detail();
 		$is_form_editor  = $this->is_form_editor();
-		$is_admin = $is_entry_detail || $is_form_editor;
+		$is_admin        = $is_entry_detail || $is_form_editor;
 
 		$form_id  = absint( $form['id'] );
 		$id       = intval( $this->id );
@@ -122,7 +122,7 @@ class GF_Field_Address extends GF_Field {
 
 		$address_types = $this->get_address_types( $form_id );
 		$addr_type     = empty( $this->addressType ) ? 'international' : $this->addressType;
-		$address_type = rgar( $address_types, $addr_type );
+		$address_type  = rgar( $address_types, $addr_type );
 
 		$state_label  = empty( $address_type['state_label'] ) ? esc_html__( 'State', 'gravityforms' ) : $address_type['state_label'];
 		$zip_label    = empty( $address_type['zip_label'] ) ? esc_html__( 'Zip Code', 'gravityforms' ) : $address_type['zip_label'];
@@ -427,7 +427,7 @@ class GF_Field_Address extends GF_Field {
 
 		$is_entry_detail = $this->is_entry_detail();
 		$is_form_editor  = $this->is_form_editor();
-		$is_admin = $is_entry_detail || $is_form_editor;
+		$is_admin        = $is_entry_detail || $is_form_editor;
 
 
 		$state_dropdown_class = $state_text_class = $state_style = $text_style = $state_field_id = '';
@@ -802,17 +802,36 @@ class GF_Field_Address extends GF_Field {
 	public function get_state_dropdown( $states, $selected_state = '', $placeholder = '' ) {
 		$str = '';
 		foreach ( $states as $code => $state ) {
-			if ( is_numeric( $code ) ) {
-				$code = $state;
+			if ( is_array( $state ) ) {
+				$str .= sprintf( '<optgroup label="%1$s">%2$s</optgroup>', esc_attr( $code ), $this->get_state_dropdown( $state, $selected_state, $placeholder ) );
+			} else {
+				if ( is_numeric( $code ) ) {
+					$code = $state;
+				}
+				if ( empty( $state ) ) {
+					$state = $placeholder;
+				}
+
+				$str .= $this->get_select_option( $code, $state, $selected_state );
 			}
-			if ( empty( $state ) ) {
-				$state = $placeholder;
-			}
-			$selected = $code == $selected_state ? "selected='selected'" : '';
-			$str .= "<option value='" . esc_attr( $code ) . "' $selected>" . esc_html( $state ) . '</option>';
 		}
 
 		return $str;
+	}
+
+	/**
+	 * Returns the option tag for the current choice.
+	 *
+	 * @param string $value The choice value.
+	 * @param string $label The choice label.
+	 * @param string $selected_value The value for the selected choice.
+	 *
+	 * @return string
+	 */
+	public function get_select_option( $value, $label, $selected_value ) {
+		$selected = $value == $selected_value ? "selected='selected'" : '';
+
+		return sprintf( "<option value='%s' %s>%s</option>", esc_attr( $value ), $selected, esc_html( $label ) );
 	}
 
 	public function get_us_state_dropdown( $selected_state = '' ) {
@@ -869,11 +888,11 @@ class GF_Field_Address extends GF_Field {
 			$country_value = trim( rgget( $this->id . '.6', $value ) );
 
 			if ( $format === 'html' ) {
-				$street_value = esc_html( $street_value );
+				$street_value  = esc_html( $street_value );
 				$street2_value = esc_html( $street2_value );
-				$city_value = esc_html( $city_value );
-				$state_value = esc_html( $state_value );
-				$zip_value = esc_html( $zip_value );
+				$city_value    = esc_html( $city_value );
+				$state_value   = esc_html( $state_value );
+				$zip_value     = esc_html( $zip_value );
 				$country_value = esc_html( $country_value );
 
 				$line_break = '<br />';

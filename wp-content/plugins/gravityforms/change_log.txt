@@ -1,4 +1,36 @@
 ------------------------------------------------------------------------------------------------------------------
+Version 2.0-beta-2.2
+    - Added the gform_phone_formats filter and form specific version allowing custom phone formats to be defined. See https://www.gravityhelp.com/documentation/article/gform_phone_formats/
+    - Added JS filter 'gform_spinner_target_elem' to allow changing the element after which the AJAX spinner is inserted. See https://www.gravityhelp.com/documentation/article/gform_spinner_target_elem/
+    - Added a dismissible message to the confirmation settings page which is displayed if merge tags are used as values for attributes.
+
+    - Updated the Address field state dropdown to support optgroups.
+    - Updated layout/styling for note meta (looked wonky for system notes where no email address is specified)
+    - Updated payment details section to use the Entry Detail meta box system
+    - Updated the daily clean-up to delete logs files older than one month.
+
+    - Deprecated GFEntryDetail::payment_details_box()
+
+    - Removed 'gform_enable_entry_info_payment_details' hook
+
+    - Fixed an issue with the sanitization of the phone format setting on some hosting environments.
+    - Fixed an issue with the value of the rich text field after validation.
+
+    - AF: Removed GFPaymentAddon::disable_entry_info_payment() method.
+    - AF: Added 'gform_gf_field_create' filter to allow modifying or replacing the GF_Field object after it has been created. See https://www.gravityhelp.com/documentation/article/gform_gf_field_create/
+
+------------------------------------------------------------------------------------------------------------------
+Version 2.0-beta-2.1
+    - Updated merge tag processing of the Post Excerpt and Post Content fields for consistency with the GF_Field input/output change made in 2.0-beta-2.
+
+    - Fixed a fatal on the entry list and form list pages which can affect some installations.
+    - Fixed an issue with the sanitization of the value of the text field.
+    - Fixed an issue with the formatting of the textarea field value when using the field merge tag.
+    - Fixed flash of unstyled content issue in form preview (due to stylesheet being loaded after content)
+
+    - AF: Fixed an issue when upgrading due to feed order column name.
+
+------------------------------------------------------------------------------------------------------------------
 Version 2.0-beta-2
     - Added an Event column to the Notifications list if the form has multiple notification events registered.
     - Added support for preventing Admin Only fields from being selected in Form Editor conditional logic; changing field already used in conditional logic to Admin Only will result in a confirmation prompt (like deleting a field used in conditional logic)
@@ -44,6 +76,10 @@ Version 2.0-beta-2
     - AF: Fixed an issue validating the select_custom field type when using optgroups.
     - AF: Fixed an issue validating choice based fields if the choice value property is not set.
     - AF: Fixed an issue with GFFeedAddOn::is_feed_condition_met().
+
+------------------------------------------------------------------------------------------------------------------
+Version 2.0-beta-1.1
+    - Fixed an issue where fields close in the form editor upon keypress within a text or textarea input field.
 
 ------------------------------------------------------------------------------------------------------------------
 Version 2.0-beta-1
@@ -135,64 +171,35 @@ Version 2.0-beta-1
 				)
 			)
 
-------------------------------------------------------------------------------------------------------------------
-Version 1.9.17.14
-    - AF: Fixed a PHP notice which could occur if the is_authorized property was not set by the payment add-on.
 
 ------------------------------------------------------------------------------------------------------------------
-Version 1.9.17.13
-    - Fixed an issue with the merge tag for the Multi Select field returning the choice values when not using the :value modifier.
+Version 1.9.18.1
+    - Added support for the Customize Posts feature plugin. The Add Form button appears in the editor when editing posts in the customizer.
 
 ------------------------------------------------------------------------------------------------------------------
-Version 1.9.17.12
-    - Updated the gform_confirmation_anchor filter to include $form as the second parameter.
+Version 1.9.18
+    - Added Chinese (China) translation. Credit: Edi Michael.
+    - Added new filter: gform_list_field_parameter_delimiter
+        add_filter( 'gform_list_field_parameter_delimiter', function( $delimiter, $field, $name, $field_values ) {
+            return '||';
+        }, 10, 4 );
 
-------------------------------------------------------------------------------------------------------------------
-Version 1.9.17.11
-    - Fixed an issue with the $field_values parameter of the gform_pre_render hook where it would change from an array to a string when processing AJAX form submissions.
+    - Added the $field object to the parameter list of the gform_counter_script filter.
 
-------------------------------------------------------------------------------------------------------------------
-Version 1.9.17.10
-    - Add the $field object to the parameter list of the gform_counter_script filter.
-
-------------------------------------------------------------------------------------------------------------------
-Version 1.9.17.9
-    - Add the provisional filter gform_sanitize_entry_value to allow site administrators to bypass the default input sanitization of the entry value before it's saved.
-
-------------------------------------------------------------------------------------------------------------------
-Version 1.9.17.8
-    - Added GFExport::prepare_forms_for_export().
     - Updated GFFormsModel::get_lead_db_columns() to public.
-    - Updated Chinese (China) translation. Credit: Edi Michael.
-
-------------------------------------------------------------------------------------------------------------------
-Version 1.9.17.7
+    - Updated the gform_confirmation_anchor filter to include $form as the second parameter.
     - Updated GFFormsModel::media_handle_upload() to be a public method.
 
-------------------------------------------------------------------------------------------------------------------
-Version 1.9.17.6
+    - Fixed an issue with the merge tag for the Multi Select field returning the choice values when not using the :value modifier.
+    - Fixed an issue with the $field_values parameter of the gform_pre_render hook where it would change from an array to a string when processing AJAX form submissions.
+    - Fixed an issue with gformCleanNumber() which for some currencies caused an incorrect value to be returned.
+    - Fixed a fatal error that can occur when third party plugins and themes call Gravity Forms methods that use GFCache, such as GFFormsModel::get_form_id(), before all the plugins have been loaded. So pluggable functions such as wp_hash() in wp-includes/pluggable.php are not available.
+	- Fixed an issue with conditional shortcodes where the shortcodes don't get parsed if the {all_fields} merge tag is present.
+    - Fixed issue where Date & Time fields did not save their default value correctly if visibility was set to Admin Only
+
+    - AF: Fixed a PHP notice which could occur if the is_authorized property was not set by the payment add-on.
     - AF: Fixed GFAddOn::get_save_button() not retrieving last section's fields when sections are using custom array keys.
     - AF: Fixed an issue with the payment status not being updated when a subscription payment is successful if a previous attempt failed.
-
-------------------------------------------------------------------------------------------------------------------
-Version 1.9.17.5
-    - Fixed an issue with gformCleanNumber() which for some currencies caused an incorrect value to be returned.
-
-------------------------------------------------------------------------------------------------------------------
-Version 1.9.17.4
-    - Fixed a fatal error that can occur when third party plugins and themes call Gravity Forms methods that use GFCache, such as GFFormsModel::get_form_id(), before all the plugins have been loaded. So pluggable functions such as wp_hash() in wp-includes/pluggable.php are not available.
-
-------------------------------------------------------------------------------------------------------------------
-Version 1.9.17.3
-	- Fixed an issue with conditional shortcodes where the shortcodes don't get parsed if the {all_fields} merge tag is present.
-
-------------------------------------------------------------------------------------------------------------------
-Version 1.9.17.2
-	- Added Chinese (China) translation. Credit: Edi Michael.
-
-------------------------------------------------------------------------------------------------------------------
-Version 1.9.17.1
-    - Fixed issue where Date & Time fields did not save their default value correctly if visibliity was set to Admin Only
 
 ------------------------------------------------------------------------------------------------------------------
 Version 1.9.17

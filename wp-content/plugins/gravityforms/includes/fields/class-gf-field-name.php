@@ -120,11 +120,11 @@ class GF_Field_Name extends GF_Field {
 				$last_name_sub_label   = rgar( $last_input, 'customLabel' ) != '' ? $last_input['customLabel'] : gf_apply_filters( array( 'gform_name_last', $form_id ), esc_html__( 'Last', 'gravityforms' ), $form_id );
 				$suffix_sub_label      = rgar( $suffix_input, 'customLabel' ) != '' ? $suffix_input['customLabel'] : gf_apply_filters( array( 'gform_name_suffix', $form_id ), esc_html__( 'Suffix', 'gravityforms' ), $form_id );
 
-				$prefix_markup         = '';
-				$first_markup          = '';
-				$middle_markup         = '';
-				$last_markup           = '';
-				$suffix_markup         = '';
+				$prefix_markup = '';
+				$first_markup  = '';
+				$middle_markup = '';
+				$last_markup   = '';
+				$suffix_markup = '';
 
 				if ( $is_sub_label_above ) {
 

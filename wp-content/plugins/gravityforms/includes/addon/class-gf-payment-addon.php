@@ -82,7 +82,6 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 		if ( rgget( 'page' ) == 'gf_entries' ) {
 			add_action( 'gform_payment_details', array( $this, 'entry_info' ), 10, 2 );
-			add_filter( 'gform_enable_entry_info_payment_details', array( $this, 'disable_entry_info_payment' ), 10, 2 );
 		}
 	}
 
@@ -2745,13 +2744,6 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 		//deleting from callback table
 		$wpdb->delete( "{$wpdb->prefix}gf_addon_payment_callback", array( 'lead_id' => $entry_id ), array( '%d' ) );
-	}
-
-	public function disable_entry_info_payment( $is_enabled, $entry ) {
-
-		$is_my_entry = $this->is_payment_gateway( $entry['id'] );
-
-		return $is_my_entry ? false : $is_enabled;
 	}
 
 	public function ajax_cancel_subscription() {

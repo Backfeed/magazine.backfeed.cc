@@ -1065,9 +1065,9 @@ class GF_Field extends stdClass implements ArrayAccess {
 			if ( isset( $choice['value'] ) ) {
 				// Strip scripts but don't encode
 				$allowed_protocols = wp_allowed_protocols();
-				$choice['value'] = wp_kses_no_null( $choice['value'], array( 'slash_zero' => 'keep' ) );
-				$choice['value'] = wp_kses_hook( $choice['value'], 'post', $allowed_protocols );
-				$choice['value'] = wp_kses_split( $choice['value'], 'post', $allowed_protocols );
+				$choice['value']   = wp_kses_no_null( $choice['value'], array( 'slash_zero' => 'keep' ) );
+				$choice['value']   = wp_kses_hook( $choice['value'], 'post', $allowed_protocols );
+				$choice['value']   = wp_kses_split( $choice['value'], 'post', $allowed_protocols );
 			}
 		}
 
@@ -1119,7 +1119,7 @@ class GF_Field extends stdClass implements ArrayAccess {
 		if ( empty( $form_id ) ) {
 			$form_id = $this->form_id;
 		}
-		$form_id = absint( $form_id );
+		$form_id    = absint( $form_id );
 		$allow_html = $this->allow_html();
 
 		/**

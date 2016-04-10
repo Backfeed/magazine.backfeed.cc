@@ -101,19 +101,19 @@ class GF_Field_CAPTCHA extends GF_Field {
 		// pass secret key and token for verification of whether the response was valid
 		$response = wp_remote_post( $verify_url, array(
 			'method' => 'POST',
-			'body' => array( 'secret' => $secret_key, 'response' => $response_token ),
+			'body'   => array( 'secret' => $secret_key, 'response' => $response_token ),
 		) );
 
 		$is_valid = false;
 
-		if( ! is_wp_error( $response ) ) {
+		if ( ! is_wp_error( $response ) ) {
 			$result = json_decode( wp_remote_retrieve_body( $response ) );
-			if( $result->success ) {
+			if ( $result->success ) {
 				$is_valid = true;
 			}
 		}
 
-		if( ! $is_valid ) {
+		if ( ! $is_valid ) {
 
 			$this->failed_validation  = true;
 			$this->validation_message = empty( $this->errorMessage ) ? __( 'The reCAPTCHA was invalid. Go back and try it again.', 'gravityforms' ) : $this->errorMessage;
@@ -350,12 +350,12 @@ class GF_Field_CAPTCHA extends GF_Field {
 		$ts_ms      = round( ( microtime( true ) - 1 ) * 1000 );
 
 		//create json string
-		$params = array( 'session_id' => $session_id, 'ts_ms' => $ts_ms );
+		$params    = array( 'session_id' => $session_id, 'ts_ms' => $ts_ms );
 		$plaintext = json_encode( $params );
 		GFCommon::log_debug( 'recaptcha token parameters: ' . $plaintext );
 
 		//pad json string
-		$pad = 16 - ( strlen( $plaintext ) % 16 );
+		$pad    = 16 - ( strlen( $plaintext ) % 16 );
 		$padded = $plaintext . str_repeat( chr( $pad ), $pad );
 
 		//encrypt as 128
@@ -363,6 +363,7 @@ class GF_Field_CAPTCHA extends GF_Field {
 
 		$token = str_replace( array( '+', '/', '=' ), array( '-', '_', '' ), $encrypted );
 		GFCommon::log_debug( ' token being used is: ' . $token );
+
 		return $token;
 	}
 

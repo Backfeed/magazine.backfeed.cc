@@ -1106,6 +1106,10 @@ class GFFormSettings {
 		$entry_meta = GFFormsModel::get_entry_meta( $form_id );
 		$entry_meta = apply_filters( 'gform_entry_meta_conditional_logic_confirmations', $entry_meta, $form, $confirmation_id );
 
+		if ( self::confirmation_looks_unsafe( $confirmation['message'] ) ) {
+			GFCommon::add_dismissible_message( esc_html__( 'Your confirmation message appears to contain a merge tag as the value for an HTML attribute. Depending on the context and field type, this might be a security risk.', 'gravityforms' ), 'confirmation_unsafe_' . $form_id );
+		}
+
 		self::page_header( __( 'Confirmations', 'gravityforms' ) );
 
 		?>
@@ -1411,6 +1415,8 @@ class GFFormSettings {
 
 			<?php GFCommon::form_page_title( $form ); ?>
 
+			<?php GFCommon::display_dismissible_message(); ?>
+
 			<?php GFCommon::display_admin_message(); ?>
 
 			<?php RGForms::top_toolbar(); ?>
@@ -1439,7 +1445,7 @@ class GFFormSettings {
 	<?php
 	}
 
-	public static function page_footer(){
+	public static function page_footer() {
 						?>
 					</div>
 					<!-- / gform_tab_content -->
@@ -1466,7 +1472,7 @@ class GFFormSettings {
 		$setting_tabs = array(
 			'10' => array( 'name' => 'settings', 'label' => __( 'Form Settings', 'gravityforms' ) ),
 			'20' => array( 'name' => 'confirmation', 'label' => __( 'Confirmations', 'gravityforms' ), 'query' => array( 'cid' => null, 'duplicatedcid' => null ) ),
-			'30' => array( 'name' => 'notification', 'label' => __( 'Notifications', 'gravityforms' ), 'query' => array( 'nid' => null ) )
+			'30' => array( 'name' => 'notification', 'label' => __( 'Notifications', 'gravityforms' ), 'query' => array( 'nid' => null ) ),
 		);
 
 		$setting_tabs = apply_filters( 'gform_form_settings_menu', $setting_tabs, $form_id );
@@ -1477,8 +1483,9 @@ class GFFormSettings {
 
 	public static function handle_confirmation_edit_submission( $confirmation, $form ) {
 
-		if ( empty( $_POST ) || ! check_admin_referer( 'gform_confirmation_edit', 'gform_confirmation_edit' ) )
+		if ( empty( $_POST ) || ! check_admin_referer( 'gform_confirmation_edit', 'gform_confirmation_edit' ) ) {
 			return $confirmation;
+		}
 
 		$is_new_confirmation = ! $confirmation;
 
@@ -1625,7 +1632,7 @@ class GFFormSettings {
 		return true;
 	}
 
-	public static function output_field_scripts( $echo = true ){
+	public static function output_field_scripts( $echo = true ) {
 		$script_str = '';
 		$conditional_logic_fields = array();
 
@@ -1633,12 +1640,11 @@ class GFFormSettings {
 			if ( $gf_field->is_conditional_logic_supported() ) {
 				$conditional_logic_fields[] = $gf_field->type;
 			}
-
 		}
 
 		$script_str .= sprintf( 'function GetConditionalLogicFields(){return %s;}', json_encode( $conditional_logic_fields ) ) . PHP_EOL;
 
-		if ( ! empty( $script_str ) && $echo ){
+		if ( ! empty( $script_str ) && $echo ) {
 			echo $script_str;
 		}
 
@@ -1739,6 +1745,22 @@ class GFFormSettings {
 
 	private static function maybe_wp_kses( $html, $allowed_html = 'post', $allowed_protocols = array() ) {
 		return GFCommon::maybe_wp_kses( $html, $allowed_html, $allowed_protocols );
+	}
+
+	/**
+	 * Checks the text for merge tags as attribute values.
+	 *
+	 * @param $text
+	 *
+	 * @return bool
+	 */
+	public static function confirmation_looks_unsafe( $text ) {
+		$unsafe = false;
+		preg_match_all( '/(\S+)\s*=\s*["|\']({[^{]*?:(\d+(\.\d+)?)(:(.*?))?})["|\']/mi', $text, $matches, PREG_SET_ORDER );
+		if ( is_array( $matches ) && count( $matches ) > 0 ) {
+			$unsafe = true;
+		}
+		return $unsafe;
 	}
 }
 
@@ -1884,8 +1906,9 @@ class GFConfirmationTable extends WP_List_Table {
 			case 'page':
 
 				$page = get_post( $item['pageId'] );
-				if ( empty( $page ) )
+				if ( empty( $page ) ) {
 					return __( '<em>This page does not exist.</em>', 'gravityforms' );
+				}
 
 				return '<a href="' . get_permalink( $item['pageId'] ) . '">' . $page->post_title . '</a>';
 

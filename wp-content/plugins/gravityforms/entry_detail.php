@@ -6,7 +6,7 @@ if ( ! class_exists( 'GFForms' ) ) {
 
 class GFEntryDetail {
 
-	public static function add_meta_boxes() {
+	public static function add_meta_boxes( $entry, $form ) {
 
 		// Prepare meta boxes and screen options.
 
@@ -34,13 +34,25 @@ class GFEntryDetail {
 			);
 		}
 
+		if ( ! empty( $entry['payment_status'] ) ) {
+			$meta_boxes[] = array(
+				'id'            => 'payment',
+				'title'         => $entry['transaction_type'] == 2 ? esc_html__( 'Subscription Details', 'gravityforms' ) : esc_html__( 'Payment Details', 'gravityforms' ),
+				'callback'      => array( 'GFEntryDetail', 'meta_box_payment_details' ),
+				'context'       => 'side',
+				'callback_args' => array( $entry, $form )
+			);
+		}
+
 		foreach ( $meta_boxes as $meta_box ) {
 			add_meta_box(
 				$meta_box['id'],
 				$meta_box['title'],
 				$meta_box['callback'],
 				'forms_page_gf_entries',
-				$meta_box['context']
+				$meta_box['context'],
+				isset( $meta_box['priority'] ) ? $meta_box['priority'] : 'default',
+				isset( $meta_box['callback_args'] ) ? $meta_box['callback_args'] : null
 			);
 		}
 	}
@@ -155,7 +167,7 @@ class GFEntryDetail {
 			return;
 		}
 		
-		self::add_meta_boxes();
+		self::add_meta_boxes( $lead, $form );
 
 		RGFormsModel::update_lead_property( $lead['id'], 'is_read', 1 );
 
@@ -533,17 +545,6 @@ class GFEntryDetail {
 							?>
 						</div>
 
-						<?php
-						/**
-						 * A filter to enable or disable the extra payment details box in an entry
-						 *
-						 * @param bool To enable (true) or disable (false)
-						 * @param array $lead The Lead object to filter
-						 */
-						if ( ! empty( $lead['payment_status'] ) && ! apply_filters( 'gform_enable_entry_info_payment_details', true, $lead ) ) {
-							self::payment_details_box( $lead, $form );
-						}
-						?>
 						<div id="postbox-container-2" class="postbox-container">
 							<?php do_meta_boxes( 'forms_page_gf_entries', 'normal', array( 'form' => $form, 'entry' => $lead, 'mode' => $mode ) ); ?>
 							<?php
@@ -699,19 +700,25 @@ class GFEntryDetail {
 						}
 						$class = $note->note_type ? " gforms_note_{$note->note_type}" : '';
 						?>
-						<div style="margin-top:4px;">
-							<div class="note-avatar"><?php
+						<div class="note-meta-container <?php echo $note->user_email ? 'note-has-email' : ''; ?>">
+							<div class="note-avatar">
+								<?php
 								/**
 								 * Allows filtering of the notes avatar
 								 *
 								 * @param array $note The Note object that is being filtered when modifying the avatar
 								 */
-								echo apply_filters( 'gform_notes_avatar', get_avatar( $note->user_id, 48 ), $note ); ?></div>
-							<h6 class="note-author"><?php echo esc_html( $note->user_name ) ?></h6>
-							<p class="note-email">
-								<a href="mailto:<?php echo esc_attr( $note->user_email ) ?>"><?php echo esc_html( $note->user_email ) ?></a><br />
-								<?php esc_html_e( 'added on', 'gravityforms' ); ?> <?php echo esc_html( GFCommon::format_date( $note->date_created, false ) ) ?>
-							</p>
+								echo apply_filters( 'gform_notes_avatar', get_avatar( $note->user_id, 48 ), $note ); ?>
+							</div>
+							<div class="note-meta">
+								<h6 class="note-author"><?php echo esc_html( $note->user_name ) ?></h6>
+								<p class="note-email">
+									<?php if( $note->user_email ): ?>
+										<a href="mailto:<?php echo esc_attr( $note->user_email ) ?>"><?php echo esc_html( $note->user_email ) ?></a> <br>
+									<?php endif; ?>
+									<?php esc_html_e( 'added on', 'gravityforms' ); ?> <?php echo esc_html( GFCommon::format_date( $note->date_created, false ) ) ?>
+								</p>
+							</div>
 						</div>
 						<div class="detail-note-content<?php echo $class ?>"><?php echo nl2br( esc_html( $note->value ) ) ?></div>
 					</td>
@@ -966,94 +973,109 @@ class GFEntryDetail {
 		return '<a ' . $href . ' class="' . $class . '" title="' . esc_attr( $label ) . '"><i class="fa-lg ' . esc_attr( $icon ) . '"></i></a></li>';
 	}
 
-	public static function payment_details_box( $lead, $form ) {
+	public static function payment_details_box( $entry, $form ) {
+		_deprecated_function( __function__, '2.0', 'Use add_meta_box() with GFEntryDetail::meta_box_payment_details as the "callback" parameter.' );
 		?>
 		<!-- PAYMENT BOX -->
 		<div id="submitdiv" class="stuffbox">
+
 			<h3 class="hndle" style="cursor:default;">
-				<span><?php echo $lead['transaction_type'] == 2 ? esc_html__( 'Subscription Details', 'gravityforms' ) : esc_html__( 'Payment Details', 'gravityforms' ); ?></span>
+				<span><?php echo $entry['transaction_type'] == 2 ? esc_html__( 'Subscription Details', 'gravityforms' ) : esc_html__( 'Payment Details', 'gravityforms' ); ?></span>
 			</h3>
 
 			<div class="inside">
-				<div id="submitcomment" class="submitbox">
-					<div id="minor-publishing" style="padding:10px;">
-						<?php
+				<?php self::meta_box_payment_details( compact( 'entry', 'form' ) ); ?>
+			</div>
 
-						$payment_status = apply_filters( 'gform_payment_status', $lead['payment_status'], $form, $lead );
-						if ( ! empty( $payment_status ) ) {
-							?>
-							<div id="gf_payment_status" class="gf_payment_detail">
-								<?php esc_html_e( 'Status', 'gravityforms' ) ?>:
-								<span id="gform_payment_status"><?php echo $payment_status; // May contain HTML ?></span>
-							</div>
+		</div>
+		<?php
+	}
 
-							<?php
+	public static function meta_box_payment_details( $args ) {
 
-							/**
-							 * Allows for modification on the form payment date format
-							 *
-							 * @param array $form The Form object to filter through
-							 * @param array $lead The Lead object to filter through
-							 */
-							$payment_date = apply_filters( 'gform_payment_date', GFCommon::format_date( $lead['payment_date'], false, 'Y/m/d', $lead['transaction_type'] != 2 ), $form, $lead );
-							if ( ! empty( $payment_date ) ) {
-								?>
-								<div id="gf_payment_date" class="gf_payment_detail">
-									<?php echo $lead['transaction_type'] == 2 ? esc_html__( 'Start Date', 'gravityforms' ) : esc_html__( 'Date', 'gravityforms' ) ?>:
-									<span id='gform_payment_date'><?php echo $payment_date; // May contain HTML ?></span>
-								</div>
-								<?php
-							}
+		$entry = $args['entry'];
+		$form  = $args['form'];
 
-							/**
-							 * Allows filtering through a payment transaction ID
-							 *
-							 * @param int   $lead['transaction_id'] The transaction ID that can be modified
-							 * @param array $form                   The Form object to be filtered when modifying the transaction ID
-							 * @param array $lead                   The Lead object to be filtered when modifying the transaction ID
-							 */
-							$transaction_id = apply_filters( 'gform_payment_transaction_id', $lead['transaction_id'], $form, $lead );
-							if ( ! empty( $transaction_id ) ) {
-								?>
-								<div id="gf_payment_transaction_id" class="gf_payment_detail">
-									<?php echo $lead['transaction_type'] == 2 ? esc_html__( 'Subscription Id', 'gravityforms' ) : esc_html__( 'Transaction Id', 'gravityforms' ); ?>:
-									<span id='gform_payment_transaction_id'><?php echo $transaction_id; // May contain HTML ?></span>
-								</div>
-								<?php
-							}
+		?>
 
-							/**
-							 * Filter through the way the Payment Amount is rendered
-							 *
-							 * @param string $lead['payment_amount'] The payment amount taken from the lead object
-							 * @param string $lead['currency']       The payment currency taken from the lead object
-							 * @param array  $form                   The Form object to filter through
-							 * @param array  $lead                   The lead object to filter through
-							 */
-							$payment_amount = apply_filters( 'gform_payment_amount', GFCommon::to_money( $lead['payment_amount'], $lead['currency'] ), $form, $lead );
-							if ( ! rgblank( $payment_amount ) ) {
-								?>
-								<div id="gf_payment_amount" class="gf_payment_detail">
-									<?php echo $lead['transaction_type'] == 2 ? esc_html__( 'Recurring Amount', 'gravityforms' ) : esc_html__( 'Amount', 'gravityforms' ); ?>:
-									<span id='gform_payment_amount'><?php echo $payment_amount; // May contain HTML ?></span>
-								</div>
-								<?php
-							}
-						}
+		<div id="submitcomment" class="submitbox">
+			<div id="minor-publishing">
+				<?php
 
-						/**
-						 * Fires after the Form Payment Details (The type of payment, the cost, the ID, etc)
-						 *
-						 * @param int   $form['id'] The current Form ID
-						 * @param array $lead       The current Lead object
-						 */
-						do_action( 'gform_payment_details', $form['id'], $lead );
-
-						?>
+				$payment_status = apply_filters( 'gform_payment_status', $entry['payment_status'], $form, $entry );
+				if ( ! empty( $payment_status ) ) {
+					?>
+					<div id="gf_payment_status" class="gf_payment_detail">
+						<?php esc_html_e( 'Status', 'gravityforms' ) ?>:
+						<span id="gform_payment_status"><?php echo $payment_status; // May contain HTML ?></span>
 					</div>
-				</div>
+
+					<?php
+
+					/**
+					 * Allows for modification on the form payment date format
+					 *
+					 * @param array $form The Form object to filter through
+					 * @param array $entry The Lead object to filter through
+					 */
+					$payment_date = apply_filters( 'gform_payment_date', GFCommon::format_date( $entry['payment_date'], false, 'Y/m/d', $entry['transaction_type'] != 2 ), $form, $entry );
+					if ( ! empty( $payment_date ) ) {
+						?>
+						<div id="gf_payment_date" class="gf_payment_detail">
+							<?php echo $entry['transaction_type'] == 2 ? esc_html__( 'Start Date', 'gravityforms' ) : esc_html__( 'Date', 'gravityforms' ) ?>:
+							<span id='gform_payment_date'><?php echo $payment_date; // May contain HTML ?></span>
+						</div>
+						<?php
+					}
+
+					/**
+					 * Allows filtering through a payment transaction ID
+					 *
+					 * @param int   $entry['transaction_id'] The transaction ID that can be modified
+					 * @param array $form                   The Form object to be filtered when modifying the transaction ID
+					 * @param array $entry                   The Lead object to be filtered when modifying the transaction ID
+					 */
+					$transaction_id = apply_filters( 'gform_payment_transaction_id', $entry['transaction_id'], $form, $entry );
+					if ( ! empty( $transaction_id ) ) {
+						?>
+						<div id="gf_payment_transaction_id" class="gf_payment_detail">
+							<?php echo $entry['transaction_type'] == 2 ? esc_html__( 'Subscription Id', 'gravityforms' ) : esc_html__( 'Transaction Id', 'gravityforms' ); ?>:
+							<span id='gform_payment_transaction_id'><?php echo $transaction_id; // May contain HTML ?></span>
+						</div>
+						<?php
+					}
+
+					/**
+					 * Filter through the way the Payment Amount is rendered
+					 *
+					 * @param string $entry['payment_amount'] The payment amount taken from the lead object
+					 * @param string $entry['currency']       The payment currency taken from the lead object
+					 * @param array  $form                   The Form object to filter through
+					 * @param array  $entry                   The lead object to filter through
+					 */
+					$payment_amount = apply_filters( 'gform_payment_amount', GFCommon::to_money( $entry['payment_amount'], $entry['currency'] ), $form, $entry );
+					if ( ! rgblank( $payment_amount ) ) {
+						?>
+						<div id="gf_payment_amount" class="gf_payment_detail">
+							<?php echo $entry['transaction_type'] == 2 ? esc_html__( 'Recurring Amount', 'gravityforms' ) : esc_html__( 'Amount', 'gravityforms' ); ?>:
+							<span id='gform_payment_amount'><?php echo $payment_amount; // May contain HTML ?></span>
+						</div>
+						<?php
+					}
+				}
+
+				/**
+				 * Fires after the Form Payment Details (The type of payment, the cost, the ID, etc)
+				 *
+				 * @param int   $form['id'] The current Form ID
+				 * @param array $entry       The current Lead object
+				 */
+				do_action( 'gform_payment_details', $form['id'], $entry );
+
+				?>
 			</div>
 		</div>
+
 		<?php
 	}
 
@@ -1118,47 +1140,6 @@ class GFEntryDetail {
 					<a href="post.php?action=edit&post=<?php echo absint( $post->ID ) ?>" alt="<?php esc_attr_e( 'Click to edit post', 'gravityforms' ); ?>" title="<?php esc_attr_e( 'Click to edit post', 'gravityforms' ); ?>"><?php echo esc_html( $post->post_title ) ?></a>
 					<br /><br />
 					<?php
-				}
-
-				/**
-				 * Enables payment details within the entry details
-				 *
-				 * @param bool
-				 * @param array $lead The Entry object
-				 */
-				if ( apply_filters( 'gform_enable_entry_info_payment_details', true, $entry ) ) {
-
-					if ( ! empty( $entry['payment_status'] ) ) {
-						echo $entry['transaction_type'] != 2 ? esc_html__( 'Payment Status', 'gravityforms' ) : esc_html__( 'Subscription Status', 'gravityforms' ); ?>:
-						<span id="gform_payment_status"><?php
-							/**
-							 * Filters through a form payment status and allows modification
-							 *
-							 * @param string $entry['payment_status] A payment status to filter though
-							 * @param array $form The Form Object to filter through
-							 * @param array $entry The Lead Object to filter through
-							 */
-							echo apply_filters( 'gform_payment_status', $entry['payment_status'], $form, $entry ) ?></span>
-						<br /><br />
-						<?php
-						if ( ! empty( $entry['payment_date'] ) ) {
-							echo $entry['transaction_type'] != 2 ? esc_html__( 'Payment Date', 'gravityforms' ) : esc_html__( 'Start Date', 'gravityforms' ) ?>: <?php echo GFCommon::format_date( $entry['payment_date'], false, 'Y/m/d', $entry['transaction_type'] != 2 ) ?>
-							<br /><br />
-							<?php
-						}
-
-						if ( ! empty( $entry['transaction_id'] ) ) {
-							echo $entry['transaction_type'] != 2 ? esc_html__( 'Transaction Id', 'gravityforms' ) : esc_html__( 'Subscriber Id', 'gravityforms' ); ?>: <?php echo esc_html( $entry['transaction_id'] ); ?>
-							<br /><br />
-							<?php
-						}
-
-						if ( ! rgblank( $entry['payment_amount'] ) ) {
-							echo $entry['transaction_type'] != 2 ? esc_html__( 'Payment Amount', 'gravityforms' ) : esc_html__( 'Subscription Amount', 'gravityforms' ); ?>: <?php echo GFCommon::to_money( $entry['payment_amount'], $entry['currency'] ) ?>
-							<br /><br />
-							<?php
-						}
-					}
 				}
 
 				/**

@@ -42,7 +42,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 	/**
 	 * @var string Version number of the Add-On Framework
 	 */
-	private $_feed_version = '0.12';
+	private $_feed_version = '0.13';
 	private $_feed_settings_fields = array();
 	private $_current_feed_id = false;
 
@@ -113,12 +113,12 @@ abstract class GFFeedAddOn extends GFAddOn {
 		}
 
 		$sql = "CREATE TABLE {$wpdb->prefix}gf_addon_feed (
-                  `id` mediumint(8) unsigned not null auto_increment,
-                  `form_id` mediumint(8) unsigned not null,
-                  `is_active` tinyint(1) not null default 1,
-                  `order` mediumint(8) unsigned not null default 0,
-                  `meta` longtext,
-                  `addon_slug` varchar(50),
+                  id mediumint(8) unsigned not null auto_increment,
+                  form_id mediumint(8) unsigned not null,
+                  is_active tinyint(1) not null default 1,
+                  feed_order mediumint(8) unsigned not null default 0,
+                  meta longtext,
+                  addon_slug varchar(50),
                   PRIMARY KEY  (id),
                   KEY addon_form (addon_slug,form_id)
                 ) $charset_collate;";
@@ -455,7 +455,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$sql = $wpdb->prepare(
 			"SELECT * FROM {$wpdb->prefix}gf_addon_feed
-                               WHERE addon_slug=%s {$form_filter} ORDER BY 'order', 'id' ASC", $this->_slug
+                               WHERE addon_slug=%s {$form_filter} ORDER BY 'feed_order', 'id' ASC", $this->_slug
 		);
 
 		$results = $wpdb->get_results( $sql, ARRAY_A );
@@ -473,7 +473,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 		$sql = $wpdb->prepare(
 			"SELECT * FROM {$wpdb->prefix}gf_addon_feed
-                               WHERE addon_slug=%s AND is_active=1 {$form_filter} ORDER BY 'order', 'id' ASC", $this->_slug
+                               WHERE addon_slug=%s AND is_active=1 {$form_filter} ORDER BY 'feed_order', 'id' ASC", $this->_slug
 		);
 
 		$results = $wpdb->get_results( $sql, ARRAY_A );
@@ -490,7 +490,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 		$form_filter = is_numeric( $form_id ) ? $wpdb->prepare( 'AND form_id=%d', absint( $form_id ) ) : '';
 
 		$sql = $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}gf_addon_feed
-                               WHERE addon_slug=%s {$form_filter} ORDER BY 'order', 'id' ASC", $slug );
+                               WHERE addon_slug=%s {$form_filter} ORDER BY 'feed_order', 'id' ASC", $slug );
 
 		$results = $wpdb->get_results( $sql, ARRAY_A );
 		foreach( $results as &$result ) {
@@ -726,7 +726,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 
 			$wpdb->update(
 				$wpdb->prefix . 'gf_addon_feed',
-				array( 'order' => $position ),
+				array( 'feed_order' => $position ),
 				array( 'id' => $feed_id ),
 				array( '%d' ),
 				array( '%d' )

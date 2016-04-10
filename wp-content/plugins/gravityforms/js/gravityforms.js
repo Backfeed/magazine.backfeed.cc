@@ -1506,15 +1506,24 @@ function renderRecaptcha(){
 
 function gformInitSpinner( formId, spinnerUrl ) {
 
-    if( typeof spinnerUrl == 'undefined' || ! spinnerUrl )
+    if( typeof spinnerUrl == 'undefined' || ! spinnerUrl ) {
         spinnerUrl = gform.applyFilters( "gform_spinner_url", gf_global.spinnerUrl, formId );
+    }
 
-	jQuery('#gform_' + formId).submit(function () {
-		if (jQuery('#gform_ajax_spinner_' + formId).length == 0) {
-			jQuery('#gform_submit_button_' + formId + ', #gform_wrapper_' + formId + ' .gform_next_button, #gform_send_resume_link_button_' + formId)
-				.after('<img id="gform_ajax_spinner_' + formId + '"  class="gform_ajax_spinner" src="' + spinnerUrl + '" alt="" />');
+	jQuery('#gform_' + formId).submit( function () {
+		if ( jQuery('#gform_ajax_spinner_' + formId).length == 0 ) {
+            /**
+             * Filter the element after which the AJAX spinner will be inserted.
+             *
+             * @since 2.0
+             *
+             * @param object $targetElem jQuery object containing all of the elements after which the AJAX spinner will be inserted.
+             * @param int    formId      ID of the current form.
+             */
+            var $spinnerTarget = gform.applyFilters( 'gform_spinner_target_elem', jQuery('#gform_submit_button_' + formId + ', #gform_wrapper_' + formId + ' .gform_next_button, #gform_send_resume_link_button_' + formId ), formId );
+            $spinnerTarget.after( '<img id="gform_ajax_spinner_' + formId + '"  class="gform_ajax_spinner" src="' + spinnerUrl + '" alt="" />' );
 		}
-	});
+	} );
 
 }
 

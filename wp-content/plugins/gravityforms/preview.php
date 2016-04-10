@@ -143,7 +143,7 @@ $min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] 
 	</script>
 
 </head>
-<body>
+<body style="display:none;">
 <div id="preview_top">
 	<div id="preview_hdr">
 

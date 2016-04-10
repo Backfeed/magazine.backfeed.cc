@@ -1395,8 +1395,15 @@ class GFFormDetail {
 				<?php gform_tooltip( 'form_field_phone_format' ) ?>
 			</label>
 			<select id="field_phone_format" onchange="SetFieldPhoneFormat(jQuery(this).val());">
-				<option value="standard">(###) ###-####</option>
-				<option value="international"><?php esc_html_e( 'International', 'gravityforms' ); ?></option>
+				<?php
+				$phone_formats = GF_Fields::get( 'phone' )->get_phone_formats( $form_id );
+				
+				foreach ( $phone_formats as $key => $phone_format ) {
+					?>
+					<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $phone_format['label'] ); ?></option>
+					<?php
+				}
+				?>
 			</select>
 		</li>
 		<?php
