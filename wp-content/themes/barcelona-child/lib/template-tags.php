@@ -30,7 +30,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
         }
 
         if ( in_array( 'votedrep', $barcelona_opt ) ) {
-            $barcelona_html .= '<li><span class="fa fa-users"></span>'. round(Backfeed\get_contribution_field($post->ID, 'engagedRepPercentage'), 2) .'</li>';
+            $barcelona_html .= '<li><span class="fa fa-users"></span>'. round(Backfeed\get_contribution_field($post->ID, 'engagedRepPercentage'), 2) .'%</li>';
         }
 
         if ( in_array( 'likes', $barcelona_opt ) ) {
@@ -118,7 +118,7 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
     $barcelona_author_html = '<a href="'. get_author_posts_url( $post->post_author ) .'" rel="author">'. get_the_author_meta( 'display_name', $post->post_author ) .'</a>';
 
     $backfeed_contribution_score = round(Backfeed\get_contribution_field($post->ID, 'score'), 2);
-    $backfeed_voted_reputation = round(Backfeed\get_contribution_field($post->ID, 'engagedRepPercentage'), 2);
+    $backfeed_voted_reputation = round(Backfeed\get_contribution_field($post->ID, 'engagedRepPercentage'), 2).'%';
     
     $barcelona_meta = array(
         'date' => array( 'clock-o', esc_html( get_the_date() ) ),
