@@ -26,7 +26,7 @@ add_action('after_setup_theme', function() {
 		wp_enqueue_style( 'barcelona-main-child' );
 
 		wp_enqueue_script( 'backstretch', '//cdnjs.cloudflare.com/ajax/libs/jquery-backstretch/2.0.4/jquery.backstretch.min.js', ['jquery'], false);
-		wp_enqueue_script( 'mailchimp', '//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js', [], false, true);
+//		wp_enqueue_script( 'mailchimp', '//s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js', [], false, true);
 		wp_enqueue_script( 'bf-main', get_stylesheet_directory_uri().'/main.js', [], false, true);
 	}, 100);
 }, 100);
@@ -54,3 +54,5 @@ add_filter('wppb_signup_user_notification_email', function($message) {
 add_filter('wppb_success_email_confirmation', function() {
 	return '<p class="wppb-success">Your email was successfully confirmed. Click here to login</p>';
 });
+
+add_filter('gform_field_value_tokensOfUser', 'Backfeed\get_current_agent_tokens');
