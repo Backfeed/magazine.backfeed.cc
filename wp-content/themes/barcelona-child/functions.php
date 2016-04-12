@@ -42,10 +42,6 @@ add_filter('gform_rich_text_editor_options', function($editor_settings) {
 	return $editor_settings;
 });
 
-add_action('init', function() {
-	add_rewrite_rule('^raw-space$', 'index.php?post_type=post&orderby=rand', 'top');
-});
-
 add_filter('wppb_signup_user_notification_email', function($message) {
 	error_log($message);
 	return 'added message value';
@@ -55,4 +51,5 @@ add_filter('wppb_success_email_confirmation', function() {
 	return '<p class="wppb-success">Your email was successfully confirmed. Click here to login</p>';
 });
 
-add_filter('gform_field_value_tokensOfUser', 'Backfeed\get_current_agent_tokens');
+if (function_exists('Backfeed\get_current_agent_tokens'))
+	add_filter('gform_field_value_tokensOfUser', 'Backfeed\get_current_agent_tokens');

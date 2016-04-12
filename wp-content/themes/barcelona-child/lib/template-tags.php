@@ -1,6 +1,4 @@
 <?php
-use Backfeed;
-
 function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
 
     global $post;

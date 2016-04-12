@@ -1,4 +1,6 @@
 <?php
+// This template is used for the front page.
+
 global $post, $wp_query;
 
 if (!isset($barcelona_q)) $barcelona_q = $wp_query;
@@ -31,7 +33,7 @@ while ($barcelona_q->have_posts()): $barcelona_q->the_post(); ?>
 					<?=esc_html(barcelona_get_excerpt(20))?>
 				</p>
 
-				<?php backfeed_post_meta(['date', 'score', 'votedrep', 'comments']); ?>
+				<?php backfeed_post_meta(['date', 'score', 'votedrep', 'comments', 'author']); ?>
 
 			</div><!-- .post-details -->
 

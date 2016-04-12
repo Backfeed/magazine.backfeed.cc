@@ -1,10 +1,9 @@
 <?php
 get_header();
 
-if (function_exists('Backfeed\front_page_query')) $barcelona_q = Backfeed\front_page_query();
+if (function_exists('Backfeed\front_page_query')) $barcelona_q = Backfeed\front_page_query(1);
 
 $barcelona_async = false;
-
 ?>
 
 <div class="container backfeed-featured-section">
@@ -20,7 +19,7 @@ $barcelona_async = false;
 	<div class="<?=esc_attr(barcelona_row_class())?>">
 
 		<main id="main" class="<?=esc_attr(barcelona_main_class())?>">
-			<?php include(locate_template('bunch-of-articles.php')); ?>
+			<?php include(locate_template('includes/modules/module-c.php')); ?>
 			<?php barcelona_pagination('infinite', $barcelona_q); ?>
 		</main>
 

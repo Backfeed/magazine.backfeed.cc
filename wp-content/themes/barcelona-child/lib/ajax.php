@@ -8,41 +8,23 @@ add_action('wp_ajax_nopriv_barcelona_pb', 'backfeed_get_module_posts');
 
 function backfeed_get_module_posts() {
     // Override the parent theme's function only on the front page
-    if ($_REQUEST['barcelona_page_id'] !== "78") {
+    if (!in_array($_POST['barcelona_page_id'], ['78', '569'])) {
         barcelona_get_module_posts();
     } else {
         header('content-type:text/html; charset=utf-8');
-
         $barcelona_async = true;
+        $paged = (array_key_exists('barcelona_paged', $_POST) && is_numeric($_POST['barcelona_paged'])) ? intval($_POST['barcelona_paged']) : 1;
 
-        $paged = (array_key_exists('barcelona_paged', $_POST) && is_numeric($_POST['barcelona_paged'])) ? $_POST['barcelona_paged'] : 1;
-
-        $barcelona_q = new WP_Query([
-            'posts_per_page'        => 8,
-            'post_type'             => 'post',
-            'post_status'           => 'publish',
-            'ignore_sticky_posts'   => false,
-            'no_found_rows'         => false,
-            'paged'                 => $paged,
-            'orderby' => 'menu_order',
-            'order' => 'ASC',
-        ]);
-
-        $contributions = Api::get_all_contributions();
-
-        if (is_array($contributions)) {
-            usort($contributions, function($a, $b) { return $b->score - $a->score; });
-            $contribution_ids = array_column($contributions, 'id');
-            $barcelona_q->meta_query = [
-                [
-                    'key' => 'backfeed_contribution_id',
-                    'value' => $contribution_ids,
-                    'compare' => 'IN'
-                ]
-            ];
+        switch ($_POST['barcelona_page_id']) {
+            case '78':
+                if (function_exists('Backfeed\front_page_query')) $barcelona_q = Backfeed\front_page_query($paged);
+                include(locate_template('includes/modules/module-c.php'));
+                break;
+            case '569':
+                if (function_exists('Backfeed\raw_space_query')) $barcelona_q = Backfeed\raw_space_query($paged);
+                include(locate_template('includes/modules/module-d.php'));
+                break;
         }
-
-        include(locate_template('bunch-of-articles.php'));
     }
 
     wp_die();
