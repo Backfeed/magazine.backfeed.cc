@@ -133,6 +133,10 @@ body.home h1.post-title {
   padding-left: 15px;
 }
 
+body.logged-in .hide-when-logged-in {
+  display: none;
+}
+
 @media only screen and (min-width: 768px) {
   .navbar-logo {
     height: 180px;
