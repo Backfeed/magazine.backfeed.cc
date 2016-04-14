@@ -42,14 +42,17 @@ add_filter('gform_rich_text_editor_options', function($editor_settings) {
 	return $editor_settings;
 });
 
-add_filter('wppb_signup_user_notification_email', function($message) {
-	error_log($message);
-	return 'added message value';
-});
-
-add_filter('wppb_success_email_confirmation', function() {
-	return '<p class="wppb-success">Your email was successfully confirmed. Click here to login</p>';
-});
-
+// Number of tokens owned by logged in agent, are added to the Submit Article form, so that the form could be hidden
+// if agent doesn't have enough tokens for the contribution fee.
 if (function_exists('Backfeed\get_current_agent_tokens'))
 	add_filter('gform_field_value_tokensOfUser', 'Backfeed\get_current_agent_tokens');
+
+// Update the token values in the UI upon submission of the Submit Article form.
+// Assuming the contribution fee is 1.
+add_action('gform_after_submission_1', function() {
+?><script>
+	Array.from(document.getElementsByClassName('backfeed-stat-tokens-value')).forEach(function(element) {
+		element.textContent -= 1;
+	});
+</script><?php
+});

@@ -40,7 +40,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
         }
 
         if ( in_array( 'author', $barcelona_opt ) ) {
-            $barcelona_html .= '<li><a href="'. get_author_posts_url( $post->post_author ) .'" rel="author"><span class="fa fa-comments"></span>'. get_the_author_meta( 'display_name', $post->post_author ) .'</a>';
+            $barcelona_html .= '<li><a href="'. get_author_posts_url( $post->post_author ) .'" rel="author"><span class="fa fa-user"></span>'. get_the_author_meta( 'display_name', $post->post_author ) .'</a>';
         }
 
         $barcelona_html .= '</ul>';
