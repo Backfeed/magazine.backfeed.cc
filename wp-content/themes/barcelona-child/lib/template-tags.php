@@ -1,7 +1,12 @@
 <?php
+global $post;
+
+$backfeed_contribution_score = round(Backfeed\get_contribution_field($post->ID, 'score'), 2);
+$backfeed_voted_reputation = round(Backfeed\get_contribution_field($post->ID, 'engagedRepPercentage'), 2).'%';
+
 function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
 
-    global $post;
+    global $post, $backfeed_contribution_score, $backfeed_voted_reputation;
 
     $barcelona_cls = array( 'post-meta clearfix' );
 
@@ -20,7 +25,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
         }
 
         if ( in_array( 'score', $barcelona_opt ) ) {
-            $barcelona_html .= '<li><span class="fa fa-star"></span>'. round(Backfeed\get_contribution_field($post->ID, 'score'), 2) .'</li>';
+            $barcelona_html .= '<li><span class="fa fa-star"></span>'. $backfeed_contribution_score .'</li>';
         }
 
         if ( in_array( 'views', $barcelona_opt ) ) {
@@ -28,7 +33,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
         }
 
         if ( in_array( 'votedrep', $barcelona_opt ) ) {
-            $barcelona_html .= '<li><span class="fa fa-users"></span>'. round(Backfeed\get_contribution_field($post->ID, 'engagedRepPercentage'), 2) .'%</li>';
+            $barcelona_html .= '<li><span class="fa fa-users"></span>'. $backfeed_voted_reputation .'</li>';
         }
 
         if ( in_array( 'likes', $barcelona_opt ) ) {
@@ -36,7 +41,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
         }
 
         if ( in_array( 'comments', $barcelona_opt ) ) {
-            $barcelona_html .= '<li class="post-comments"><span class="fa fa-comments"></span>'. intval( $post->comment_count ) .'</li>';
+            $barcelona_html .= '<li class="post-comments"><span class="fa fa-comments"></span>'. intval($post->comment_count) .'</li>';
         }
 
         if ( in_array( 'author', $barcelona_opt ) ) {
@@ -61,7 +66,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
  */
 function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
 
-    global $post;
+    global $post, $backfeed_contribution_score, $backfeed_voted_reputation;
 
     $barcelona_in_loop = in_the_loop();
     $barcelona_post_format = barcelona_get_post_format();
@@ -114,9 +119,6 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
     $barcelona_categories_html .= '</ul>';
 
     $barcelona_author_html = '<a href="'. get_author_posts_url( $post->post_author ) .'" rel="author">'. get_the_author_meta( 'display_name', $post->post_author ) .'</a>';
-
-    $backfeed_contribution_score = round(Backfeed\get_contribution_field($post->ID, 'score'), 2);
-    $backfeed_voted_reputation = round(Backfeed\get_contribution_field($post->ID, 'engagedRepPercentage'), 2).'%';
     
     $barcelona_meta = array(
         'date' => array( 'clock-o', esc_html( get_the_date() ) ),
