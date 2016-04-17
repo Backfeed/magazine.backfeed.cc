@@ -1,3 +1,5 @@
+# Set up
+
 When cloning this repository, make sure git submodules are being cloned as well:
 
 `git clone --recursive https://github.com/Backfeed/magazine.backfeed.cc.git`
@@ -46,3 +48,11 @@ feed4444
 Follow [the instructions in the plugin repository](https://github.com/Backfeed/d-magazine#install-d-magazine) to configure the plugin for initial use.
 
 Go to the WordPress plugins list at `wp-admin/plugins.php` and make sure `D-Magazine` is activated.
+
+# Use
+Few folders are relevant at all for contributers to this repository:
+
+* `wp-content/themes/barcelona-child`: contains all code specific to the BF Magazine theme. Not reusable in any other theme and thus shouldn't be packed with the plugin.
+* `wp-content/plugins/d-magazine`: the plugin.
+
+
