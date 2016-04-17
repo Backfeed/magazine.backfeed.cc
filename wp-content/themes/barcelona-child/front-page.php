@@ -12,7 +12,7 @@ $barcelona_async = false;
 		<h2 class="backfeed-featured-section-title">Be a Content Miner</h2>
 		<h3 class="backfeed-featured-section-subtitle">Write, Rate, Share and get Tokens</h3>
 	</div>
-	<button class="btn">Take me on a Tour</button>
+	<button id="backfeed-featured-section-btn" class="btn">Take me on a Tour</button>
 </div>
 
 <div class="<?=esc_attr(barcelona_single_class())?>">
