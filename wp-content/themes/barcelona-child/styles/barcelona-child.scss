@@ -6,6 +6,8 @@
   justify-content: space-between;
   align-items: center;
   height: 292px;
+  padding-left: 15px;
+  margin-right: 0;
   position: relative;
   background: url('../images/homepage-banner.jpg') no-repeat;
   background-origin: content-box;
@@ -27,15 +29,31 @@
 
   .backfeed-featured-section-title {
     margin-top: 0;
-    margin-bottom: 5px;
-    font-size: 50px;
+    margin-bottom: 17px;
+    font-size: 25px;
+    font-weight: bold;
     text-transform: uppercase;
+
+    @media only screen and (min-width: 544px) {
+      font-size: 40px;
+    }
+
+    @media only screen and (min-width: 768px) {
+      margin-bottom: 5px;
+      font-size: 50px;
+      font-weight: normal;
+    }
   }
 
   .backfeed-featured-section-subtitle {
     margin-top: 0;
     margin-bottom: 0;
-    font-size: 20px;
+    font-size: 14px;
+
+    @media only screen and (min-width: 544px) {
+      font-size: 20px;
+
+    }
   }
 
 
@@ -53,14 +71,14 @@
   }
 }
 
-#page-wrapper {
-  margin-top: 20px;
-}
-
-#page-wrapper > .container:nth-of-type(1).backfeed-featured-section {
+#page-wrapper > .container:nth-of-type(1).backfeed-featured-section-container {
   padding-top: 0;
   margin-top: 0;
   margin-bottom: 29px;
+}
+
+#page-wrapper {
+  margin-top: 20px;
 }
 
 .wp-media-buttons {
@@ -144,6 +162,10 @@ body.logged-in .hide-when-logged-in {
 .attachments-browser > .media-toolbar,
 .attachments-browser > .media-sidebar {
   display: none;
+}
+
+body.page .featured-image .fimg-inner {
+  min-height: 150px;
 }
 
 @media only screen and (min-width: 768px) {
