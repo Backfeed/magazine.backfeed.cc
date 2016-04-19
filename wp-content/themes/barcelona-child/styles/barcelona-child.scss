@@ -1,4 +1,5 @@
 @import 'tooltip';
+@import 'theme-overrides';
 
 .backfeed-featured-section {
   display: flex;
@@ -56,7 +57,6 @@
     }
   }
 
-
   .btn {
     color: white;
     text-transform: uppercase;
@@ -75,15 +75,6 @@
   padding-top: 0;
   margin-top: 0;
   margin-bottom: 29px;
-}
-
-#page-wrapper {
-  margin-top: 20px;
-}
-
-.wp-media-buttons {
-  float: right;
-  margin-bottom: 0.5rem;
 }
 
 .gform_wrapper {
@@ -113,35 +104,6 @@
   }
 }
 
-.panel-group .panel-heading {
-  padding-bottom: 0;
-}
-
-.post-summary .post-meta,
-.posts-box-3 .post-summary,
-.type-page .post-content{
-  margin-bottom: 0;
-}
-
-.post-content a {
-  &:link {
-    color: #f2132d;
-  }
-
-  &:visited {
-    color: #AC0E21;
-  }
-
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
-body:not(.barcelona-fimg-cl) .sidebar-right .post-content .barcelona-sc-accordion h4:first-child {
-  margin-bottom: 0;
-  transform: translateY(6px);
-}
-
 body.home h1.post-title {
   display: none !important;
 }
@@ -159,31 +121,16 @@ body:not(.logged-in) .hide-when-logged-out {
   display: none;
 }
 
-.screen-reader-text {
-  display: none;
-}
 
-.attachments-browser > .media-toolbar,
-.attachments-browser > .media-sidebar {
-  display: none;
-}
 
 body.page .fimg-fw .fimg-inner {
   min-height: 150px;
 }
 
-@media only screen and (min-width: 768px) {
-  .navbar-logo {
-    height: 180px;
-    line-height: 180px;
-    width: 400px;
-  }
 
-  #menu-main-menu .alternate-hierarchy {
+
+.has-nav-menu .alternate-hierarchy {
+  @media only screen and (min-width: 768px) {
     float: right;
-  }
-
-  .panel-title a .inner {
-    width: 100%;
   }
 }

@@ -31,6 +31,54 @@
   display: block;
   width: 0; }
 
+#page-wrapper {
+  margin-top: 20px; }
+
+.wp-media-buttons {
+  float: right;
+  margin-bottom: 0.5rem; }
+
+.panel-group .panel-heading {
+  padding-bottom: 0; }
+
+.post-summary .post-meta,
+.posts-box-3 .post-summary,
+.type-page .post-content {
+  margin-bottom: 0; }
+
+.post-content a:link {
+  color: #f2132d; }
+.post-content a:visited {
+  color: #AC0E21; }
+.post-content a:hover {
+  text-decoration: underline; }
+
+body:not(.barcelona-fimg-cl) .sidebar-right .post-content .barcelona-sc-accordion h4:first-child {
+  margin-bottom: 0;
+  transform: translateY(6px); }
+
+.screen-reader-text {
+  display: none; }
+
+.media-modal {
+  height: 50%;
+  width: 360px;
+  top: 25% !important;
+  margin-left: auto;
+  margin-right: auto; }
+
+.attachments-browser > .media-toolbar,
+.attachments-browser > .media-sidebar {
+  display: none; }
+
+@media only screen and (min-width: 768px) {
+  .navbar-logo {
+    height: 180px;
+    line-height: 180px;
+    width: 400px; }
+
+  .panel-title a .inner {
+    width: 100%; } }
 .backfeed-featured-section {
   display: flex;
   flex-direction: column;
@@ -89,13 +137,6 @@
   margin-top: 0;
   margin-bottom: 29px; }
 
-#page-wrapper {
-  margin-top: 20px; }
-
-.wp-media-buttons {
-  float: right;
-  margin-bottom: 0.5rem; }
-
 .gform_wrapper {
   margin-bottom: 0 !important; }
   .gform_wrapper .gfield_description {
@@ -114,25 +155,6 @@
       border-color: #e71d1d;
       background-color: #e71d1d; }
 
-.panel-group .panel-heading {
-  padding-bottom: 0; }
-
-.post-summary .post-meta,
-.posts-box-3 .post-summary,
-.type-page .post-content {
-  margin-bottom: 0; }
-
-.post-content a:link {
-  color: #f2132d; }
-.post-content a:visited {
-  color: #AC0E21; }
-.post-content a:hover {
-  text-decoration: underline; }
-
-body:not(.barcelona-fimg-cl) .sidebar-right .post-content .barcelona-sc-accordion h4:first-child {
-  margin-bottom: 0;
-  transform: translateY(6px); }
-
 body.home h1.post-title {
   display: none !important; }
 
@@ -146,26 +168,11 @@ body.logged-in .hide-when-logged-in {
 body:not(.logged-in) .hide-when-logged-out {
   display: none; }
 
-.screen-reader-text {
-  display: none; }
-
-.attachments-browser > .media-toolbar,
-.attachments-browser > .media-sidebar {
-  display: none; }
-
 body.page .fimg-fw .fimg-inner {
   min-height: 150px; }
 
 @media only screen and (min-width: 768px) {
-  .navbar-logo {
-    height: 180px;
-    line-height: 180px;
-    width: 400px; }
-
-  #menu-main-menu .alternate-hierarchy {
-    float: right; }
-
-  .panel-title a .inner {
-    width: 100%; } }
+  .has-nav-menu .alternate-hierarchy {
+    float: right; } }
 
 /*# sourceMappingURL=barcelona-child.css.map */
