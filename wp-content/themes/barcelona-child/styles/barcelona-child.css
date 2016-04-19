@@ -143,6 +143,9 @@ body.home h1.post-title {
 body.logged-in .hide-when-logged-in {
   display: none; }
 
+body:not(.logged-in) .hide-when-logged-out {
+  display: none; }
+
 .screen-reader-text {
   display: none; }
 
@@ -150,7 +153,7 @@ body.logged-in .hide-when-logged-in {
 .attachments-browser > .media-sidebar {
   display: none; }
 
-body.page .featured-image .fimg-inner {
+body.page .fimg-fw .fimg-inner {
   min-height: 150px; }
 
 @media only screen and (min-width: 768px) {
