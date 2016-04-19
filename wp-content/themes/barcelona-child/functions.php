@@ -56,3 +56,12 @@ add_action('gform_after_submission_1', function() {
 	});
 </script><?php
 });
+
+// After successful register, login the user and redirect to homepage.
+add_action( 'wppb_register_success', function($http_request, $form_name, $user_id){
+	wp_signon([
+		'user_login' => $http_request['email'],
+		'user_password' => $http_request['passw1']
+	]);
+	wp_redirect(home_url()); exit;
+}, 20, 3 );
