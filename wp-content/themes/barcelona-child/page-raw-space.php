@@ -6,11 +6,9 @@ get_header();
 
 barcelona_breadcrumb();
 
-if (function_exists('Backfeed\raw_space_query')) $barcelona_q = Backfeed\raw_space_query(1);
+if (function_exists('Backfeed\raw_space_query')) $barcelona_q = Backfeed\raw_space_query();
 
 $barcelona_mod_header = '<div class="box-header archive-header has-title"><h2 class="title">Raw Space</h2></div>';
-
-$barcelona_mod_post_meta = ["date", "author", "score", "votedrep", "comments"];
 
 ?>
 

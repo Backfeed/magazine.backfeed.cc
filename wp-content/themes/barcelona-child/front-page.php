@@ -1,7 +1,7 @@
 <?php
 get_header();
 
-if (function_exists('Backfeed\front_page_query')) $barcelona_q = Backfeed\front_page_query(1);
+if (function_exists('Backfeed\front_page_query')) $barcelona_q = Backfeed\front_page_query();
 
 $barcelona_async = false;
 ?>
