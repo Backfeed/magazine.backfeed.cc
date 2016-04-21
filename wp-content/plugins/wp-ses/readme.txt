@@ -1,49 +1,50 @@
 === Plugin Name ===
 Contributors: SylvainDeaure
 Donate link: http://wp-ses.com/donate.html
-Tags: email,ses,amazon,webservice,delivrability,newsletter,autoresponder,mail,wp_mail,smtp,service
+Tags: email,ses,amazon,webservice,deliverability,newsletter,autoresponder,mail,wp_mail,smtp,service
 Requires at least: 3.0.0
-Tested up to: 4.1
+Tested up to: 4.4.2
 Stable tag: trunk
 
-WP-SES redirects all outgoing WordPress emails through Amazon Simple Email Service (SES) for maximum email delivrability.
+WP-SES redirects all outgoing WordPress emails through Amazon Simple Email Service (SES) for maximum email deliverability.
 
 == Description ==
 
 WP-SES redirects All outgoing WordPress emails through Amazon Simple Email Service (SES) instead of local wp_mail function.
-This ensures high email delivrability, email trafic statistics and a powerful managed infrastructure.
+This ensures high email deliverability, email traffic statistics and a powerful managed infrastructure.
 
-This plugin is functionnal and I use it on several websites.
+This plugin is functional and I use it on several websites.
 WPMU features are so far experimental.
 
 Current features are:
 
-*	Ability to adjust WordPress Default Sender Email and Name
-*	Validation of Amazon API Credentials
-*	Request confirmation for sender Emails
-*	Test message within Amazon Sandbox mode
-*	Full integration as seamless replacement for wp_mail internal function
-*	Dasboard panel with Quota and statistics
-*	Ability to customize return path for delivery failure notifications
-*       Custom Reply-To or from Headers
-*       Default config values for centralised WPMU setups
-*       SES Endpoint selection     
-*       Mails with attachments (Compatible with Contact Form 7)  
-*       File logging feature (may be verbose and unsecure, do not use as is in production for a long period of time)
+* Ability to adjust WordPress Default Sender Email and Name
+* Validation of Amazon API Credentials
+* Request confirmation for sender Emails
+* Test message within Amazon Sandbox mode
+* Full integration as seamless replacement for wp_mail internal function
+* Dasboard panel with Quota and statistics
+* Ability to customize return path for delivery failure notifications
+* Custom Reply-To or from Headers
+* Default config values for centralized WPMU setups
+* SES Endpoint selection     
+* Mails with attachments (Compatible with Contact Form 7)  
+* File logging feature (may be verbose and insecure, do not use as is in production for a long period of time)
+* English, French, Spanish, Serbo-Croatian translations (fell free to send your mo/po files to support more languages)
 
 See full features at http://wp-ses.com/features.html
 
 Roadmap
 
-*	Graphical SES Statistics
-*	Full featured Error management
-*	Control of sending rate
-*	Notice for volume limits
-*	Bounce and blacklist management
+* Graphical SES Statistics
+* Full featured Error management
+* Control of sending rate
+* Notice for volume limits
+* Bounce and blacklist management
 
 
 You can read more about Amazon SES here : http://aws.amazon.com/ses/
-This plugin uses the Amazon Simple Email Service PHP class at http://sourceforge.net/projects/php-aws-ses/
+This plugin uses a fork of the Amazon Simple Email Service PHP class at http://sourceforge.net/projects/php-aws-ses/
 
 == Installation ==
 
@@ -64,6 +65,11 @@ Then, proceed to the settings:
 7. Once in production mode, you can use the top button to activate the plugin.
 8. From the plugin, you can manage and validate other senders.
 
+Note 1 : If you use an IAM user (recommended) , give it at least the following permissions : ListIdentities, SendEmail, SendRawEmail
+To use all features, you'll also need VerifyEmailIdentity, DeleteIdentity, GetSendQuota, GetSendStatistics
+
+Note 2 : Email validation is per SES Endpoint, not global.
+
 == Frequently Asked Questions ==
 
 = Where can I find support for the plugin ? =
@@ -72,10 +78,10 @@ Please use our main website http://wp-ses.com/faq.html for all support related q
 
 = What are the pre-requisites ? =
 
-*	A WP3+ Self hosted WordPress Blog
-*	PHP5 and Curl PHP extension
-*	An Amazon Web Service account
-*	Validate your SES service
+* A WP3+ Self hosted WordPress Blog
+* PHP5 and Curl PHP extension
+* An Amazon Web Service account
+* Validate your SES service
 
 = Can you help me about... (an Amazon concern) =
 
@@ -87,7 +93,7 @@ Please direct your specific Amazon questions to the Amazon support.
 Please, DO test your setting without this.
 Then, when all works as expected, fill in the config file.
 
-Edit the wp-config.php file, and add what you want to define. Here is a complete setup, some defines are optionnal.
+Edit the wp-config.php file, and add what you want to define. Here is a complete setup, some defines are optional.
 
 // WP-SES defines  
 
@@ -127,11 +133,39 @@ define('WP_SES_ENDPOINT', 'email.us-west-2.amazonaws.com');
 OR  
 define('WP_SES_ENDPOINT', 'email.eu-west-1.amazonaws.com');  
 
+= How to do other actions on mail sent ? =
+
+I was asked to add a hook once mail is sent.
+Could be used to log emails, or post email info to an API or database.
+
+wpses_mailsent hook is available for that use.
+
+In your code, define a callback function :
+
+function myMailSentHook($to, $subject, $message, $headers, $attachments ) { ... }
+// params are the same as the wp_mail() function.
+
+// Then add your action :
+add_action('wpses_mailsent','myMailSentHook',10,5);
+
 == Screenshots ==
 
 1. the settings screen of WP-SES plugin.
 
 == Changelog ==
+
+= 0.4.8 =
+* Experimental support for cc: and Bcc: in custom header
+* Domain verification is ok
+
+= 0.4.0 =
+* Serbo-Croatian Translation by https://webhostinggeeks.com/
+* Fixed Reply-to: extraction Regexp
+* fixes from hbradleyiii https://wordpress.org/support/topic/bug-with-force-plugin-activation-option
+* better handling of custom headers
+* removed ListVerifiedEmailAddresses deprecated api call, now using ListIdentities.
+* added wpses_mailsent hook
+* several minor fixes.
 
 = 0.3.58 =
 * Tries to always auto-activate in answer to https://wordpress.org/support/topic/the-plugin-get-inactive-after-a-few-minutes
@@ -212,6 +246,15 @@ First public Beta release
 * Proof of concept
 
 == Upgrade Notice ==
+
+= 0.4.8 =
+Domain verification is ok
+
+= 0.4.2 =
+Experimental support for cc: and Bcc: in custom header
+
+= 0.4.0 =
+Removed deprecated SES call, several bugfixes, added sr_RS translation.
 
 = 0.2.9 =
 Pre-release, mainly bugfixes, before another update.

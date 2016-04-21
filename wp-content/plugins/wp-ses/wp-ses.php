@@ -2,27 +2,15 @@
 
 /*
   Plugin Name: WP SES
-  Version: 0.3.60
+  Version: 0.4.8
   Plugin URI: http://wp-ses.com
   Description: Uses Amazon Simple Email Service instead of local mail for all outgoing WP emails.
   Author: Sylvain Deaure
   Author URI: http://www.blog-expert.fr
  */
 
-define('WPSES_VERSION', 0.360);
+define('WPSES_VERSION', 0.48);
 
-// refs
-// http://aws.amazon.com/fr/
-//
-// 0.3.48 : Experimental WP Better Email compatibility
-// 0.3.46 : Remove notices, updated old code.
-// 0.3.42 : Spanish translation
-// 0.3.4 : auto activation via WP_SES_AUTOACTIVATE define
-// 0.3.1 : Reply_to and global WPMU setup
-// 0.3 : Last WP update
-// 0.2.2 : Reference language is now english
-// 0.2.1 : return-path | stats | Quota | Deactivate plugin | Production mode test
-// 0.1.2
 // TODO
 // stats cache (beware of directory)
 // logs of mails sent (inc details ?)
@@ -33,6 +21,7 @@ define('WPSES_VERSION', 0.360);
 // dashboard integration (main stats without extra page)
 // Add error display for test messages
 // add attachments (contact form 7) : see https://github.com/daniel-zahariev/php-aws-ses
+// retrieve the security credentials from the instance metadata service for EC2 : cf Christian at tellnes
 
 if (defined('WP_SES_ACCESS_KEY') and defined('WP_SES_SECRET_KEY')) {
     define('WP_SES_RESTRICTED', true);
@@ -48,7 +37,7 @@ if (is_admin()) {
     register_activation_hook(__FILE__, 'wpses_install');
     register_deactivation_hook(__FILE__, 'wpses_uninstall');
 }
-require_once (WP_PLUGIN_DIR . '/wp-ses/ses.class.0.8.4.php');
+require_once (WP_PLUGIN_DIR . '/wp-ses/ses.class.0.8.6.php');
 
 function wpses_init() {
     load_plugin_textdomain('wpses', false, basename(dirname(__FILE__)));
@@ -91,35 +80,46 @@ function wpses_options() {
     if (!in_array('administrator', $current_user->roles)) {
         //die('Pas admin');
     }
-    $autorized = '';
-    if (($wpses_options['access_key'] != '') and ($wpses_options['secret_key'] != '')) {
-        $autorized = wpses_getverified();
+    $authorized = '';
+    if (($wpses_options['access_key'] != '') and ( $wpses_options['secret_key'] != '')) {
+        $authorized = wpses_getverified();
     }
     $senders = (array) get_option('wpses_senders');
     // ajouter dans senders les verified absents
     $updated = false;
-    if ('' != $autorized) {
-        if (!is_array($autorized)) {
-            $authorized = array($autorized);
+    if ('' != $authorized) {
+        if (!is_array($authorized)) {
+            $authorized = array($authorized);
         }
-        foreach ($autorized as $email) {
+        foreach ($authorized as $email) {
+            // if (false !==strpos($email, '@')) {
+            // identity if full email
             if (!array_key_exists($email, $senders)) {
                 $senders[$email] = array(
-                    -1,
+                    -1, // Got an Id, but not request id
                     TRUE
                 );
                 $updated = true;
             } else {
                 if (!$senders[$email][1]) {
-                    // activer ceux qu'on a reçu depuis
+                    // activate the new emails 
                     $senders[$email][1] = true;
                     $updated = true;
                 }
             }
+            /* } else {
+              // identity is domain only
+              // Must check with all senders
+              // No request id here, just tag as valid
+              foreach($senders as $email=>$detail) {
+
+
+              }
+              } */
         }
         // remove old senders
         foreach ($senders as $email => $info) {
-            if ($info[1] and !in_array($email, $autorized)) {
+            if ($info[1] and ! in_array($email, $authorized)) {
                 $senders[$email][1] = false;
                 // echo 'remove '.$email.' ';
                 $updated = true;
@@ -130,15 +130,10 @@ function wpses_options() {
     if ($updated) {
         update_option('wpses_senders', $senders);
     }
-    if ((($wpses_options['sender_ok'] != 1) and ($wpses_options['force'] != 1)) or ($wpses_options['credentials_ok'] != 1)) {
-        $wpses_options['active'] = 0;
-        wpses_log('Deactivate sender_ok=' . $wpses_options['sender_ok'] . ' Force=' . $wpses_options['force'] . ' credentials_ok=' . $wpses_options['credentials_ok']);
-        update_option('wpses_options', $wpses_options);
-    }
+
+    $wpses_options['sender_ok'] = 0;
+
     if (($wpses_options['from_email'] != '')) {
-        if (!isset($senders[$wpses_options['from_email']])) {
-            $senders[$wpses_options['from_email']] = array(-1, false);
-        }
         if ($senders[$wpses_options['from_email']][1] === TRUE) { //
             // email exp enregistré non vide et listé, on peut donc supposer que credentials ok et exp ok.
             if ($wpses_options['credentials_ok'] == 0) {
@@ -153,27 +148,51 @@ function wpses_options() {
             }
         } else {
             //if ($senders[$wpses_options['from_email']][1] !== TRUE) { //
-            $wpses_options['sender_ok'] = 0;
-            wpses_log('Sender not OK');
-            update_option('wpses_options', $wpses_options);
+            //$wpses_options['sender_ok'] = 0;
+            //wpses_log('Sender not OK');
+            //update_option('wpses_options', $wpses_options);
         }
+        //if (!isset($senders[$wpses_options['from_email']])) {
+        if (0 == $wpses_options['sender_ok']) {
+            // email is not known, but domain could be listed
+            list($user, $domain) = explode('@', $wpses_options['from_email']);
+            if ($senders[$domain][1] === TRUE) {
+                // domain is validated
+                //$senders[$wpses_options['from_email']] = array(-1, true);
+                $wpses_options['sender_ok'] = 1;
+                wpses_log('Sender domain ok');
+                $wpses_options['credentials_ok'] = 1;
+                update_option('wpses_options', $wpses_options);
+            } else {
+                //$senders[$wpses_options['from_email']] = array(-1, false);
+            }
+        }
+    }
+
+    if ((($wpses_options['sender_ok'] != 1) and ( $wpses_options['force'] != 1)) or ( $wpses_options['credentials_ok'] != 1)) {
+        $wpses_options['active'] = 0;
+        wpses_log('Deactivate sender_ok=' . $wpses_options['sender_ok'] . ' Force=' . $wpses_options['force'] . ' credentials_ok=' . $wpses_options['credentials_ok']);
+        update_option('wpses_options', $wpses_options);
     }
 
     if (!empty($_POST['activate'])) {
         $wpses_options['force'] = 0;
-        if (1 == $_POST['force']) {
-            // bad hack to force plugin activation with IAM credentials
-            $wpses_options['sender_ok'] == 1;
-            $wpses_options['force'] = 1;
-            wpses_log('Forced activation');
-        }
-        if (($wpses_options['sender_ok'] == 1) and ($wpses_options['credentials_ok'] == 1)) {
+        if (($wpses_options['sender_ok'] == 1) and ( $wpses_options['credentials_ok'] == 1)) {
             $wpses_options['active'] = 1;
             wpses_log('Normal activation');
             update_option('wpses_options', $wpses_options);
             echo '<div id="message" class="updated fade">
-							<p>' . __('Plugin is activated and functionnal', 'wpses') . '</p>
-							</div>' . "\n";
+			<p>' . __('Plugin is activated and functionnal', 'wpses') . '</p>
+			</div>' . "\n";
+        }
+        if (isset($_POST['force']) and 1 == $_POST['force']) {
+            // bad hack to force plugin activation with IAM credentials
+            $wpses_options['sender_ok'] = 1;
+            $wpses_options['credentials_ok'] = 1;
+            $wpses_options['active'] = 1;
+            $wpses_options['force'] = 1;
+            wpses_log('Forced activation');
+            update_option('wpses_options', $wpses_options);
         }
     }
     if (!empty($_POST['deactivate'])) {
@@ -181,8 +200,8 @@ function wpses_options() {
         wpses_log('Manual deactivation');
         update_option('wpses_options', $wpses_options);
         echo '<div id="message" class="updated fade">
-							<p>' . __('Plugin de-activated', 'wpses') . '</p>
-							</div>' . "\n";
+			<p>' . __('Plugin de-activated', 'wpses') . '</p>
+			</div>' . "\n";
     }
     if (!empty($_POST['activatelogs'])) {
 
@@ -195,8 +214,8 @@ function wpses_options() {
         } else {
             @ unlink(WP_PLUGIN_DIR . '/wp-ses/log/wpses.log');
             echo '<div id="message" class="updated fade">
-							<p>' . __('Logs activated', 'wpses') . '</p>
-							</div>' . "\n";
+			<p>' . __('Logs activated', 'wpses') . '</p>
+			</div>' . "\n";
             $wpses_options['log'] = 1;
             update_option('wpses_options', $wpses_options);
             wpses_log('Start Logging');
@@ -247,7 +266,7 @@ function wpses_options() {
         $wpses_options['endpoint'] = trim($_POST['endpoint']); //
         // TODO si mail diff�re, relancer proc�dure check => resetter sender_ok si besoin
 
-        if (($wpses_options['access_key'] != trim($_POST['access_key'])) or ($wpses_options['secret_key'] != trim($_POST['secret_key']))) {
+        if (($wpses_options['access_key'] != trim($_POST['access_key'])) or ( $wpses_options['secret_key'] != trim($_POST['secret_key']))) {
             wpses_log('API Keys changed, reset state and deactivate');
             $wpses_options['credentials_ok'] = 0;
             $wpses_options['sender_ok'] = 0;
@@ -332,7 +351,7 @@ function wpses_admin_warnings() {
 function wpses_admin_menu() {
     add_options_page('wpses', __('WP SES', 'wpses'), 'manage_options', __FILE__, 'wpses_options');
     // Quota and Stats
-    if (!defined('WP_SES_HIDE_STATS') or (false == WP_SES_HIDE_STATS)) {
+    if (!defined('WP_SES_HIDE_STATS') or ( false == WP_SES_HIDE_STATS)) {
         add_submenu_page('index.php', 'SES Stats', 'SES Stats', 'manage_options', 'wp-ses/ses-stats.php');
     }
 }
@@ -362,16 +381,22 @@ function wpses_message_step1done() {
     echo "<div id='wpses-warning' class='updated fade'><p><strong>" . __("A confirmation request has been sent. You will receive at the stated email a confirmation request from amazon SES. You MUST click on the provided link in order to confirm your sender Email.<br />SES Answer - ", 'wpses') . $WPSESMSG . "</strong></p></div>";
 }
 
+/**
+ * 
+ * @global type $wpses_options
+ * @global type $SES
+ * @return Fetches verifiedIdentities
+ */
 function wpses_getverified() {
     global $wpses_options;
     global $SES;
     wpses_check_SES();
-    @ $result = $SES->listVerifiedEmailAddresses();
+    @ $result = $SES->listIdentities();
     if (is_array($result)) {
-        wpses_log(count($result) . ' Verified Emails.');
-        return $result['Addresses'];
+        wpses_log(count($result) . ' Verified Identities.');
+        return $result['Identities'];
     } else {
-        wpses_log('No verified Emails.');
+        wpses_log('No verified Identity.');
         return NULL;
     }
 }
@@ -406,7 +431,7 @@ function wpses_verify_sender_step1($mail) {
     //Use our custom handler
     set_error_handler('wpses_error_handler');
     try {
-        $rid = $SES->verifyEmailAddress($mail);
+        $rid = $SES->verifyEmailIdentity($mail);
         $senders = get_option('wpses_senders');
         if ($rid <> '') {
             $senders[$mail] = array(
@@ -438,6 +463,28 @@ function wpses_remove_sender($mail) {
     $rid = $SES->deleteVerifiedEmailAddress($mail);
     $WPSESMSG .= ' id ' . var_export($rid, true);
     echo "<div id='wpses-warning' class='updated fade'><p><strong>" . $mail . '<br />' . __("This email address has been removed from verified senders.", 'wpses') . "</strong></p></div>";
+}
+
+/**
+ * Returns true is sender email is defined and allowed by ses
+ * @global type $wpses_options
+ */
+function wpses_sender_confirmed() {
+    global $wpses_options;
+    if ($wpses_options['from_email'] != '') {
+        $senders = (array) get_option('wpses_senders');
+        if ($senders[$wpses_options['from_email']][1]) {
+            // email matches
+            return true;
+        }
+        // email is not known, but domain could be listed
+        list($user, $domain) = explode('@', $wpses_options['from_email']);
+        if ($senders[$domain][1] === TRUE) {
+            //echo($domain." domain validated ");
+            return true;
+        }
+    }
+    return false;
 }
 
 function wpses_message_testdone() {
@@ -536,7 +583,9 @@ function wpses_mail($to, $subject, $message, $headers = '', $attachments = '') {
         if ('headers' == strtolower($wpses_options['reply_to'])) {
             // extract replyto from headers
             $rto = array();
-            if (preg_match('/^Reply-To: ([a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4})\b/imsU', $headers, $rto)) {
+            //if (preg_match('/^Reply-To: ([a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4})\b/imsU', $headers, $rto)) {
+            //if (preg_match('/^Reply-To: (.*)\b/imsU', $headers, $rto)) {
+            if (preg_match('/^Reply-To: (.*)/im', $headers, $rto)) {
                 // does only support one email for now.
                 $m->addReplyTo($rto[1]);
             }
@@ -544,7 +593,21 @@ function wpses_mail($to, $subject, $message, $headers = '', $attachments = '') {
                 // Uses "From:" header - was /isU which broke things, see https://wordpress.org/support/topic/gravity-forms-18205-latest-contact-form-7-403-latest-not-working
                 $from = $rto[1];
             }
-            // Should we handle cc and bcc: from headers too ? Guess so... TODO
+            // Handle multiple cc and bcc: from headers too ? Guess so... TODO
+            if ('' != $headers) {
+                $headers = str_replace("\r\n", "\n", $headers);
+                $lines = explode("\n", $headers);
+                foreach ($lines as $line) {
+                    if (preg_match('/^cc: (.*)/im', $line, $cc)) {
+                        $m->addCC($cc[1]);
+                    }
+                    if (preg_match('/^Bcc: (.*)/im', $line, $Bcc)) {
+                        $m->addBCC($Bcc[1]);
+                    }
+                }
+            }
+            // Test : use full headers if provided
+            //$m->addCustomHeader($headers);
         } else {
             $m->addReplyTo($wpses_options['reply_to']);
         }
@@ -571,11 +634,23 @@ function wpses_mail($to, $subject, $message, $headers = '', $attachments = '') {
     $res = $SES->sendEmail($m);
     restore_error_handler();
 
+    // Call custom Hook
+    do_action('wpses_mailsent', $to, $subject, $message, $headers, $attachments);
+
     if (is_array($res)) {
         wpses_log('SES id=' . $res['MessageId']);
         return $res['MessageId'];
     } else {
         return NULL;
+    }
+}
+
+function wpses_default_options($array, $value) {
+    global $wpses_options;
+    foreach ($array as $key) {
+        if (!isset($wpses_options[$key])) {
+            $wpses_options[$key] = '';
+        }
     }
 }
 
@@ -585,15 +660,10 @@ function wpses_getoptions() {
     if (!is_array($wpses_options)) {
         $wpses_options = array();
     }
-    if (!array_key_exists('reply_to', $wpses_options)) {
-        $wpses_options['reply_to'] = '';
-    }
-    if (!array_key_exists('force', $wpses_options)) {
-        $wpses_options['force'] = '0';
-    }
-    if (!array_key_exists('log', $wpses_options)) {
-        $wpses_options['log'] = '0';
-    }
+    wpses_default_options(array('reply_to', 'access_key', 'secret_key', 'from_email', 'from_name', 'return_path'), '');
+    wpses_default_options(array('sender_ok', 'credentials_ok'), 1);
+    wpses_default_options(array('force', 'log', 'active'), 0);
+
     if (defined('WP_SES_ENDPOINT')) {
         $wpses_options['endpoint'] = WP_SES_ENDPOINT;
     }
@@ -636,7 +706,7 @@ if (!isset($wpses_options)) {
     wpses_getoptions();
 }
 // Test : always auto-activate
-$wpses_options['active'] = 1;
+//$wpses_options['active'] = 1;
 
 if ($wpses_options['active'] == 1) {
     if (!function_exists('wp_mail')) {

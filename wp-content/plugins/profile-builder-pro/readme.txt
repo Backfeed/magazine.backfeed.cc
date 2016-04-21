@@ -6,8 +6,8 @@ Tags: registration, profile, user registration, custom field registration, custo
 custom registration, custom registration form, custom registration page, extra user fields, registration page, user custom fields, user listing, user login, user registration form, front-end login, 
 front-end register, front-end registration, frontend edit profile, edit profileregistration, customize profile, user fields, builder, profile builder, custom fields, avatar
 Requires at least: 3.1
-Tested up to: 4.4.2
-Stable tag: 2.3.4
+Tested up to: 4.5
+Stable tag: 2.3.5
 
 
 Login, registration and edit profile shortcodes for the front-end. Also you can chose what fields should be displayed or add custom ones.
@@ -99,6 +99,13 @@ This plugin only adds/removes fields in the front-end. The default information-f
 
 
 == Changelog ==
+
+= 2.3.5 =
+Fixed issue regarding password update not working in certain cases
+Changed label for when login with username is selected
+Fixed a issue regarding the password field and Admin Email customizer
+Fixed small css issue regarding checkboxes labels
+Fixed a problem with Userlisting templates not saving correctly
 
 = 2.3.4 =
 We now load the plugin translation from the current theme in the folder local_pb_lang if it exists otherwise normally from the plugin dir

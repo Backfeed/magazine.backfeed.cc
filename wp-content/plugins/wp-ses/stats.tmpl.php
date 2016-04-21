@@ -6,7 +6,7 @@
     <h3><?php _e('Sending limits', 'wpses') ?></h3>
     <div style="border:1px solid#ccc; padding:10px; float:right; ">
         Don't forget to check online FAQs on <a href="http://wp-ses.com/" target="_blank">WP-SES</a> website.<br />
-        We also provide usefull tips on email delivrability<br />and successfull list building.
+        We also provide useful tips on email deliverability<br />and successful list building.
     </div>
 
     <?php

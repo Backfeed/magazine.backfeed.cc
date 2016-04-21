@@ -407,6 +407,22 @@ add_filter( 'mustache_variable_ec_user_email', 'wppb_ec_replace_user_email', 10,
  * @return string
  */
 function wppb_ec_replace_password( $value, $merge_tag_name, $merge_tag, $extra_data ){
+    /* don't send the password to the admin */
+    global $wp_current_filter;
+    if( !empty( $wp_current_filter ) && is_array( $wp_current_filter ) ){
+        foreach( $wp_current_filter as $filter ){
+            if( $filter == 'wppb_register_admin_email_subject_without_admin_approval' ||
+                $filter == 'wppb_register_admin_email_message_without_admin_approval' ||
+                $filter == 'wppb_register_admin_email_subject_with_admin_approval' ||
+                $filter == 'wppb_register_admin_email_message_with_admin_approval' ||
+                $filter == 'wppb_recover_password_message_content_sent_to_admin' ||
+                $filter == 'wppb_recover_password_message_title_sent_to_admin'
+              ){
+                return __( 'The users selected password at signup', 'profile-builder' );
+            }
+        }
+    }
+
 	$wppb_general_settings = get_option( 'wppb_general_settings' );
 
 	if( empty( $extra_data['email_confirmation_unserialized_data']['user_pass'] ) && empty( $extra_data['user_password'] ) ){

@@ -9,7 +9,7 @@
     </form>  
     <div style="border:1px solid#ccc; padding:10px; float:right; ">
         Don't forget to check online FAQs on <a href="http://wp-ses.com/" target="_blank">WP-SES</a> website.<br />
-        We also provide usefull tips on email delivrability<br />and successfull list building.
+        We also provide useful tips on email deliverability<br />and successful list building.
     </div>
     <ul>
         <?php
@@ -31,14 +31,15 @@
         }
         ?></li>
         <?php
-        if (($wpses_options['from_email'] != '') and ($senders[$wpses_options['from_email']][1])) {
+        //if (($wpses_options['from_email'] != '') and ($senders[$wpses_options['from_email']][1])) {
+        if (wpses_sender_confirmed()) {
             echo('<li style="color:#0f0;">');
             _e("Sender Email has been confirmed.", 'wpses');
         } else {
             echo('<li style="color:#f00;">');
             _e("Sender Email has not been confirmed yet.", 'wpses');
         }
-        ?></li>  	
+        ?></li>
 
         <?php
         if ($wpses_options['active'] == 1) {
@@ -73,7 +74,7 @@
 
     </ul>
     <h3><?php _e('Sender Email', 'wpses') ?></h3>
-    <?php _e('These settings do replace default sender email used by your blog.', 'wpses') ?>
+    <?php _e('These settings replace the default sender email used by your blog.', 'wpses') ?>
     <form method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
         <?php wp_nonce_field('wpses'); ?>
         <table class="form-table">
@@ -117,8 +118,10 @@
         <h3><?php _e("Amazon API Keys", 'wpses') ?></h3>
         <?php if (!WP_SES_RESTRICTED) { ?>
             <div style="border:1px solid#ccc; padding:10px; float:right; ">
-                If you already use an Amazon Webservice like S3,<br />
-                you can use the very same keys here.
+                If you already use an Amazon Web service like S3,<br />
+                you can use the very same keys here.<br />
+                It's best to use an IAM user. <br />Make sure you give it at least the following permissions : ListIdentities, SendEmail, SendRawEmail.<br />
+                You should also allow : VerifyEmailIdentity, DeleteIdentity, Remove GetSendQuota, GetSendStatistics
             </div>
             <?php _e('Please insert here your API keys given by the Amazon Web Services.', 'wpses') ?>
             <table class="form-table" style="width:450px; float:left;" width="450">
@@ -237,7 +240,7 @@
         </form>
         <br />&nbsp;
         <h3><?php _e('Production mode test', 'wpses') ?></h3>
-    <?php _e('Once Amazon did activate your account into production mode, you can begin to send mail to any address<br />Use the form below to test this before fully activating the plugin on your blog.', 'wpses') ?>
+    <?php _e('Once Amazon puts your account into production mode, you can begin to send mail to any address<br />Use the form below to test this before fully activating the plugin on your blog.', 'wpses') ?>
         <form method="post" action="<?php echo $_SERVER['REQUEST_URI']; ?>">
     <?php wp_nonce_field('wpses'); ?>
             <table class="form-table" >
