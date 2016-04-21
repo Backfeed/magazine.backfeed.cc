@@ -1,5 +1,4 @@
 <?php
-require_once('lib/login.php');
 require_once('lib/ajax.php');
 require_once('lib/template-tags.php');
 
@@ -58,7 +57,12 @@ add_action('gform_after_submission_1', function() {
 });
 
 // After successful register, login the user and redirect to homepage.
-add_action( 'wppb_register_success', function($http_request, $form_name, $user_id){
+add_action( 'wppb_register_success', function($http_request, $form_name, $user_id) {
+	wp_update_user([
+		'ID' => $user_id,
+		'display_name' => $http_request['first_name'].' '.$http_request['last_name']
+	]);
+
 	wp_signon([
 		'user_login' => $http_request['email'],
 		'user_password' => $http_request['passw1']
