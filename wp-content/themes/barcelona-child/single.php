@@ -20,7 +20,7 @@ backfeed_featured_img();
 
 				<article id="post-<?php echo intval( get_the_ID() ); ?>" <?php post_class(); ?>>
 
-					<?php barcelona_featured_img(); ?>
+					<?php backfeed_featured_img(); ?>
 
 					<?php if ( barcelona_get_option( 'show_content' ) == 'on' ): ?>
 					<section class="post-content">
