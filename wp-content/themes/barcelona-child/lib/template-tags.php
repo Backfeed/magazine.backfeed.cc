@@ -5,6 +5,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
 
     global $post;
 
+    // TODO: Remove duplication of this code block
     if (function_exists('Backfeed\get_contribution_field')) {
         $backfeed_contribution_score = round(Backfeed\get_contribution_field($post->ID, 'score'), 2);
         $backfeed_engaged_reputation = round(Backfeed\get_contribution_field($post->ID, 'engaged_reputation'), 2).'%';
@@ -30,7 +31,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
         }
 
         if ( in_array( 'score', $barcelona_opt ) ) {
-            $barcelona_html .= '<li><span class="fa fa-star"></span>'. $backfeed_contribution_score .'</li>';
+            $barcelona_html .= '<li class="backfeed-tooltip"><div class="backfeed-tooltip-content">Article Score</div><span class="fa fa-star"></span>'. $backfeed_contribution_score .'</li>';
         }
 
         if ( in_array( 'views', $barcelona_opt ) ) {
@@ -38,7 +39,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
         }
 
         if ( in_array( 'engagedrep', $barcelona_opt ) ) {
-            $barcelona_html .= '<li><span class="fa fa-users"></span>'. $backfeed_engaged_reputation .'</li>';
+            $barcelona_html .= '<li class="backfeed-tooltip"><div class="backfeed-tooltip-content"><div class="backfeed-tooltip-title">Reputation Invested</div> Indicates community engagement in ranking this article. The higher this score, the more reputed members participated in evaluating the quality of this article.</div><span class="fa fa-users"></span>'. $backfeed_engaged_reputation .'</li>';
         }
 
         if ( in_array( 'likes', $barcelona_opt ) ) {
@@ -73,6 +74,7 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
 
     global $post;
 
+    // TODO: Remove duplication of this code block
     if (function_exists('Backfeed\get_contribution_field')) {
         $backfeed_contribution_score = round(Backfeed\get_contribution_field($post->ID, 'score'), 2);
         $backfeed_engaged_reputation = round(Backfeed\get_contribution_field($post->ID, 'engaged_reputation'), 2).'%';
@@ -137,9 +139,9 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
         'date' => array( 'clock-o', esc_html( get_the_date() ) ),
         'author' => array( 'user', $barcelona_author_html , get_author_posts_url( $post->post_author ) ),
 //        'views' => array( 'eye', esc_html( barcelona_get_post_views() ) ),
-        'score' => array( 'star', $backfeed_contribution_score, '', 'tooltip content' ),
+        'score' => array( 'star', $backfeed_contribution_score, '', 'Article Score' ),
 //        'likes' => array( 'thumbs-up', '<span class="post_vote_up_val">'. esc_html( barcelona_get_post_vote( $post->ID ) ) .'</span>' ),
-        'engagedrep' => array( 'users', $backfeed_engaged_reputation, '', 'tooltip content' ),
+        'engagedrep' => array( 'users', $backfeed_engaged_reputation, '', '<div class="backfeed-tooltip-title">Reputation Invested</div> Indicates community engagement in ranking this article. The higher this score, the more reputed members participated in evaluating the quality of this article.' ),
         'comments' => array( 'comments', intval( get_comments_number() ) ),
         'categories' => array( 'bars', $barcelona_categories_html )
     );
