@@ -176,6 +176,9 @@ body:not(.barcelona-fimg-cl) .sidebar-right .post-content .barcelona-sc-accordio
       border-color: #e71d1d;
       background-color: #e71d1d; }
 
+.wppb-input-hidden {
+  display: none; }
+
 body.home h1.post-title {
   display: none !important; }
 
