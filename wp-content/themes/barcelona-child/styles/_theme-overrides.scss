@@ -61,8 +61,13 @@ body:not(.barcelona-fimg-cl) .sidebar-right .post-content .barcelona-sc-accordio
   margin-top: 15px;
 }
 
+#main,
 #sidebar .sidebar-widget:last-of-type {
   padding-bottom: 20px;
+}
+
+.no-breadcrumb #page-wrapper > .container:nth-of-type(1) {
+  padding-top: 300px;
 }
 
 @media only screen and (min-width: 768px) {
@@ -74,5 +79,9 @@ body:not(.barcelona-fimg-cl) .sidebar-right .post-content .barcelona-sc-accordio
 
   .panel-title a .inner {
     width: 100%;
+  }
+
+  .fimg-wrapper:not(.fimg-cl):not(.fimg-no-thumb) + .single-container {
+    padding-top: 30px;
   }
 }

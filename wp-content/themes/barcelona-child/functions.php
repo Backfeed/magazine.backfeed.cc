@@ -69,3 +69,14 @@ add_action( 'wppb_register_success', function($http_request, $form_name, $user_i
 	]);
 	wp_redirect(home_url()); exit;
 }, 20, 3 );
+
+add_filter( 'gettext', function ($translated_text, $text, $domain) {
+	switch ($domain) {
+		case 'profile-builder':
+			switch ($text) {
+				case 'Send these credentials via email.':
+					return 'Send username and password to my email.';
+			}
+	}
+	return $translated_text;
+}, 20, 3 );
