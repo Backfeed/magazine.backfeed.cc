@@ -22,6 +22,7 @@
   pointer-events: none;
   font-size: 12px;
   text-align: left;
+  z-index: 999;
 
   &:after {
     content: "";

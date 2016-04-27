@@ -18,7 +18,8 @@
   background: black;
   pointer-events: none;
   font-size: 12px;
-  text-align: left; }
+  text-align: left;
+  z-index: 999; }
   .backfeed-tooltip-content:after {
     content: "";
     position: absolute;
