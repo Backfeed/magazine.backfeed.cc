@@ -6,9 +6,10 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
     global $post;
 
     // TODO: Remove duplication of this code block
-    if (function_exists('Backfeed\get_contribution_field')) {
-        $backfeed_contribution_score = round(Backfeed\get_contribution_field($post->ID, 'score'), 2);
-        $backfeed_engaged_reputation = round(Backfeed\get_contribution_field($post->ID, 'engaged_reputation'), 2).'%';
+    if (function_exists('Backfeed\get_contribution')) {
+        $contribution = Backfeed\get_contribution($post->ID);
+        $backfeed_contribution_score = round($contribution->stats->score, 2);
+        $backfeed_engaged_reputation = round($contribution->stats->engaged_reputation, 2).'%';
     } else {
         barcelona_post_meta($barcelona_opt, $barcelona_sep, $echo);
         return false;
@@ -75,9 +76,10 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
     global $post;
 
     // TODO: Remove duplication of this code block
-    if (function_exists('Backfeed\get_contribution_field')) {
-        $backfeed_contribution_score = round(Backfeed\get_contribution_field($post->ID, 'score'), 2);
-        $backfeed_engaged_reputation = round(Backfeed\get_contribution_field($post->ID, 'engaged_reputation'), 2).'%';
+    if (function_exists('Backfeed\get_contribution')) {
+        $contribution = Backfeed\get_contribution($post->ID);
+        $backfeed_contribution_score = round($contribution->stats->score, 2);
+        $backfeed_engaged_reputation = round($contribution->stats->engaged_reputation, 2).'%';
     } else {
         barcelona_featured_img($barcelona_fimg_id);
         return false;
