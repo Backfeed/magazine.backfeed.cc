@@ -18,7 +18,7 @@ while ($barcelona_q->have_posts()): $barcelona_q->the_post(); ?>
 			<div class="post-image">
 
 				<a href="<?=esc_url(get_the_permalink())?>" title="<?=esc_attr(get_the_title())?>">
-					<?php barcelona_psum_overlay(); the_post_thumbnail( 'barcelona-sm' ); ?>
+					<?php barcelona_psum_overlay(); barcelona_thumbnail( 'barcelona-sm' ); ?>
 				</a>
 
 			</div><!-- .post-image -->

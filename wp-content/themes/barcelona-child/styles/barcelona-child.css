@@ -90,6 +90,10 @@ body:not(.barcelona-fimg-cl) .sidebar-right .post-content .barcelona-sc-accordio
 .no-breadcrumb #page-wrapper > .container:nth-of-type(1) {
   padding-top: 300px; }
 
+.post-summary .post-image > a img {
+  height: 212px;
+  object-fit: cover; }
+
 @media only screen and (min-width: 768px) {
   .navbar-logo {
     height: 180px;
