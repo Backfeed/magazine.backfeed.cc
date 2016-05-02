@@ -11,7 +11,7 @@ if (!$barcelona_async) echo '<div class="posts-box posts-box-2" data-type="t2_0"
 
 if (isset($barcelona_mod_header)) echo $barcelona_mod_header;
 
-if (!$barcelona_async) the_content();
+if (!$barcelona_async && !is_author()) the_content();
 
 if (!$barcelona_async) echo '<div class="posts-wrapper">';
 
