@@ -93,4 +93,8 @@ body:not(.barcelona-fimg-cl) .sidebar-right .post-content .barcelona-sc-accordio
   .fimg-wrapper:not(.fimg-cl):not(.fimg-no-thumb) + .single-container {
     padding-top: 30px;
   }
+
+  body:not(.barcelona-fimg-cl) .sidebar-right .post-content:not(.box-description) h1:first-child, body:not(.barcelona-fimg-cl) .sidebar-right .post-content:not(.box-description) h2:first-child, body:not(.barcelona-fimg-cl) .sidebar-right .post-content:not(.box-description) h3:first-child, body:not(.barcelona-fimg-cl) .sidebar-right .post-content:not(.box-description) h4:first-child, body:not(.barcelona-fimg-cl) .sidebar-right .post-content:not(.box-description) h5:first-child, body:not(.barcelona-fimg-cl) .sidebar-right .post-content:not(.box-description) h6:first-child {
+    transform: none;
+  }
 }
