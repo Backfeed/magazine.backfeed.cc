@@ -75,6 +75,10 @@ body:not(.barcelona-fimg-cl) .sidebar-right .post-content .barcelona-sc-accordio
   object-fit: cover;
 }
 
+.posts-box-related-posts article:not(.psum-featured) {
+  display: none;
+}
+
 @media only screen and (min-width: 768px) {
   .navbar-logo {
     height: 180px;
