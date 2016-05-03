@@ -9,14 +9,15 @@ sitemap.xml.gz
 wp-content/advanced-cache.php
 wp-content/cache/
 wp-content/envato-backups/
+wp-content/plugins/wp-rocket/cache.json
+wp-content/wp-rocket-config/
 
 wp-content/backup-db/
 wp-content/backups/
 wp-content/blogs.dir/
 wp-content/upgrade/
-wp-content/plugins/hello.php
-
 wp-content/uploads/
+
 # wp-config.php
 
 /readme.html
