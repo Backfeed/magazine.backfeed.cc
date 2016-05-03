@@ -3,7 +3,7 @@
 Plugin Name: WP Rocket
 Plugin URI: http://www.wp-rocket.me
 Description: The best WordPress performance plugin.
-Version: 2.7.2
+Version: 2.7.4
 Code Name: Hoth
 Author: WP Rocket
 Contributors: Jonathan Buttigieg, Julio Potier
@@ -19,7 +19,7 @@ Copyright 2013-2015 WP Rocket
 defined( 'ABSPATH' ) or die( 'Cheatin&#8217; uh?' );
 
 // Rocket defines
-define( 'WP_ROCKET_VERSION'             , '2.7.2' );
+define( 'WP_ROCKET_VERSION'             , '2.7.4' );
 define( 'WP_ROCKET_PRIVATE_KEY'         , '1d68ab3c91d22fe8e128c17583a7b618');
 define( 'WP_ROCKET_SLUG'                , 'wp_rocket_settings' );
 define( 'WP_ROCKET_WEB_MAIN'            , 'http://support.wp-rocket.me/' );
