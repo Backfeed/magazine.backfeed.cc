@@ -1,5 +1,6 @@
 <?php
 require_once('lib/ajax.php');
+require_once('lib/autoblogging.php');
 require_once('lib/template-tags.php');
 
 add_action('after_setup_theme', function() {
