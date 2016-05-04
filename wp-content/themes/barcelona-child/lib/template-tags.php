@@ -435,3 +435,38 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
     }
 
 }
+
+/*
+ * Social Icons
+ */
+function backfeed_social_icons( $items=array() ) {
+
+    $output = '';
+
+    if ( ! is_array( $items ) || empty( $items ) ) {
+        $items = false;
+    }
+
+    $barcelona_social_links = barcelona_get_social_links();
+
+    $barcelona_social_links['slack'] = [
+        'title' => 'Slack',
+        'href' => 'http://slackinvite.backfeed.cc/',
+        'icon' => 'slack'
+    ];
+
+    if ( ! empty( $barcelona_social_links ) ) {
+
+        $output = '<ul class="social-icons">';
+
+        foreach ( $barcelona_social_links as $k => $v ) {
+            $output .= '<li><a target="_blank" href="'. esc_url( $v['href'] ) .'" title="'. esc_attr( $v['title'] ) .'"><span class="fa fa-'. sanitize_html_class( $v['icon'] ) .'"></span></a></li>';
+        }
+
+        $output .= '</ul>';
+
+    }
+
+    return $output;
+
+}
