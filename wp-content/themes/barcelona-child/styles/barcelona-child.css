@@ -34,9 +34,29 @@ body:not(.barcelona-fimg-cl) .sidebar-right .post-content .barcelona-sc-accordio
   margin-left: auto;
   margin-right: auto; }
 
+.media-sidebar {
+  width: 100% !important;
+  height: 100% !important;
+  bottom: initial !important;
+  max-width: 100% !important; }
+
 .attachments-browser > .media-toolbar,
-.attachments-browser > .media-sidebar {
-  display: none; }
+.attachments-browser > .attachments,
+.attachment-details > h2,
+.attachment-details > label,
+.attachment-details .details {
+  display: none !important; }
+
+.attachment-info {
+  margin-bottom: 0 !important;
+  border-bottom: 0 !important;
+  padding-bottom: 0 !important; }
+  .attachment-info .thumbnail,
+  .attachment-info .thumbnail img {
+    max-width: 300px !important;
+    max-height: 300px !important; }
+  .attachment-info .thumbnail {
+    margin-left: 10px !important; }
 
 #page-wrapper > .fimg-media {
   padding-top: 235px !important; }

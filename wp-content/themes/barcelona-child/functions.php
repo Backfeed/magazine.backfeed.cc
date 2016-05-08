@@ -1,4 +1,5 @@
 <?php
+
 require_once('lib/ajax.php');
 require_once('lib/autoblogging.php');
 require_once('lib/template-tags.php');
@@ -71,7 +72,7 @@ add_action( 'wppb_register_success', function($http_request, $form_name, $user_i
 	wp_redirect(home_url()); exit;
 }, 20, 3 );
 
-add_filter( 'gettext', function ($translated_text, $text, $domain) {
+add_filter('gettext', function ($translated_text, $text, $domain) {
 	switch ($domain) {
 		case 'profile-builder':
 			switch ($text) {
@@ -80,4 +81,4 @@ add_filter( 'gettext', function ($translated_text, $text, $domain) {
 			}
 	}
 	return $translated_text;
-}, 20, 3 );
+}, 20, 3);
