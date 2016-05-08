@@ -124,7 +124,9 @@ body:not(.logged-in) .hide-when-logged-out {
   display: none;
 }
 
-
+.backfeed-tooltip-content {
+  opacity: 0;
+}
 
 body.page .fimg-fw .fimg-inner {
   min-height: 150px;

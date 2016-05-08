@@ -2417,14 +2417,14 @@ class GFCommon {
 
 	public static function is_section_empty( $section_field, $form, $entry ) {
 
-		$cache_key = "GFCommon::is_section_empty_{$form['id']}_{$section_field['id']}";
+		$cache_key = "GFCommon::is_section_empty_{$form['id']}_{$section_field->id}";
 		$value     = GFCache::get( $cache_key );
 
 		if ( $value !== false ) {
 			return $value == true;
 		}
 
-		$fields = self::get_section_fields( $form, $section_field['id'] );
+		$fields = self::get_section_fields( $form, $section_field->id );
 		if ( ! is_array( $fields ) ) {
 			GFCache::set( $cache_key, 1 );
 
@@ -2445,7 +2445,7 @@ class GFCommon {
 
 			// by default, product fields are not displayed in their containing section (displayed in a product summary table)
 			// if the filter is used to disable this, product fields are displayed in the section like other fields
-			if ( self::is_product_field( $field['type'] ) ) {
+			if ( self::is_product_field( $field->type ) ) {
 
 				/**
 				 * By default, product fields are not displayed in their containing section (displayed in a product summary table). If the filter is used to disable this, product fields are displayed in the section like other fields
@@ -4493,7 +4493,8 @@ class GFCommon {
 		$locale = apply_filters( 'plugin_locale', get_locale(), 'gravityforms' );
 		if ( ! isset( $l10n[$domain] ) ){
 			load_textdomain( 'gravityforms', WP_LANG_DIR . '/gravityforms/gravityforms-' . $locale . '.mo' );
-			load_plugin_textdomain( 'gravityforms', false, '/gravityforms/languages' );
+			load_textdomain( 'gravityforms', WP_LANG_DIR . '/plugins/gravityforms-' . $locale . '.mo' );
+			load_plugin_textdomain( 'gravityforms', false, plugin_basename( self::get_base_path() ) . '/languages' );
 		}
 	}
 
@@ -4607,6 +4608,42 @@ class GFCommon {
 		return $confirmation_message;
 	}
 
+	/**
+	 * Generates a hash for a Gravity Forms download.
+	 *
+	 * May return false if the algorithm is not available.
+	 *
+	 * @param int $form_id The Form ID.
+	 * @param int $field_id The ID of the field used to upload the file.
+	 * @param string $file The file url relative to the form's upload folder. E.g. 2016/04/my-file.pdf
+	 *
+	 * @return string|bool
+	 */
+	public static function generate_download_hash( $form_id, $field_id, $file ) {
+
+		$key = absint( $form_id ) . ':' . absint( $field_id ) . ':' . urlencode( $file );
+
+		$algo = 'sha256';
+
+		/**
+		 * Allows the hash algorithm to be changed when generating the file download hash.
+		 *
+		 * @param string $algo The algorithm. E.g. "md5", "sha256", "haval160,4", etc
+		 */
+		$algo  = apply_filters( 'gform_download_hash_algorithm', $algo );
+
+		$hash = hash_hmac( $algo, $key, 'gform_download' . wp_salt() );
+		/**
+		 * Allows the hash to be modified.
+		 *
+		 * @param string $hash The hash.
+		 * @param int $form_id The Form ID
+		 * @param string $file The File path relative to the upload root for the form.
+		 */
+		$hash  = apply_filters( 'gform_download_hash', $hash, $form_id, $file );
+
+		return $hash;
+	}
 }
 
 class GFCategoryWalker extends Walker {

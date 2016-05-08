@@ -14,7 +14,7 @@ require_once( 'class-gf-feed-addon.php' );
 
 abstract class GFPaymentAddOn extends GFFeedAddOn {
 
-	private $_payment_version = '1.2';
+	private $_payment_version = '1.3';
 
 	/**
 	 * If set to true, user will not be able to create feeds for a form until a credit card field has been added.
@@ -138,6 +138,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
                   lead_id int(10) unsigned not null,
                   transaction_type varchar(30) not null,
                   transaction_id varchar(50),
+                  subscription_id varchar(50),
                   is_recurring tinyint(1) not null default 0,
                   amount decimal(19,2),
                   date_created datetime,
@@ -477,7 +478,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 		if ( $payment && $payment['is_success'] ) {
 
-			$this->insert_transaction( $entry['id'], 'payment', $payment['transaction_id'], $payment['amount'], false );
+			$this->insert_transaction( $entry['id'], 'payment', $payment['transaction_id'], $payment['amount'], false, rgar( $subscription, 'subscription_id' ) );
 
 			$amount_formatted = GFCommon::to_money( $payment['amount'], $entry['currency'] );
 			$note             = sprintf( esc_html__( '%s has been captured successfully. Amount: %s. Transaction Id: %s', 'gravityforms' ), $payment_name, $amount_formatted, $payment['transaction_id'] );
@@ -510,16 +511,17 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 	}
 
-	public function insert_transaction( $entry_id, $transaction_type, $transaction_id, $amount, $is_recurring = null ) {
+	public function insert_transaction( $entry_id, $transaction_type, $transaction_id, $amount, $is_recurring = null, $subscription_id = null ) {
 		global $wpdb;
 
 		// @todo: make sure stats does not show setup fee as a recurring payment
 		$payment_count = $wpdb->get_var( $wpdb->prepare( "SELECT count(id) FROM {$wpdb->prefix}gf_addon_payment_transaction WHERE lead_id=%d", $entry_id ) );
 		$is_recurring  = $payment_count > 0 && $transaction_type == 'payment' ? 1 : 0;
+		$subscription_id = empty( $subscription_id ) ? '' : $subscription_id;
 
 		$sql = $wpdb->prepare(
-			" INSERT INTO {$wpdb->prefix}gf_addon_payment_transaction (lead_id, transaction_type, transaction_id, amount, is_recurring, date_created)
-                                values(%d, %s, %s, %f, %d, utc_timestamp())", $entry_id, $transaction_type, $transaction_id, $amount, $is_recurring
+			" INSERT INTO {$wpdb->prefix}gf_addon_payment_transaction (lead_id, transaction_type, transaction_id, amount, is_recurring, date_created, subscription_id)
+                                values(%d, %s, %s, %f, %d, utc_timestamp(), %s)", $entry_id, $transaction_type, $transaction_id, $amount, $is_recurring, $subscription_id
 		);
 		$wpdb->query( $sql );
 
@@ -535,7 +537,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		 * @param string $amount The amount payed in the transaction
 		 * @param bool $is_recurring True or false if this is an ongoing payment
 		 */
-		do_action( 'gform_post_payment_transaction', $txn_id, $entry_id, $transaction_type, $transaction_id, $amount, $is_recurring );
+		do_action( 'gform_post_payment_transaction', $txn_id, $entry_id, $transaction_type, $transaction_id, $amount, $is_recurring, $subscription_id );
 		if ( has_filter( 'gform_post_payment_transaction' ) ) {
 			$this->log_debug( __METHOD__ . '(): Executing functions hooked to gform_post_payment_transaction.' );
 		}
@@ -1213,7 +1215,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 
 		$transaction_id = ! empty( $action['transaction_id'] ) ? $action['transaction_id'] : $action['subscription_id'];
 
-		$this->insert_transaction( $entry['id'], $action['transaction_type'], $transaction_id, $action['amount'] );
+		$this->insert_transaction( $entry['id'], $action['transaction_type'], $transaction_id, $action['amount'], null, rgar( $action, 'subscription_id') );
 		$this->add_note( $entry['id'], $action['note'], 'success' );
 
 		/**
@@ -1834,7 +1836,7 @@ abstract class GFPaymentAddOn extends GFFeedAddOn {
 		);
 
 		foreach ( $fields as $field ) {
-			$field_id    = $field['id'];
+			$field_id    = $field->id;
 			$field_label = RGFormsModel::get_label( $field );
 			$choices[]   = array( 'value' => $field_id, 'label' => $field_label );
 		}

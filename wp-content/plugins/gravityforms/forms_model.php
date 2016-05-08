@@ -3842,14 +3842,21 @@ class GFFormsModel {
 		return $leads;
 	}
 
-	public static function save_key( $key ) {
-		$current_key = get_option( 'rg_gforms_key' );
-		if ( empty( $key ) ) {
+	public static function save_key( $new_key ) {
+
+		$previous_key = get_option( 'rg_gforms_key' );
+
+		if ( empty( $new_key ) ) {
+
 			delete_option( 'rg_gforms_key' );
-		} else if ( $current_key != $key ) {
-			$key = trim( $key );
-			update_option( 'rg_gforms_key', md5( $key ) );
+
+		} else if ( $previous_key != $new_key ) {
+
+			$new_key = trim( $new_key );
+			update_option( 'rg_gforms_key', md5( $new_key ) );
+
 		}
+
 	}
 
 	public static function get_lead_count( $form_id, $search, $star = null, $read = null, $start_date = null, $end_date = null, $status = null, $payment_status = null ) {

@@ -798,8 +798,8 @@ class GFExport {
 
 			self::write_file( $lines, $export_id );
 
-			$time_end                     = microtime( true );
-			$execution_time               = ( $time_end - $time_start );
+			$time_end       = microtime( true );
+			$execution_time = ( $time_end - $time_start );
 
 			if ( $execution_time >= $max_execution_time ) {
 				break;
@@ -966,13 +966,14 @@ class GFExport {
 		}
 
 		$offset = absint( rgpost( 'offset' ) );
-		$export_id = sanitize_text_field( ( rgpost( 'exportId' ) ) );
+		$export_id = sanitize_key( ( rgpost( 'exportId' ) ) );
 
 		$form_id = $_POST['export_form'];
 		$form    = RGFormsModel::get_form_meta( $form_id );
 
 		if ( empty( $export_id ) ) {
 			$export_id = wp_hash( uniqid( 'export', true ) );
+			$export_id = sanitize_key( $export_id );
 		}
 
 		$status = self::start_export( $form, $offset, $export_id );
@@ -1005,7 +1006,7 @@ class GFExport {
 		self::maybe_create_htaccess_file( $export_folder );
 		self::maybe_create_index_file( $export_folder );
 
-		$file = $export_folder . 'export-' . $export_id .'.csv';
+		$file = $export_folder . sanitize_file_name( 'export-' . $export_id .'.csv' );
 
 		file_put_contents( $file, $lines, FILE_APPEND | LOCK_EX );
 
@@ -1085,7 +1086,7 @@ deny from all';
 
 		$export_id = rgget( 'export-id' );
 
-		$export_id = sanitize_text_field( $export_id );
+		$export_id = sanitize_key( $export_id );
 
 		$export_folder = RGFormsModel::get_upload_root() . 'export/';
 		$file = $export_folder . 'export-' . $export_id . '.csv';

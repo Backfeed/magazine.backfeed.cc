@@ -41,55 +41,41 @@ if ( ! class_exists( 'Gravity_Api' ) ) {
 		 *
 		 * @return bool Success
 		 */
-		public function add_site( $license_key, $is_md5 = false ) {
+		public function register_current_site( $license_key, $is_md5 = false ) {
 
 			$body = array(
 				'site_name' => get_bloginfo( 'name' ),
 				'site_url'  => get_bloginfo( 'url' ),
 			);
+
 			if ( $is_md5 ) {
 				$body['license_key_md5'] = $license_key;
+				$license_key_md5 = $license_key;
 			} else {
 				$body['license_key'] = $license_key;
+				$license_key_md5 = md5( $license_key );
 			}
 
 			GFCommon::log_debug( __METHOD__ . '() - requesting new site key' );
-			$result = $this->request( 'sites', $body );
+			$result = $this->request( 'sites', $body, 'POST', array( 'headers' => $this->get_license_auth_header( $license_key_md5 ) ) );
+			$result = $this->prepare_response_body( $result );
 
 			if ( is_wp_error( $result ) ) {
+				GFCommon::log_debug( __METHOD__ . '() - error registering site. ' . print_r( $result, true ) );
 				return $result;
 			}
 
-			if ( $result['response']['code'] != 200 ) {
-				return false;
-			}
+			$response_body = $result->get_data();
 
-			$response_body = json_decode( $result['body'] );
-			if ( empty( $response_body ) ) {
-				GFCommon::log_debug( 'Gravity_Api::stash_site_key() - error - unexpected response:' . print_r( $result, true ) );
-				return false;
-			} else {
-				if ( $response_body->success ) {
-					$site_details = $response_body->data;
-					$site_key     = $site_details->key;
-					$site_secret  = $site_details->secret;
+			update_option( 'gf_site_key', $response_body->key );
+			update_option( 'gf_site_secret', $response_body->secret );
 
-					update_option( 'gf_site_key', $site_key );
-					update_option( 'gf_site_secret', $site_secret );
-
-					GFCommon::log_debug( 'Gravity_Api::stash_site_key() - stashed' );
-				} else {
-					GFCommon::log_debug( 'Gravity_Api::stash_site_key() - error: ' . $response_body->message );
-
-					return new WP_Error( $response_body->code, $response_body->message );
-				}
-			}
-
+			GFCommon::log_debug( __METHOD__ . '() - site registration successful.' );
 
 			return true;
 		}
 
-		public function update_site( $new_license_key_md5 ) {
+		public function update_current_site( $new_license_key_md5 ) {
 
 			$site_key = $this->get_site_key();
 			if ( empty( $site_key ) ) {
@@ -101,28 +87,50 @@ if ( ! class_exists( 'Gravity_Api' ) ) {
 			GFCommon::log_debug( __METHOD__ . '() - refreshing license info' );
 
 			$body = array(
-				'site_secret' => $site_secret,
 				'site_name' => get_bloginfo( 'name' ),
 				'site_url'  => get_bloginfo( 'url' ),
 				'license_key_md5' => $new_license_key_md5,
 			);
 
-			$result = $this->request( 'sites/' . $site_key, $body, 'PUT' );
+			$result = $this->request( 'sites/' . $site_key, $body, 'PUT', array( 'headers' => $this->get_license_auth_header( $new_license_key_md5 ) ) );
+			$result = $this->prepare_response_body( $result );
 
-			if ( is_wp_error( $result ) || $result['response']['code'] != 200 ) {
+			if ( is_wp_error( $result ) ) {
+
+				GFCommon::log_debug( __METHOD__ . '() - error updating site registration. ' . print_r( $result, true ) );
+				return $result;
+
+			}
+
+			return true;
+		}
+
+		public function deregister_current_site(){
+
+			$site_key = $this->get_site_key();
+			$site_secret = $this->get_site_secret();
+
+			if ( empty( $site_key ) ) {
 				return false;
 			}
 
-			$response_body = json_decode( $result['body'] );
+			GFCommon::log_debug( __METHOD__ . '() - deregistering' );
 
-			if ( ! $response_body ) {
-				return new WP_Error( $response_body->code, $response_body->message );
-			}
-			else if ( ! $response_body->success ) {
-				return new WP_Error( $response_body->code, $response_body->message );
+			$body = array(
+				'license_key_md5' => '',
+			);
+
+			$result = $this->request( 'sites/' . $site_key, $body, 'PUT', array( 'headers' => $this->get_site_auth_header( $site_key, $site_secret ) ) );
+			$result = $this->prepare_response_body( $result );
+
+			if ( is_wp_error( $result ) ) {
+
+				GFCommon::log_debug( __METHOD__ . '() - error updating site registration. ' . print_r( $result, true ) );
+				return $result;
+
 			}
 
-			return $response_body;
+			return true;
 		}
 
 		/***
@@ -161,6 +169,20 @@ if ( ! class_exists( 'Gravity_Api' ) ) {
 
 
 		// # HELPERS
+
+		private function get_site_auth_header( $site_key, $site_secret ){
+
+			$auth = base64_encode( "{$site_key}:{$site_secret}" );
+			return array( 'Authorization' => 'GravityAPI ' . $auth );
+
+		}
+
+		private function get_license_auth_header( $license_key_md5 ){
+
+			$auth = base64_encode( "license:{$license_key_md5}" );
+			return array( 'Authorization' => 'GravityAPI ' . $auth );
+
+		}
 
 		public function prepare_response_body( $raw_response ) {
 
@@ -253,7 +275,7 @@ if ( ! class_exists( 'Gravity_Api' ) ) {
 					return false;
 				}
 
-				$result = $this->add_site( $license_key_md5, true );
+				$result = $this->register_current_site( $license_key_md5, true );
 
 				if ( ! $result || is_wp_error( $result ) ) {
 					return false;

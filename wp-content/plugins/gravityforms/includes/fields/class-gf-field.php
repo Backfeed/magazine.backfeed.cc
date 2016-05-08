@@ -7,10 +7,17 @@ if ( ! class_exists( 'GFForms' ) ) {
 /**
  * Class GF_Field
  *
- * Note to third party developers:
- * GF_Field is still in a state of flux at the moment so we don’t recommend that you start using it just yet as a base for new fields in production environments.
- * Once it’s stable we’ll provide documentation and instructions on how to use it for your own projects.
- *
+ * This class provides the base functionality for developers when creating new fields for Gravity Forms. It facilitates the following:
+ *  Adding a button for the field to the form editor
+ *  Defining the field title to be used in the form editor
+ *  Defining which settings should be present when editing the field
+ *  Registering the field as compatible with conditional logic
+ *  Outputting field scripts to the form editor and front-end
+ *  Defining the field appearance on the front-end, in the form editor and on the entry detail page
+ *  Validating the field during submission
+ *  Saving the entry value
+ *  Defining how the entry value is displayed when merge tags are processed, on the entries list and entry detail pages
+ *  Defining how the entry value should be formatted when used in csv exports and by framework based add-ons
  */
 class GF_Field extends stdClass implements ArrayAccess {
 
@@ -29,13 +36,20 @@ class GF_Field extends stdClass implements ArrayAccess {
 		}
 	}
 
-	/*
-	 * Fires the deprecation notice only once per page
+	/**
+	 * Fires the deprecation notice only once per page. Not fired during AJAX requests.
+	 *
+	 * @param string $offset The array key being accessed.
 	 */
 	private function maybe_fire_array_access_deprecation_notice( $offset ) {
+
 		if ( self::SUPPRESS_DEPRECATION_NOTICE ) {
 			return;
 		};
+
+		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
+			return;
+		}
 
 		if ( ! self::$deprecation_notice_fired ) {
 			_deprecated_function( "Array access to the field object is now deprecated. Further notices will be suppressed. \$field['" . $offset . "']", '2.0', 'the object operator e.g. $field->' . $offset );

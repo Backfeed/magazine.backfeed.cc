@@ -243,6 +243,7 @@ class GF_Field_FileUpload extends GF_Field {
 				$file_index          = intval( $file_index );
 				$file_url            = esc_attr( $file_url );
 				$display_file_url    = GFCommon::truncate_url( $file_url );
+				$file_url = $this->get_download_url( $file_url );
 				$download_button_url = GFCommon::get_base_url() . '/images/download.png';
 				$delete_button_url   = GFCommon::get_base_url() . '/images/delete.png';
 				$preview .= "<div id='preview_file_{$file_index}' class='ginput_preview'>
@@ -406,6 +407,7 @@ class GF_Field_FileUpload extends GF_Field {
 		if ( ! empty( $file_path ) ) {
 			//displaying thumbnail (if file is an image) or an icon based on the extension
 			$thumb     = GFEntryList::get_icon_url( $file_path );
+			$file_path = $this->get_download_url( $file_path );
 			$file_path = esc_attr( $file_path );
 			$value     = "<a href='$file_path' target='_blank' title='" . esc_attr__( 'Click to view', 'gravityforms' ) . "'><img src='$thumb'/></a>";
 		}
@@ -421,6 +423,7 @@ class GF_Field_FileUpload extends GF_Field {
 			if ( is_array( $file_paths ) ) {
 				foreach ( $file_paths as $file_path ) {
 					$info = pathinfo( $file_path );
+					$file_path = $this->get_download_url( $file_path );
 					if ( GFCommon::is_ssl() && strpos( $file_path, 'http:' ) !== false ) {
 						$file_path = str_replace( 'http:', 'https:', $file_path );
 					}
@@ -443,9 +446,8 @@ class GF_Field_FileUpload extends GF_Field {
 
 			$files = empty( $raw_value ) ? array() : json_decode( $raw_value, true );
 			foreach ( $files as &$file ) {
-
+				$file = $this->get_download_url( $file );
 				$file = str_replace( ' ', '%20', $file );
-
 				if ( $esc_html ) {
 					$value = esc_html( $value );
 				}
@@ -453,13 +455,13 @@ class GF_Field_FileUpload extends GF_Field {
 			$value = $format == 'html' ? join( '<br />', $files ) : join( ', ', $files );
 
 		} else {
+			$value = $this->get_download_url( $value );
 			$value = str_replace( ' ', '%20', $value );
 		}
 
 		if ( $url_encode ) {
 			$value = urlencode( $value );
 		}
-
 
 		return $value;
 	}
@@ -503,7 +505,6 @@ class GF_Field_FileUpload extends GF_Field {
 		$this->multipleFiles = (bool) $this->multipleFiles;
 
 		$this->allowedExtensions = sanitize_text_field( $this->allowedExtensions );
-
 	}
 
 	public function get_value_export( $entry, $input_id = '', $use_text = false, $is_csv = false ) {
@@ -519,6 +520,52 @@ class GF_Field_FileUpload extends GF_Field {
 		return $value;
 	}
 
+	/**
+	 * Returns the download URL for a file. The URL is not escaped for output.
+	 *
+	 * @since 2.0
+	 *
+	 * @param string $file The complete file URL.
+	 *
+	 * @return string
+	 */
+	public function get_download_url( $file ) {
+		$download_url = $file;
+
+		$hide_real_download_location = true;
+
+		/**
+		 * By default the real location of the uploaded file will be hidden and the special URL will be generated with a security token to prevent guessing of other files.
+		 *
+		 * Return FALSE to display the real location.
+		 *
+		 * @param bool $hide_real_download_location
+		 */
+		$hide_real_download_location = apply_filters( 'gform_hide_real_download_location', $hide_real_download_location, $this );
+		$hide_real_download_location = apply_filters( 'gform_hide_real_download_location_' . $this->formId, $hide_real_download_location, $this );
+
+		if ( ! $hide_real_download_location ) {
+			return $download_url;
+		}
+
+		$upload_root = GFFormsModel::get_upload_url( $this->formId );
+		$upload_root = trailingslashit( $upload_root );
+
+		// Only hide the real URL if the location of the file is in the upload root for the form.
+		// The upload root is calculated using the WP Salts so if the WP Salts have changed then file can't be located during the download request.
+		if ( strpos( $file, $upload_root ) !== false ) {
+			$file = str_replace( $upload_root, '', $file );
+			$download_url = site_url( 'index.php' );
+			$args = array(
+				'gf-download' => urlencode( $file ),
+				'form-id' => $this->formId,
+				'field-id' => $this->id,
+				'hash' => GFCommon::generate_download_hash( $this->formId, $this->id, $file ),
+			);
+			$download_url = add_query_arg( $args, $download_url );
+		}
+		return $download_url;
+	}
 }
 
 GF_Fields::register( new GF_Field_FileUpload() );

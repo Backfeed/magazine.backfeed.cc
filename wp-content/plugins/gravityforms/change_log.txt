@@ -1,34 +1,48 @@
 ------------------------------------------------------------------------------------------------------------------
-Version 2.0-beta-2.2
+Version 2.0-beta-3
+    - Added the gform_entry_detail_meta_boxes filter allowing custom meta boxes to be added to the entry detail page. See https://www.gravityhelp.com/documentation/article/gform_entry_detail_meta_boxes/
+	- Added security enhancements to the admin area.
+	- Added security enhancements to the file upload field. The location of the uploaded file is now hidden by default.
+    - Added filter 'gform_progress_steps' to allow modifying/replacing the progress steps markup. See https://www.gravityhelp.com/documentation/article/gform_progress_steps/
+    - Added support for Loco Translate which stores translations in WP_LANG_DIR/plugins/.
+    - Added English translations (AU, GB, NZ). Credit: Ross McKay.
+    - Added filter 'gform_progress_bar' to allow modifying/replacing progress bar markup. See https://www.gravityhelp.com/documentation/article/gform_progress_bar/
+    - Added GFFormDisplay::get_first_page_with_error() method.
+	- Added GFFormDisplay::get_progress_steps() method for retrieving page step markup.
     - Added the gform_phone_formats filter and form specific version allowing custom phone formats to be defined. See https://www.gravityhelp.com/documentation/article/gform_phone_formats/
     - Added JS filter 'gform_spinner_target_elem' to allow changing the element after which the AJAX spinner is inserted. See https://www.gravityhelp.com/documentation/article/gform_spinner_target_elem/
-    - Added a dismissible message to the confirmation settings page which is displayed if merge tags are used as values for attributes.
+    - Added a dismissible message to the confirmation page which is displayed if merge tags are used as values for attributes.
 
-    - Updated the Address field state dropdown to support optgroups.
+    - Updated GFFormDisplay::get_progress_bar() method from private to public, removed redundant $form_id parameter, added $page parameter to allow the fetching of markup for a specific page.
+	- Updated the default number of user accounts in the impersonation setting for the Web API to 3000.
+	- Updated the Address field state dropdown to support optgroups.
     - Updated layout/styling for note meta (looked wonky for system notes where no email address is specified)
     - Updated payment details section to use the Entry Detail meta box system
     - Updated the daily clean-up to delete logs files older than one month.
-
-    - Deprecated GFEntryDetail::payment_details_box()
-
-    - Removed 'gform_enable_entry_info_payment_details' hook
-
-    - Fixed an issue with the sanitization of the phone format setting on some hosting environments.
-    - Fixed an issue with the value of the rich text field after validation.
-
-    - AF: Removed GFPaymentAddon::disable_entry_info_payment() method.
-    - AF: Added 'gform_gf_field_create' filter to allow modifying or replacing the GF_Field object after it has been created. See https://www.gravityhelp.com/documentation/article/gform_gf_field_create/
-
-------------------------------------------------------------------------------------------------------------------
-Version 2.0-beta-2.1
     - Updated merge tag processing of the Post Excerpt and Post Content fields for consistency with the GF_Field input/output change made in 2.0-beta-2.
 
+	- Fixed issues with the screen options on the entry detail page and entry list.
+    - Fixed an issue loading translations when using a custom directory name for the plugin.
+    - Fixed an issue with the sanitization of the phone format setting on some hosting environments.
+    - Fixed an issue with the value of the rich text field after validation.
     - Fixed a fatal on the entry list and form list pages which can affect some installations.
     - Fixed an issue with the sanitization of the value of the text field.
     - Fixed an issue with the formatting of the textarea field value when using the field merge tag.
     - Fixed flash of unstyled content issue in form preview (due to stylesheet being loaded after content)
 
+    - Deprecated GFEntryDetail::payment_details_box()
+    - Removed 'gform_enable_entry_info_payment_details' hook
+
+	- AF: Added subscription id to the transaction table.
+	- AF: Fixed an issue with the check for updates when the check doesn't run in an admin context. e.g. WP-CLI.
+    - AF: Updated the delayed payment choices on the PayPal feed to appear under the 'Post Payment Actions' setting instead of 'Options'.
+    - AF: Added GF_Addon::get_slug().
+    - AF: Added the gform_post_process_feed action hook. See https://www.gravityhelp.com/documentation/article/gform_post_process_feed/
+    - AF: Removed GFPaymentAddon::disable_entry_info_payment() method.
+    - AF: Added 'gform_gf_field_create' filter to allow modifying or replacing the GF_Field object after it has been created. See https://www.gravityhelp.com/documentation/article/gform_gf_field_create/
     - AF: Fixed an issue when upgrading due to feed order column name.
+
+    - API: Updated the Web API tools to load the JS files locally.
 
 ------------------------------------------------------------------------------------------------------------------
 Version 2.0-beta-2
@@ -64,7 +78,7 @@ Version 2.0-beta-2
     - Fixed a JavaScript error in the form editor when configuring the max chars setting.
     - Fixed issue with the output values of the Paragraph field in the merge tags, entry list and entry detail.
 
-    - API: Updated GF_Field:sanitize_entry_value() to sanitize the value only if HTML is enabled for the field or activated using the gform_allowable_tags filter. Fields should override this method to implement field-specific sanitization.
+    - API: Updated GF_Field::sanitize_entry_value() to sanitize the value only if HTML is enabled for the field or activated using the gform_allowable_tags filter. Fields should override this method to implement field-specific sanitization.
     - API: Updated the way GF_Field handles input and output values. Input values are now not sanitized on input unless the HTML tags are allowed, in which case values are passed through wp_kses_post() and then through gform_allowable_tags filter and then through strip_tags() if required. Updated the way the Address, Checkbox, Multiselect, Name, Radio, Select, Text and Textarea fields handle input and output to account for the change.
 
     - AF: Added GFAddon::pre_process_feeds() method to handle applying new 'gform_addon_pre_process_feeds' filter
@@ -171,10 +185,21 @@ Version 2.0-beta-1
 				)
 			)
 
+------------------------------------------------------------------------------------------------------------------
+Version 1.9.19.1
+    - Fixed an issue with AJAX enabled forms not adding the gform_validation_error class to the form wrapper when a validation error occurs.
 
 ------------------------------------------------------------------------------------------------------------------
-Version 1.9.18.1
-    - Added support for the Customize Posts feature plugin. The Add Form button appears in the editor when editing posts in the customizer.
+Version 1.9.19
+
+    - Added support for the Customize Posts feature plugin. The Add Form button appears in the editor when editing posts in the front-end using the Customizer.
+    - Updated the setting page to prevent the Uninstall tab from being added for users without the gravityforms_uninstall or gform_full_access capabilities.
+    - Updated German translation. Credit: Dominik Horn - netzstrategen.
+    - Fixed an issue with the front-end total calculation if the quantity field value contained the comma thousand separator.
+    - Fixed a JS error which could occur when processing the option field labels if the DOM has been manipulated to include a text field within the choices container.
+    - Fixed an issue with the shortcode builder where form titles with special characters are not displayed correctly.
+    - AF: Fixed an issue with the check for updates when the check doesn't run in an admin context. e.g. WP-CLI.
+    - AF: Added 'gform_gf_field_create' filter to allow modifying or replacing the GF_Field object after it has been created. See https://www.gravityhelp.com/documentation/article/gform_gf_field_create/
 
 ------------------------------------------------------------------------------------------------------------------
 Version 1.9.18

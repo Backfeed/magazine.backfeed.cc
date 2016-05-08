@@ -1107,7 +1107,9 @@ class GFFormSettings {
 		$entry_meta = apply_filters( 'gform_entry_meta_conditional_logic_confirmations', $entry_meta, $form, $confirmation_id );
 
 		if ( self::confirmation_looks_unsafe( $confirmation['message'] ) ) {
-			GFCommon::add_dismissible_message( esc_html__( 'Your confirmation message appears to contain a merge tag as the value for an HTML attribute. Depending on the context and field type, this might be a security risk.', 'gravityforms' ), 'confirmation_unsafe_' . $form_id );
+			$dismissible_message = esc_html__( 'Your confirmation message appears to contain a merge tag as the value for an HTML attribute. Depending on the attribute and field type, this might be a security risk. %sFurther details%s', 'gravityforms' );
+			$dismissible_message = sprintf( $dismissible_message, '<a href="https://www.gravityhelp.com/documentation/article/security-warning-merge-tags-html-attribute-values/" target="_blank">', '</a>' );
+			GFCommon::add_dismissible_message( $dismissible_message, 'confirmation_unsafe_' . $form_id );
 		}
 
 		self::page_header( __( 'Confirmations', 'gravityforms' ) );

@@ -6,50 +6,81 @@ if ( ! class_exists( 'GFForms' ) ) {
 
 class GFEntryDetail {
 
-	public static function add_meta_boxes( $entry, $form ) {
+	/**
+	 * The current entry array.
+	 *
+	 * @var null|array
+	 */
+	private static $_entry = null;
 
+	/**
+	 * The current form object.
+	 *
+	 * @var null|form
+	 */
+	private static $_form = null;
+
+	/**
+	 * The total number of entries in the current filter sent from the entry list.
+	 *
+	 * @var int
+	 */
+	private static $_total_count = 0;
+
+	public static function add_meta_boxes() {
 		// Prepare meta boxes and screen options.
 
 		$meta_boxes = array(
-			array(
-				'id' => 'submitdiv',
-				'title' => esc_html__( 'Entry', 'gravityforms' ),
+			'submitdiv'     => array(
+				'title'    => esc_html__( 'Entry', 'gravityforms' ),
 				'callback' => array( 'GFEntryDetail', 'meta_box_entry_info' ),
-				'context' => 'side',
+				'context'  => 'side',
 			),
-			array(
-				'id' => 'notifications',
-				'title' => esc_html__( 'Notifications', 'gravityforms' ),
+			'notifications' => array(
+				'title'    => esc_html__( 'Notifications', 'gravityforms' ),
 				'callback' => array( 'GFEntryDetail', 'meta_box_notifications' ),
-				'context' => 'side',
+				'context'  => 'side',
 			),
 		);
 
 		if ( GFCommon::current_user_can_any( 'gravityforms_view_entry_notes' ) ) {
-			$meta_boxes[] = array(
-				'id' => 'notes',
-				'title' => esc_html__( 'Notes', 'gravityforms' ),
+			$meta_boxes['notes'] = array(
+				'title'    => esc_html__( 'Notes', 'gravityforms' ),
 				'callback' => array( 'GFEntryDetail', 'meta_box_notes' ),
-				'context' => 'normal',
+				'context'  => 'normal',
 			);
 		}
 
+		$entry = self::get_current_entry();
+		$form  = self::get_current_form();
+
 		if ( ! empty( $entry['payment_status'] ) ) {
-			$meta_boxes[] = array(
-				'id'            => 'payment',
+			$meta_boxes['payment'] = array(
 				'title'         => $entry['transaction_type'] == 2 ? esc_html__( 'Subscription Details', 'gravityforms' ) : esc_html__( 'Payment Details', 'gravityforms' ),
 				'callback'      => array( 'GFEntryDetail', 'meta_box_payment_details' ),
 				'context'       => 'side',
-				'callback_args' => array( $entry, $form )
+				'callback_args' => array( $entry, $form ),
 			);
 		}
 
-		foreach ( $meta_boxes as $meta_box ) {
+		/**
+		 * Allow custom meta boxes to be added to the entry detail page.
+		 *
+		 * @since 2.0-beta-3
+		 *
+		 * @param array $meta_boxes The properties for the meta boxes.
+		 * @param array $entry The entry currently being viewed/edited.
+		 * @param array $form The form object used to process the current entry.
+		 */
+		$meta_boxes = apply_filters( 'gform_entry_detail_meta_boxes', $meta_boxes, $entry, $form );
+
+		foreach ( $meta_boxes as $id => $meta_box ) {
+			$screen = get_current_screen();
 			add_meta_box(
-				$meta_box['id'],
+				$id,
 				$meta_box['title'],
 				$meta_box['callback'],
-				'forms_page_gf_entries',
+				$screen->id,
 				$meta_box['context'],
 				isset( $meta_box['priority'] ) ? $meta_box['priority'] : 'default',
 				isset( $meta_box['callback_args'] ) ? $meta_box['callback_args'] : null
@@ -57,22 +88,26 @@ class GFEntryDetail {
 		}
 	}
 
-	public static function lead_detail_page() {
-		global $current_user;
+	public static function get_current_form() {
 
-		if ( ! GFCommon::ensure_wp_version() ) {
-			return;
+		if ( isset( self::$_form ) ) {
+			$form = self::$_form;
+		} else {
+			$form = GFFormsModel::get_form_meta( absint( $_GET['id'] ) );
 		}
 
-		echo GFCommon::get_remote_message();
-
-		$requested_form_id = absint( $_GET['id'] );
-		if ( empty( $requested_form_id ) ) {
-			return;
-		}
-		$form    = RGFormsModel::get_form_meta( absint( $_GET['id'] ) );
 		$form_id = absint( $form['id'] );
 		$form    = gf_apply_filters( array( 'gform_admin_pre_render', $form_id ), $form );
+
+		return $form;
+	}
+
+	public static function get_current_entry() {
+		if ( isset( self::$_entry ) ) {
+			return self::$_entry;
+		}
+		$form = self::get_current_form();
+		$form_id = absint( $form['id'] );
 		$lead_id = rgpost( 'entry_id' ) ? absint( rgpost( 'entry_id' ) ): absint( rgget( 'lid' ) );
 
 		$filter = rgget( 'filter' );
@@ -140,11 +175,55 @@ class GFEntryDetail {
 		} else {
 			$sorting = array();
 		}
-		$total_count = 0;
-		$leads       = GFAPI::get_entries( $form['id'], $search_criteria, $sorting, $paging, $total_count );
 
-		$prev_pos = ! rgblank( $position ) && $position > 0 ? $position - 1 : false;
-		$next_pos = ! rgblank( $position ) && $position < $total_count - 1 ? $position + 1 : false;
+		$leads = GFAPI::get_entries( $form['id'], $search_criteria, $sorting, $paging, self::$_total_count );
+
+		if ( ! $lead_id ) {
+			$lead = ! empty( $leads ) ? $leads[0] : false;
+		} else {
+			$lead = GFAPI::get_entry( $lead_id );
+		}
+
+		self::$_entry = $lead;
+
+		return $lead;
+	}
+
+	public static function get_total_count() {
+		return self::$_total_count;
+	}
+
+	public static function lead_detail_page() {
+		global $current_user;
+
+		if ( ! GFCommon::ensure_wp_version() ) {
+			return;
+		}
+
+		echo GFCommon::get_remote_message();
+
+		$requested_form_id = absint( $_GET['id'] );
+		if ( empty( $requested_form_id ) ) {
+			return;
+		}
+
+		$lead = self::get_current_entry();
+		if ( is_wp_error( $lead ) || ! $lead ) {
+			esc_html_e( "Oops! We couldn't find your entry. Please try again", 'gravityforms' );
+
+			return;
+		}
+
+		$lead_id  = $lead['id'];
+		$form     = self::get_current_form();
+		$form_id  = absint( $form['id'] );
+
+		$total_count = self::get_total_count();
+		$position    = rgget( 'pos' ) ? rgget( 'pos' ) : 0;
+		$prev_pos    = ! rgblank( $position ) && $position > 0 ? $position - 1 : false;
+		$next_pos    = ! rgblank( $position ) && $position < self::$_total_count - 1 ? $position + 1 : false;
+
+		$filter = rgget( 'filter' );
 
 		// unread filter requires special handling for pagination since entries are filter out of the query as they are read
 		if ( $filter == 'unread' ) {
@@ -154,20 +233,6 @@ class GFEntryDetail {
 				$next_pos = false;
 			}
 		}
-
-		if ( ! $lead_id ) {
-			$lead = ! empty( $leads ) ? $leads[0] : false;
-		} else {
-			$lead = GFAPI::get_entry( $lead_id );
-		}
-
-		if ( is_wp_error( $lead ) || ! $lead ) {
-			esc_html_e( "Oops! We couldn't find your entry. Please try again", 'gravityforms' );
-
-			return;
-		}
-		
-		self::add_meta_boxes( $lead, $form );
 
 		RGFormsModel::update_lead_property( $lead['id'], 'is_read', 1 );
 
@@ -294,6 +359,8 @@ class GFEntryDetail {
 
 		$mode = empty( $_POST['screen_mode'] ) ? 'view' : $_POST['screen_mode'];
 
+		$screen = get_current_screen();
+
 		$min = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG || isset( $_GET['gform_debug'] ) ? '' : '.min';
 
 		?>
@@ -305,7 +372,7 @@ class GFEntryDetail {
 				jQuery('#gform_update_button').prop('disabled', false);
 				if(typeof postboxes != 'undefined'){
 					jQuery('.if-js-closed').removeClass('if-js-closed').addClass('closed');
-					postboxes.add_postbox_toggles( 'forms_page_gf_entries' );
+					postboxes.add_postbox_toggles( <?php echo json_encode( $screen->id ); ?>);
 				}
 			});
 
@@ -512,7 +579,9 @@ class GFEntryDetail {
 							 */
 							do_action( 'gform_entry_detail_sidebar_before', $form, $lead );
 							?>
-							<?php do_meta_boxes( 'forms_page_gf_entries', 'side', array( 'form' => $form, 'entry' => $lead, 'mode' => $mode ) ); ?>
+							<?php
+
+							do_meta_boxes( $screen->id, 'side', array( 'form' => $form, 'entry' => $lead, 'mode' => $mode ) ); ?>
 
 							<?php
 							/**
@@ -546,7 +615,7 @@ class GFEntryDetail {
 						</div>
 
 						<div id="postbox-container-2" class="postbox-container">
-							<?php do_meta_boxes( 'forms_page_gf_entries', 'normal', array( 'form' => $form, 'entry' => $lead, 'mode' => $mode ) ); ?>
+							<?php do_meta_boxes( $screen->id, 'normal', array( 'form' => $form, 'entry' => $lead, 'mode' => $mode ) ); ?>
 							<?php
 
 							/**

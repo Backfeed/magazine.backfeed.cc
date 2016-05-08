@@ -845,22 +845,10 @@ class GFFormDisplay {
 				$form_string .= '
                         </div>';
 			}
-			
+
 			/* If the form was submitted, has multiple pages and is invalid, set the current page to the first page with an invalid field. */
 			if ( $has_pages && $is_postback && ! $is_valid ) {
-			
-				$first_invalid_page = 1;
-				
-				foreach ( $form['fields'] as $field ) {
-					
-					if ( $field->failed_validation && $first_invalid_page < $field->pageNumber ) {
-						$first_invalid_page = $field->pageNumber;
-					}
-					
-				}
-				
-				self::set_current_page( $form_id, $first_invalid_page );
-			
+				self::set_current_page( $form_id, GFFormDisplay::get_first_page_with_error( $form ) );
 			}
 
 			$current_page = self::get_current_page( $form_id );
@@ -868,31 +856,9 @@ class GFFormDisplay {
 			if ( $has_pages && ! $is_admin ) {
 
 				if ( $form['pagination']['type'] == 'percentage' ) {
-					$form_string .= self::get_progress_bar( $form, $form_id, $confirmation_message );
+					$form_string .= self::get_progress_bar( $form, $current_page, $confirmation_message );
 				} else if ( $form['pagination']['type'] == 'steps' ) {
-					$form_string .= "
-                    <div id='gf_page_steps_{$form_id}' class='gf_page_steps'>";
-					$pages = isset( $form['pagination']['pages'] ) ? $form['pagination']['pages'] : array();
-					for ( $i = 0, $count = sizeof( $pages ); $i < $count; $i ++ ) {
-						$step_number    = $i + 1;
-						$active_class   = $step_number == $current_page ? ' gf_step_active' : '';
-						$first_class    = $i == 0 ? ' gf_step_first' : '';
-						$last_class     = $i + 1 == $count ? ' gf_step_last' : '';
-						$complete_class = $step_number < $current_page ? ' gf_step_completed' : '';
-						$previous_class = $step_number + 1 == $current_page ? ' gf_step_previous' : '';
-						$next_class     = $step_number - 1 == $current_page ? ' gf_step_next' : '';
-						$pending_class  = $step_number > $current_page ? ' gf_step_pending' : '';
-						$classes        = 'gf_step' . $active_class . $first_class . $last_class . $complete_class . $previous_class . $next_class . $pending_class;
-
-						$classes = GFCommon::trim_all( $classes );
-
-						$form_string .= "
-                        <div id='gf_step_{$form_id}_{$step_number}' class='{$classes}'><span class='gf_step_number'>{$step_number}</span>&nbsp;<span class='gf_step_label'>{$pages[ $i ]}</span></div>";
-					}
-
-					$form_string .= "
-                        <div class='gf_step_clear'></div>
-                    </div>";
+					$form_string .= self::get_progress_steps( $form, $current_page );
 				}
 			}
 
@@ -1003,6 +969,7 @@ class GFFormDisplay {
 							'var is_form = form_content.length > 0 && ! is_redirect && ! is_confirmation;' .
 							'if(is_form){' .
 								"jQuery('#gform_wrapper_{$form_id}').html(form_content.html());" .
+				                "if(form_content.hasClass('gform_validation_error')){jQuery('#gform_wrapper_{$form_id}').addClass('gform_validation_error');} else {jQuery('#gform_wrapper_{$form_id}').removeClass('gform_validation_error');}" .
 				                "setTimeout( function() { /* delay the scroll by 50 milliseconds to fix a bug in chrome */ {$scroll_position['default']} }, 50 );" .
 								"if(window['gformInitDatepicker']) {gformInitDatepicker();}" .
 								"if(window['gformInitPriceFields']) {gformInitPriceFields();}" .
@@ -1057,7 +1024,7 @@ class GFFormDisplay {
 
 			//show progress bar on confirmation
 			if ( $start_at_zero && $has_pages && ! $is_admin && ( $form['confirmation']['type'] == 'message' && $form['pagination']['type'] == 'percentage' ) ) {
-				$progress_confirmation = self::get_progress_bar( $form, $form_id, $confirmation_message );
+				$progress_confirmation = self::get_progress_bar( $form, $current_page, $confirmation_message );
 				if ( $ajax ) {
 					$progress_confirmation = apply_filters( 'gform_ajax_iframe_content', "<!DOCTYPE html><html><head><meta charset='UTF-8' /></head><body class='GF_AJAX_POSTBACK'>" . $progress_confirmation . '</body></html>' );
 				}
@@ -1219,6 +1186,19 @@ class GFFormDisplay {
 		return $page_number == 0 ? 0 : $page_number + 1;
 	}
 
+	public static function get_first_page_with_error( $form ) {
+
+		$page = 1;
+
+		foreach ( $form['fields'] as $field ) {
+			if ( $field->failed_validation ) {
+				$page = $field->pageNumber;
+				break;
+			}
+		}
+
+		return $page;
+	}
 
 	private static function get_honeypot_field( $form ) {
 		$max_id     = self::get_max_field_id( $form );
@@ -1579,7 +1559,7 @@ class GFFormDisplay {
 		$form                   = $validation_result['form'];
 		$failed_validation_page = $validation_result['failed_validation_page'];
 
-		return $is_valid;
+    		return $is_valid;
 	}
 
 	public static function is_form_empty( $form ) {
@@ -1929,7 +1909,7 @@ class GFFormDisplay {
 
 			//use section's logic if one exists
 			$section       = RGFormsModel::get_section( $form, $field->id );
-			$section_logic = ! empty( $section ) ? rgar( $section, 'conditionalLogic' ) : null;
+			$section_logic = ! empty( $section ) ? $section->conditionalLogic : null;
 
 			$field_logic = $field->type != 'page' ? $field->conditionalLogic : null; //page break conditional logic will be handled during the next button click
 
@@ -2144,6 +2124,7 @@ class GFFormDisplay {
 
 		//adding currency config if there are any product fields in the form
 		if ( self::has_price_field( $form ) ) {
+			self::add_init_script( $form['id'], 'number_formats', self::ON_PAGE_RENDER, self::get_number_formats_script( $form ) );
 			self::add_init_script( $form['id'], 'pricing', self::ON_PAGE_RENDER, self::get_pricing_init_script( $form ) );
 		}
 
@@ -2580,8 +2561,8 @@ class GFFormDisplay {
 						if ( $field->type == 'section' ) {
 							$section_fields = GFCommon::get_section_fields( $form, $field->id );
 							foreach ( $section_fields as $section_field ) {
-								if ( ! empty( $section_field['conditionalLogic'] ) ) {
-									$fields[] = floatval( $section_field['id'] );
+								if ( ! empty( $section_field->conditionalLogic ) ) {
+									$fields[] = floatval( $section_field->id );
 								}
 							}
 						}
@@ -2718,7 +2699,7 @@ class GFFormDisplay {
 		$prev = null;
 		foreach ( $form['fields'] as $field ) {
 			if ( $field->id == $field_id ) {
-				return $prev != null && ! empty( $prev['description'] );
+				return $prev != null && ! empty( $prev->description );
 			}
 			$prev = $field;
 		}
@@ -2765,13 +2746,13 @@ class GFFormDisplay {
 		return $field_content;
 	}
 
-	private static function get_progress_bar( $form, $form_id, $confirmation_message ) {
+	public static function get_progress_bar( $form, $page, $confirmation_message = '' ) {
 
 		$progress_complete = false;
 		$progress_bar      = '';
 		$page_count        = self::get_max_page_number( $form );
-		$current_page      = self::get_current_page( $form_id );
-		$page_name         = rgar( rgar( $form['pagination'], 'pages' ), $current_page - 1 );
+		$current_page      = $page;
+		$page_name         = rgars( $form['pagination'], sprintf( 'pages/%d', $current_page - 1 ) );
 		$page_name         = ! empty( $page_name ) ? ' - ' . $page_name : '';
 		$style             = $form['pagination']['style'];
 		$color             = $style == 'custom' ? " color:{$form['pagination']['color']};" : '';
@@ -2798,7 +2779,7 @@ class GFFormDisplay {
 
 
 		$progress_bar .= "
-        <div id='gf_progressbar_wrapper_{$form_id}' class='gf_progressbar_wrapper'>
+        <div id='gf_progressbar_wrapper_{$form['id']}' class='gf_progressbar_wrapper'>
             <h3 class='gf_progressbar_title'>";
 		$progress_bar .= ! $progress_complete ? esc_html__( 'Step', 'gravityforms' ) . " {$current_page} " . esc_html__( 'of', 'gravityforms' ) . " {$page_count}{$page_name}" : "{$page_name}";
 		$progress_bar .= "
@@ -2809,7 +2790,63 @@ class GFFormDisplay {
 		//close div for surrounding wrapper class when confirmation page
 		$progress_bar .= $progress_complete ? $confirmation_message . '</div>' : '';
 
+		/**
+		 * Filter the mulit-page progress bar markup.
+		 *
+		 * @since 2.0
+		 *
+		 * @param string $progress_bar         Progress bar markup as an HTML string.
+		 * @param array  $form                 Current form object.
+		 * @param string $confirmation_message The confirmation message to be displayed on the confirmation page.
+		 *
+		 * @see   https://www.gravityhelp.com/documentation/article/gform_progress_bar/
+		 */
+		$progress_bar = apply_filters( 'gform_progress_bar',               $progress_bar, $form, $confirmation_message );
+		$progress_bar = apply_filters( "gform_progress_bar_{$form['id']}", $progress_bar, $form, $confirmation_message );
+
 		return $progress_bar;
+	}
+
+	public static function get_progress_steps( $form, $page ) {
+
+		$progress_steps = "<div id='gf_page_steps_{$form['id']}' class='gf_page_steps'>";
+		$pages  = isset( $form['pagination']['pages'] ) ? $form['pagination']['pages'] : array();
+
+		for ( $i = 0, $count = sizeof( $pages ); $i < $count; $i ++ ) {
+			$step_number    = $i + 1;
+			$active_class   = $step_number == $page ? ' gf_step_active' : '';
+			$first_class    = $i == 0 ? ' gf_step_first' : '';
+			$last_class     = $i + 1 == $count ? ' gf_step_last' : '';
+			$complete_class = $step_number < $page ? ' gf_step_completed' : '';
+			$previous_class = $step_number + 1 == $page ? ' gf_step_previous' : '';
+			$next_class     = $step_number - 1 == $page ? ' gf_step_next' : '';
+			$pending_class  = $step_number > $page ? ' gf_step_pending' : '';
+			$classes        = 'gf_step' . $active_class . $first_class . $last_class . $complete_class . $previous_class . $next_class . $pending_class;
+
+			$classes = GFCommon::trim_all( $classes );
+
+			$progress_steps .= "<div id='gf_step_{$form['id']}_{$step_number}' class='{$classes}'><span class='gf_step_number'>{$step_number}</span>&nbsp;<span class='gf_step_label'>{$pages[ $i ]}</span></div>";
+
+		}
+
+		$progress_steps .= "<div class='gf_step_clear'></div></div>";
+
+
+		/**
+		 * Filter the multi-page progress steps markup.
+		 *
+		 * @since 2.0-beta-3
+		 *
+		 * @param string $progress_steps HTML string containing the progress steps markup.
+		 * @param array $form The current form object.
+		 * @param int $page The current page number.
+		 *
+		 * @see   https://www.gravityhelp.com/documentation/article/gform_progress_steps/
+		 */
+		$progress_steps = apply_filters( 'gform_progress_steps', $progress_steps, $form, $page );
+		$progress_steps = apply_filters( "gform_progress_steps_{$form['id']}", $progress_steps, $form, $page );
+
+		return $progress_steps;
 	}
 
 	/**

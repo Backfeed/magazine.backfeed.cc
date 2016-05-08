@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: http://www.gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 2.0-beta-2.2
+Version: 2.0-beta-3
 Author: rocketgenius
 Author URI: http://www.rocketgenius.com
 Text Domain: gravityforms
@@ -86,6 +86,7 @@ require_once( plugin_dir_path( __FILE__ ) . 'widget.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'includes/api.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'includes/webapi/webapi.php' );
 require_once( plugin_dir_path( __FILE__ ) . 'includes/fields/class-gf-fields.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/class-gf-download.php' );
 
 // GFCommon::$version is deprecated, set it to current version for backwards compatibility
 GFCommon::$version = GFForms::$version;
@@ -116,7 +117,7 @@ register_deactivation_hook( __FILE__, array( 'GFForms', 'deactivation_hook' ) );
 
 class GFForms {
 
-	public static $version = '2.0-beta-2.2';
+	public static $version = '2.0-beta-3';
 
 	public static function loaded() {
 
@@ -143,6 +144,8 @@ class GFForms {
 		}
 
 		add_action( 'gravityforms_cron', array( 'GFForms', 'cron' ) );
+
+		GF_Download::maybe_process();
 
 		//load text domains
 		GFCommon::load_gf_text_domain( 'gravityforms' );
@@ -267,7 +270,6 @@ class GFForms {
 						add_action( 'wp_ajax_gf_dismiss_message', array( 'GFForms', 'ajax_dismiss_message' ) );
 					}
 
-
 					add_filter( 'plugins_api', array( 'RGForms', 'get_addon_info' ), 100, 3 );
 					add_action( 'after_plugin_row_gravityforms/gravityforms.php', array( 'RGForms', 'plugin_row' ) );
 					add_action( 'install_plugins_pre_plugin-information', array( 'RGForms', 'display_changelog' ) );
@@ -276,7 +278,8 @@ class GFForms {
 			}
 			add_action( 'admin_init', array( 'RGForms', 'ajax_parse_request' ), 10 );
 
-			if ( self::get_page() == 'entry_list' && ! isset( $_GET['filter'] ) ) {
+			$gf_page = self::get_page();
+			if ( $gf_page == 'entry_list' && ! isset( $_GET['filter'] ) ) {
 				require_once( GFCommon::get_base_path() . '/entry_list.php' );
 				$default_filter = GFEntryList::get_default_filter();
 				if ( $default_filter !== 'all' ) {
@@ -284,6 +287,9 @@ class GFForms {
 					$url = esc_url_raw( $url );
 					wp_safe_redirect( $url );
 				}
+			}
+
+			if ( $gf_page == 'entry_list' ) {
 				add_filter( 'set-screen-option', array( 'GFForms', 'set_screen_options' ), 10, 3 );
 				add_filter( 'screen_settings', array( 'GFForms', 'show_screen_options' ), 10, 2 );
 			}
@@ -1167,7 +1173,17 @@ class GFForms {
 		return in_array( $current_page, $gf_pages );
 	}
 
-	//Creates "Forms" left nav
+	/**
+	 * Creates the "Forms" left nav.
+	 *
+	 * WordPress generates the page hook suffix and screen ID by passing the translated menu title through sanitize_title().
+	 * Screen options and metabox preferences are stored using the screen ID therefore:
+	 * 1. The page suffix or screen ID should never be hard-coded. Use get_current_screen()->id.
+	 * 2. The page suffix and screen ID must never change.
+	 *  e.g. When an update for Gravity Forms is available an icon will be added to the the menu title.
+	 *  The HTML for the icon will be stripped entirely by sanitize_title() because the number 1 is encoded.
+	 *
+	 */
 	public static function create_menu() {
 
 		$has_full_access = current_user_can( 'gform_full_access' );
@@ -1181,8 +1197,8 @@ class GFForms {
 
 		$parent_menu = self::get_parent_menu( $addon_menus );
 
-		// Add a top-level left nav
-		$update_icon = GFCommon::has_update() && current_user_can( 'install_plugins' ) ? "<span title='" . esc_attr( __( 'Update Available', 'gravityforms' ) ) . "' class='update-plugins count-1'><span class='update-count'>1</span></span>" : '';
+		// Add a top-level left nav.
+		$update_icon = GFCommon::has_update() && current_user_can( 'install_plugins' ) ? "<span title='" . esc_attr( __( 'Update Available', 'gravityforms' ) ) . "' class='update-plugins count-1'><span class='update-count'>&#49;</span></span>" : '';
 
 		$admin_icon = self::get_admin_icon_b64( GFForms::is_gravity_page() ? '#fff' : false );
 
@@ -1193,7 +1209,9 @@ class GFForms {
 
 		add_submenu_page( $parent_menu['name'], __( 'New Form', 'gravityforms' ), __( 'New Form', 'gravityforms' ), $has_full_access ? 'gform_full_access' : 'gravityforms_create_form', 'gf_new_form', array( 'RGForms', 'new_form' ) );
 
-		add_submenu_page( $parent_menu['name'], __( 'Entries', 'gravityforms' ), __( 'Entries', 'gravityforms' ), $has_full_access ? 'gform_full_access' : 'gravityforms_view_entries', 'gf_entries', array( 'RGForms', 'all_leads_page' ) );
+		$entries_hook_suffix = add_submenu_page( $parent_menu['name'], __( 'Entries', 'gravityforms' ), __( 'Entries', 'gravityforms' ), $has_full_access ? 'gform_full_access' : 'gravityforms_view_entries', 'gf_entries', array( 'RGForms', 'all_leads_page' ) );
+
+		add_action( 'load-' . $entries_hook_suffix, array( 'GFForms', 'load_screen_options' ) );
 
 		if ( is_array( $addon_menus ) ) {
 			foreach ( $addon_menus as $addon_menu ) {
@@ -3144,7 +3162,7 @@ class GFForms {
 		$forms             = RGFormsModel::get_forms( 1, 'title' );
 		$forms_options[''] = __( 'Select a Form', 'gravityforms' );
 		foreach ( $forms as $form ) {
-			$forms_options[ absint( $form->id ) ] = esc_html( $form->title );
+			$forms_options[ absint( $form->id ) ] = $form->title;
 		}
 
 		$default_attrs = array(
@@ -3270,6 +3288,17 @@ class GFForms {
 		}
 	}
 
+	/**
+	 * Sets the screen options for the entry list.
+	 *
+	 * @since 2.0
+	 *
+	 * @param $status
+	 * @param $option
+	 * @param $value
+	 *
+	 * @return array
+	 */
 	public static function set_screen_options( $status, $option, $value ) {
 		$return = $value;
 		if ( $option == 'gform_entries_screen_options' ) {
@@ -3281,15 +3310,50 @@ class GFForms {
 		return $return;
 	}
 
+	/**
+	 * Returns the markup for the screen options for the entry list.
+	 *
+	 * @since 2.0
+	 *
+	 * @param $status
+	 * @param $args
+	 *
+	 * @return string
+	 */
 	public static function show_screen_options( $status, $args ) {
 
 		$return = $status;
-		if ( $args->base == 'forms_page_gf_entries' ) {
+
+		if ( self::get_page() == 'entry_list' ) {
+			require_once( GFCommon::get_base_path() . '/entry_list.php' );
 			$return = GFEntryList::get_screen_options_markup( $status, $args );
 		}
 
 		return $return;
 	}
+
+	/**
+	 * Loads the screen options for the entry detail page.
+	 *
+	 * @since 2.0
+	 */
+	public static function load_screen_options() {
+		$screen = get_current_screen();
+
+		if ( ! is_object( $screen ) ) {
+			return;
+		}
+
+		$page = GFForms::get_page();
+
+		if ( in_array( $page, array( 'entry_detail', 'entry_detail_edit' ) ) ) {
+
+			require_once( GFCommon::get_base_path() . '/entry_detail.php' );
+
+			GFEntryDetail::add_meta_boxes();
+		}
+	}
+
 
 	/**
 	 * Daily cron task. Target for the gravityforms_cron action.

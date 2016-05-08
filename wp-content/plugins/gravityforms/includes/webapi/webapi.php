@@ -93,14 +93,14 @@ if ( class_exists( 'GFForms' ) ) {
 			$scripts = array(
 				array(
 					'handle'  => 'gfwebapi_hmac_sha1',
-					'src'     => 'https://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/hmac-sha1.js',
+					'src'     => GFCommon::get_base_url() . '/includes/webapi/js/hmac-sha1.min.js',
 					'enqueue' => array(
 						array( 'admin_page' => array( 'plugin_settings' ) ),
 					)
 				),
 				array(
 					'handle'   => 'gfwebapi_enc_base64',
-					'src'      => 'https://crypto-js.googlecode.com/svn/tags/3.1.2/build/components/enc-base64-min.js',
+					'src'      => GFCommon::get_base_url() . '/includes/webapi/js/enc-base64-min.js',
 					'deps'     => array( 'gfwebapi_hmac_sha1' ),
 					'callback' => array( $this, 'localize_form_settings_scripts' ),
 					'enqueue'  => array(
@@ -149,7 +149,7 @@ if ( class_exists( 'GFForms' ) ) {
 
 		public function plugin_settings_fields() {
 
-			$args = apply_filters( 'gform_webapi_get_users_settings_page', array( 'number' => 200 ) );
+			$args = apply_filters( 'gform_webapi_get_users_settings_page', array( 'number' => 3000 ) );
 
 			$accounts = get_users( $args );
 

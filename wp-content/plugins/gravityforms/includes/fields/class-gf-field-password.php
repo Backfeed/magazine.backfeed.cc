@@ -169,8 +169,9 @@ class GF_Field_Password extends GF_Field {
 		$password_fields = GFAPI::get_fields_by_type( $form, array( 'password' ) );
 
 		foreach ( $password_fields as $password_field ) {
-			GFAPI::update_entry_field( $entry['id'], $password_field['id'], '' );
+			GFAPI::update_entry_field( $entry['id'], $password_field->id, '' );
 		}
+
 	}
 }
 

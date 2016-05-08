@@ -195,7 +195,8 @@ abstract class GFAddOn {
 		// Initializing translations. Translation files in the WP_LANG_DIR folder have a higher priority.
 		$locale = apply_filters( 'plugin_locale', get_locale(), $this->_slug );
 		load_textdomain( $this->_slug, WP_LANG_DIR . '/gravityforms/' . $this->_slug . '-' . $locale . '.mo' );
-		load_plugin_textdomain( $this->_slug, false, $this->_slug . '/languages' );
+		load_textdomain( $this->_slug, WP_LANG_DIR . '/plugins/' . $this->_slug . '-' . $locale . '.mo' );
+		load_plugin_textdomain( $this->_slug, false, plugin_basename( dirname( $this->_full_path ) ) . '/languages' );
 
 		add_filter( 'gform_logging_supported', array( $this, 'set_logging_supported' ) );
 
@@ -2048,7 +2049,7 @@ abstract class GFAddOn {
 						);
 						$col_index ++;
 					}
-				} elseif ( ! rgar( $field, 'displayOnly' ) && $field_is_valid_type && ! $exclude_field ) {
+				} elseif ( ! $field->displayOnly && $field_is_valid_type && ! $exclude_field ) {
 					$fields[] = array( 'value' => $field->id, 'label' => GFCommon::get_label( $field ) );
 				}
 			}
@@ -2409,7 +2410,7 @@ abstract class GFAddOn {
 					);
 					$col_index ++;
 				}
-			} elseif ( ! rgar( $field, 'displayOnly' ) ) {
+			} elseif ( ! $field->displayOnly ) {
 				$fields[] = array( 'value' => $field->id, 'label' => GFCommon::get_label( $field ) );
 			} else {
 				$fields[] = array(
@@ -5214,6 +5215,15 @@ abstract class GFAddOn {
 
 	public function maybe_wp_kses( $html, $allowed_html = 'post', $allowed_protocols = array() ) {
 		return GFCommon::maybe_wp_kses( $html, $allowed_html, $allowed_protocols );
+	}
+
+	/**
+	 * Returns the slug for the add-on.
+	 *
+	 * @since 2.0
+	 */
+	public function get_slug() {
+		return $this->_slug;
 	}
 
 }

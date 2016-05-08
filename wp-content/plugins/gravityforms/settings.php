@@ -65,6 +65,8 @@ class GFSettings {
 		self::page_header( __( 'Uninstall Gravity Forms', 'gravityforms' ), '' );
 		if ( isset( $_POST['uninstall'] ) ) {
 
+			check_admin_referer( 'gform_uninstall', 'gform_uninstall_nonce' );
+
 			if ( ! GFCommon::current_user_can_any( 'gravityforms_uninstall' ) || ( function_exists( 'is_multisite' ) && is_multisite() && ! is_super_admin() ) ) {
 				die( esc_html__( "You don't have adequate permission to uninstall Gravity Forms.", 'gravityforms' ) );
 			}
@@ -117,7 +119,10 @@ class GFSettings {
 		?>
 
 		<form action="" method="post">
-			<?php if ( GFCommon::current_user_can_any( 'gravityforms_uninstall' ) && ( ! function_exists( 'is_multisite' ) || ! is_multisite() || is_super_admin() ) ) { ?>
+			<?php if ( GFCommon::current_user_can_any( 'gravityforms_uninstall' ) && ( ! function_exists( 'is_multisite' ) || ! is_multisite() || is_super_admin() ) ) {
+
+				wp_nonce_field( 'gform_uninstall', 'gform_uninstall_nonce' );
+				?>
 				<h3><span><i class="fa fa-times"></i> <?php esc_html_e( 'Uninstall Gravity Forms', 'gravityforms' ); ?></span>
 				</h3>
 				<div class="delete-alert alert_red">
@@ -559,7 +564,10 @@ class GFSettings {
 			}
 		}
 
-		$setting_tabs[] = array( 'name' => 'uninstall', 'label' => __( 'Uninstall', 'gravityforms' ) );
+		// Prevent Uninstall tab from being added for users that don't have gravityforms_uninstall capability
+		if ( GFCommon::current_user_can_any( 'gravityforms_uninstall' ) ) {
+			$setting_tabs[] = array( 'name' => 'uninstall', 'label' => __( 'Uninstall', 'gravityforms' ) );
+		}
 
 		$setting_tabs = apply_filters( 'gform_settings_menu', $setting_tabs );
 		ksort( $setting_tabs, SORT_NUMERIC );

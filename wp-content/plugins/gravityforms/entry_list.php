@@ -205,7 +205,6 @@ class GFEntryList {
 		$table->output_styles();
 		$table->output_scripts();
 
-
 		wp_print_styles( array( 'thickbox' ) );
 
 		echo GFCommon::get_remote_message();
@@ -579,7 +578,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 
 		$form_id = $this->get_form_id();
 
-		$page_index = empty( $_GET['paged'] ) ? 0 : intval( $_GET['paged'] ) - 1;
+		$page_index = empty( $_GET['paged'] ) ? 0 : absint( $_GET['paged'] - 1 );
 
 		$form       = RGFormsModel::get_form_meta( $form_id );
 
@@ -591,7 +590,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 
 		$sort_field_meta = RGFormsModel::get_field( $form, $sort_field );
 
-		$is_numeric      = $sort_field_meta instanceof GF_FIeld ? $sort_field_meta->type == 'number' : $sort_field_meta['type'];
+		$is_numeric      = $sort_field_meta instanceof GF_Field ? $sort_field_meta->type == 'number' : $sort_field_meta['type'];
 
 		$screen_options = get_user_option( 'gform_entries_screen_options' );
 		$page_size = isset( $screen_options['per_page'] ) ? absint( $screen_options['per_page'] ) : 20;

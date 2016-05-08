@@ -276,6 +276,19 @@ abstract class GFFeedAddOn extends GFAddOn {
 					$entry = $returned_entry;
 				}
 
+				/**
+				 * Perform a custom action when a feed has been processed.
+				 *
+				 * @param array $feed The feed which was processed.
+				 * @param array $entry The current entry object, which may have been modified by the processed feed.
+				 * @param array $form The current form object.
+				 * @param object $addon The current instance of the GFAddOn object which extends GFFeedAddOn or GFPaymentAddOn (i.e. GFCoupons, GF_User_Registration, GFStripe).
+				 *
+				 * @since 2.0
+				 */
+				do_action( 'gform_post_process_feed', $feed, $entry, $form, $this );
+				do_action( "gform_{$this->_slug}_post_process_feed", $feed, $entry, $form, $this );
+
 				// should the add-on fulfill be done here????
 				$this->log_debug( 'GFFeedAddOn::maybe_process_feed(): Marking entry #' . $entry['id'] . ' as fulfilled for ' . $this->_slug );
 				gform_update_meta( $entry['id'], "{$this->_slug}_is_fulfilled", true );
@@ -389,7 +402,7 @@ abstract class GFFeedAddOn extends GFAddOn {
 			}
 
 			// Do not add to line items if the payment field selected in the feed is not the current field.
-			if ( is_numeric( $payment_field ) && $payment_field !== $field_id ) {
+			if ( is_numeric( $payment_field ) && $payment_field != $field_id ) {
 				continue;
 			}
 
@@ -1303,74 +1316,59 @@ abstract class GFFeedAddOn extends GFAddOn {
 	}
 
 	public function add_delayed_payment_support( $options ) {
-
 		$this->delayed_payment_integration = $options;
 
 		if ( is_admin() ) {
-
-			add_action( 'gform_paypal_action_fields', array( $this, 'add_paypal_settings' ), 10, 2 );
-			add_filter( 'gform_paypal_save_config', array( $this, 'save_paypal_settings' ) );
-
+			add_filter( 'gform_gravityformspaypal_feed_settings_fields', array( $this, 'add_paypal_post_payment_actions' ) );
 		}
 
 		add_action( 'gform_paypal_fulfillment', array( $this, 'paypal_fulfillment' ), 10, 4 );
 	}
 
-	public function add_paypal_settings( $feed, $form ) {
+	/**
+	 * Add the Post Payments Actions setting to the PayPal feed.
+	 *
+	 * @param array $feed_settings_fields The PayPal feed settings.
+	 *
+	 * @return array
+	 */
+	public function add_paypal_post_payment_actions( $feed_settings_fields ) {
 
-		$form_id        = rgar( $form, 'id' );
-		$feed_meta      = $feed['meta'];
-		$settings_style = $this->has_feed( $form_id ) ? '' : 'display:none;';
+		$form_id = absint( rgget( 'id' ) );
+		if ( $this->has_feed( $form_id ) ) {
 
-		$addon_name  = $this->_slug;
-		$addon_feeds = array();
-		foreach ( $this->get_feeds( $form_id ) as $feed ) {
-			$addon_feeds[] = $feed['form_id'];
+			$addon_label = rgar( $this->delayed_payment_integration, 'option_label' );
+			$choice      = array(
+				'label' => $addon_label ? $addon_label : sprintf( esc_html__( 'Process %s feed only when payment is received.', 'gravityforms' ), $this->get_short_title() ),
+				'name'  => 'delay_' . $this->_slug,
+			);
+
+			$field_name = 'post_payment_actions';
+			$field      = $this->get_field( $field_name, $feed_settings_fields );
+
+			if ( ! $field ) {
+
+				$fields = array(
+					array(
+						'name'    => $field_name,
+						'label'   => esc_html( 'Post Payment Actions', 'gravityforms' ),
+						'type'    => 'checkbox',
+						'choices' => array( $choice ),
+						'tooltip' => '<h6>' . esc_html__( 'Post Payment Actions', 'gravityforms' ) . '</h6>' . esc_html__( 'Select which actions should only occur after payment has been received.', 'gravityforms' )
+					)
+				);
+
+				$feed_settings_fields = $this->add_field_after( 'options', $fields, $feed_settings_fields );
+
+			} else {
+
+				$field['choices'][]   = $choice;
+				$feed_settings_fields = $this->replace_field( $field_name, $field, $feed_settings_fields );
+
+			}
 		}
 
-		?>
-
-		<div style="<?php echo esc_attr( $settings_style ); ?>" id="delay_<?php echo esc_attr__( $addon_name ); ?>_container">
-			<input type="checkbox" name="paypal_delay_<?php echo esc_attr( $addon_name ); ?>" id="paypal_delay_<?php echo esc_attr( $addon_name ); ?>" value="1" <?php echo rgar( $feed_meta, "delay_$addon_name" ) ? "checked='checked'" : '' ?> class="gaddon-setting gaddon-checkbox" />
-			<label class="inline" for="paypal_delay_<?php echo esc_attr( $addon_name ); ?>">
-				<?php
-				if ( rgar( $this->delayed_payment_integration, 'option_label' ) ) {
-					echo rgar( $this->delayed_payment_integration, 'option_label' );
-				} else {
-					printf( esc_html__( 'Process %s feed only when payment is received.', 'gravityforms' ), $this->get_short_title() );
-				}
-				?>
-			</label>
-		</div>
-
-		<script type="text/javascript">
-			jQuery(document).ready(function ($) {
-
-				jQuery(document).bind('paypalFormSelected', function (event, form) {
-
-					var addonFormIds = <?php echo json_encode( $addon_feeds ); ?>;
-					var isApplicableFeed = false;
-
-					if (jQuery.inArray(String(form.id), addonFormIds) != -1)
-						isApplicableFeed = true;
-
-					if (isApplicableFeed) {
-						jQuery(<?php echo json_encode( '#delay_' . $addon_name . '_container' ); ?>).show();
-					} else {
-						jQuery(<?php echo json_encode( '#delay_' . $addon_name . '_container' ); ?>).hide();
-					}
-
-				});
-			});
-		</script>
-
-	<?php
-	}
-
-	public function save_paypal_settings( $feed ) {
-		$feed['meta'][ "delay_{$this->_slug}" ] = rgpost( "paypal_delay_{$this->_slug}" );
-
-		return $feed;
+		return $feed_settings_fields;
 	}
 
 	public function paypal_fulfillment( $entry, $paypal_config, $transaction_id, $amount ) {
@@ -1399,7 +1397,16 @@ abstract class GFFeedAddOn extends GFAddOn {
 			return false;
 		}
 
-		$this->process_feed( $feed_to_process, $entry, $form );
+		$returned_entry = $this->process_feed( $feed_to_process, $entry, $form );
+
+		// If returned value from the process feed call is an array containing an id, set the entry to its value.
+		if ( is_array( $returned_entry ) && rgar( $returned_entry, 'id' ) ) {
+			$entry = $returned_entry;
+		}
+
+		do_action( 'gform_post_process_feed', $feed_to_process, $entry, $form, $this );
+		do_action( "gform_{$this->_slug}_post_process_feed", $feed_to_process, $entry, $form, $this );
+
 		// updating meta to indicate this entry has been fulfilled for the current add-on
 		$this->log_debug( 'GFFeedAddOn::paypal_fulfillment(): Marking entry ' . $entry['id'] . ' as fulfilled for ' . $this->_slug );
 		gform_update_meta( $entry['id'], "{$this->_slug}_is_fulfilled", true );
