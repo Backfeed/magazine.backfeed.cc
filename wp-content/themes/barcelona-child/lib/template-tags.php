@@ -32,7 +32,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
         }
 
         if ( in_array( 'score', $barcelona_opt ) ) {
-            $barcelona_html .= '<li class="backfeed-tooltip"><div class="backfeed-tooltip-content">Article Score</div><span class="fa fa-star"></span>'. $backfeed_contribution_score .'</li>';
+            $barcelona_html .= '<li class="backfeed-tooltip"><div class="backfeed-tooltip-content"><div class="backfeed-tooltip-title">Article Score</div></div><span class="fa fa-star"></span>'. $backfeed_contribution_score .'</li>';
         }
 
         if ( in_array( 'views', $barcelona_opt ) ) {
@@ -40,7 +40,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
         }
 
         if ( in_array( 'engagedrep', $barcelona_opt ) ) {
-            $barcelona_html .= '<li class="backfeed-tooltip"><div class="backfeed-tooltip-content"><div class="backfeed-tooltip-title">Reputation Invested</div> Indicates community engagement in ranking this article. The higher this score, the more reputed members participated in evaluating the quality of this article.</div><span class="fa fa-users"></span>'. $backfeed_engaged_reputation .'</li>';
+            $barcelona_html .= '<li class="backfeed-tooltip"><div class="backfeed-tooltip-content"><div class="backfeed-tooltip-title">Reputation Invested</div><p>Indicates community engagement in ranking this article. The higher this score, the more reputed members participated in evaluating the quality of this article.</p></div><span class="fa fa-users"></span>'. $backfeed_engaged_reputation .'</li>';
         }
 
         if ( in_array( 'likes', $barcelona_opt ) ) {
@@ -141,9 +141,9 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
         'date' => array( 'clock-o', esc_html( get_the_date() ) ),
         'author' => array( 'user', $barcelona_author_html , get_author_posts_url( $post->post_author ) ),
 //        'views' => array( 'eye', esc_html( barcelona_get_post_views() ) ),
-        'score' => array( 'star', $backfeed_contribution_score, '', 'Article Score' ),
+        'score' => array( 'star', $backfeed_contribution_score, '', '<div class="backfeed-tooltip-title">Article Score</div>' ),
 //        'likes' => array( 'thumbs-up', '<span class="post_vote_up_val">'. esc_html( barcelona_get_post_vote( $post->ID ) ) .'</span>' ),
-        'engagedrep' => array( 'users', $backfeed_engaged_reputation, '', '<div class="backfeed-tooltip-title">Reputation Invested</div> Indicates community engagement in ranking this article. The higher this score, the more reputed members participated in evaluating the quality of this article.' ),
+        'engagedrep' => array( 'users', $backfeed_engaged_reputation, '', '<div class="backfeed-tooltip-title">Reputation Invested</div><p>Indicates community engagement in ranking this article. The higher this score, the more reputed members participated in evaluating the quality of this article.</p>' ),
         'comments' => array( 'comments', intval( get_comments_number() ) ),
         'categories' => array( 'bars', $barcelona_categories_html )
     );
