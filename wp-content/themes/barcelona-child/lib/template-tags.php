@@ -8,8 +8,8 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
     // TODO: Remove duplication of this code block
     if (function_exists('Backfeed\get_contribution')) {
         $contribution = Backfeed\get_contribution($post->ID);
-        $backfeed_contribution_score = round($contribution->stats->score, 2);
-        $backfeed_engaged_reputation = round($contribution->stats->engaged_reputation, 2).'%';
+        $backfeed_contribution_score = round($contribution->stats->score * 100, 2);
+        $backfeed_engaged_reputation = round($contribution->stats->engaged_reputation * 100, 2).'%';
     } else {
         barcelona_post_meta($barcelona_opt, $barcelona_sep, $echo);
         return false;
@@ -78,8 +78,8 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
     // TODO: Remove duplication of this code block
     if (function_exists('Backfeed\get_contribution')) {
         $contribution = Backfeed\get_contribution($post->ID);
-        $backfeed_contribution_score = round($contribution->stats->score, 2);
-        $backfeed_engaged_reputation = round($contribution->stats->engaged_reputation, 2).'%';
+        $backfeed_contribution_score = round($contribution->stats->score * 100, 2);
+        $backfeed_engaged_reputation = round($contribution->stats->engaged_reputation * 100, 2).'%';
     } else {
         barcelona_featured_img($barcelona_fimg_id);
         return false;
