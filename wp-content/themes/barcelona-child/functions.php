@@ -59,7 +59,7 @@ add_action('gform_after_submission_1', function() {
 });
 
 // After successful register, login the user and redirect to homepage.
-add_action( 'wppb_register_success', function($http_request, $form_name, $user_id) {
+add_action('wppb_register_success', function($http_request, $form_name, $user_id) {
 	wp_update_user([
 		'ID' => $user_id,
 		'display_name' => $http_request['first_name'].' '.$http_request['last_name']
@@ -70,7 +70,7 @@ add_action( 'wppb_register_success', function($http_request, $form_name, $user_i
 		'user_password' => $http_request['passw1']
 	]);
 	wp_redirect(home_url()); exit;
-}, 20, 3 );
+}, 20, 3);
 
 add_filter('gettext', function ($translated_text, $text, $domain) {
 	switch ($domain) {
@@ -82,3 +82,13 @@ add_filter('gettext', function ($translated_text, $text, $domain) {
 	}
 	return $translated_text;
 }, 20, 3);
+
+add_filter('wp_nav_menu_items', function($items, $args) {
+	if ($args->theme_location == 'top') {
+		if (is_user_logged_in()) {
+			$items .= '<li class="menu-item"><a href="'. wp_logout_url() .'">Logout</a></li>';
+		}
+	}
+	return $items;
+}, 10, 2);
+
