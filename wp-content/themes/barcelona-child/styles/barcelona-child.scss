@@ -89,7 +89,7 @@
     border: none;
     text-transform: uppercase;
     font-weight: bold !important;
-    background-color: #cc1919;
+    background-color: #B80443;
     color: #fff;
 
     &:focus {
@@ -97,8 +97,7 @@
     }
 
     &:hover {
-      border-color: #e71d1d;
-      background-color: #e71d1d;
+      background-color: #D62663;
     }
   }
 }
@@ -130,6 +129,11 @@ body:not(.logged-in) .hide-when-logged-out {
 
 body.page .fimg-fw .fimg-inner {
   min-height: 150px;
+}
+
+.upload-field-details .file-name,
+.upload-field-details .file-type {
+  display: none;
 }
 
 .has-nav-menu .alternate-hierarchy {

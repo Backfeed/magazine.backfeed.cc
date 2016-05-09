@@ -160,13 +160,12 @@ body:not(.barcelona-fimg-cl) .sidebar-right .post-content .barcelona-sc-accordio
     border: none;
     text-transform: uppercase;
     font-weight: bold !important;
-    background-color: #cc1919;
+    background-color: #B80443;
     color: #fff; }
     .gform_wrapper .gform_footer input[type="submit"]:focus {
       outline: 0; }
     .gform_wrapper .gform_footer input[type="submit"]:hover {
-      border-color: #e71d1d;
-      background-color: #e71d1d; }
+      background-color: #D62663; }
 
 .wppb-input-hidden {
   display: none; }
@@ -189,6 +188,10 @@ body:not(.logged-in) .hide-when-logged-out {
 
 body.page .fimg-fw .fimg-inner {
   min-height: 150px; }
+
+.upload-field-details .file-name,
+.upload-field-details .file-type {
+  display: none; }
 
 @media only screen and (min-width: 768px) {
   .has-nav-menu .alternate-hierarchy {

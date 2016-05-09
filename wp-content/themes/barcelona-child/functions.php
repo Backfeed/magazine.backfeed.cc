@@ -78,6 +78,8 @@ add_filter('gettext', function ($translated_text, $text, $domain) {
 			switch ($text) {
 				case 'Send these credentials via email.':
 					return 'Send username and password to my email.';
+				case 'Remove':
+					return 'Replace';
 			}
 	}
 	return $translated_text;
