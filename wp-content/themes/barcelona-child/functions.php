@@ -3,6 +3,7 @@
 require_once('lib/ajax.php');
 require_once('lib/autoblogging.php');
 require_once('lib/template-tags.php');
+require_once('lib/submit-article-form.php');
 
 add_action('after_setup_theme', function() {
 	remove_action('wp_head', 'rsd_link'); //removes EditURI/RSD (Really Simple Discovery) link.
@@ -36,26 +37,6 @@ add_action('after_setup_theme', function() {
 add_action('widgets_init', function() {
 	global $wp_widget_factory;
 	remove_action('wp_head', [$wp_widget_factory->widgets['WP_Widget_Recent_Comments'], 'recent_comments_style']);
-});
-
-add_filter('gform_rich_text_editor_options', function($editor_settings) {
-	$editor_settings['media_buttons'] = true;
-	return $editor_settings;
-});
-
-// Number of tokens owned by logged in agent, are added to the Submit Article form, so that the form could be hidden
-// if agent doesn't have enough tokens for the contribution fee.
-if (function_exists('Backfeed\get_current_agent_tokens'))
-	add_filter('gform_field_value_tokensOfUser', 'Backfeed\get_current_agent_tokens');
-
-// Update the token values in the UI upon submission of the Submit Article form.
-// Assuming the contribution fee is 1.
-add_action('gform_after_submission_1', function() {
-?><script>
-	Array.from(document.getElementsByClassName('backfeed-stat-tokens-value')).forEach(function(element) {
-		element.textContent -= 1;
-	});
-</script><?php
 });
 
 // After successful register, login the user and redirect to homepage.

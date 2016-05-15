@@ -76,6 +76,24 @@
   margin-bottom: 29px;
 }
 
+.wppb-user-forms input[type="submit"],
+.gform_wrapper .gform_footer input[type="submit"] {
+  padding: 5px 15px;
+  border: none;
+  text-transform: uppercase;
+  font-weight: bold !important;
+  background-color: #B80443;
+  color: #fff;
+
+  &:focus {
+    outline: 0;
+  }
+
+  &:hover {
+    background-color: #D62663;
+  }
+}
+
 .gform_wrapper {
   margin-bottom: 0 !important;
 
@@ -84,13 +102,31 @@
     color: grey;
   }
 
-  .gform_footer input[type="submit"] {
+  .gform_footer .token-fee-button {
+    display: flex;
+    align-items: center;
     padding: 5px 15px;
     border: none;
-    text-transform: uppercase;
-    font-weight: bold !important;
     background-color: #B80443;
     color: #fff;
+
+    span:nth-of-type(1) {
+      text-transform: uppercase;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    span:nth-of-type(2) {
+      width: 1px;
+      background-color: #d87979;
+      height: 30px;
+      margin: 0 15px;
+    }
+
+    span:nth-of-type(3) {
+      color: #f5b9b9;
+      font-size: 14px;
+    }
 
     &:focus {
       outline: 0;
