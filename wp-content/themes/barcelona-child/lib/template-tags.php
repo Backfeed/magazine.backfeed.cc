@@ -75,16 +75,6 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
 
     global $post;
 
-    // TODO: Remove duplication of this code block
-    if (function_exists('Backfeed\get_contribution')) {
-        $contribution = Backfeed\get_contribution($post->ID);
-        $backfeed_contribution_score = round($contribution->stats->score * 100, 2).'/100';
-        $backfeed_engaged_reputation = round($contribution->stats->engaged_reputation * 100, 2).'%';
-    } else {
-        barcelona_featured_img($barcelona_fimg_id);
-        return false;
-    }
-
     $barcelona_in_loop = in_the_loop();
     $barcelona_post_format = barcelona_get_post_format();
     $barcelona_is_media = in_array( $barcelona_post_format, array( 'audio', 'gallery', 'video' ) );
@@ -125,60 +115,8 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
     }
 
     // Post meta
-
-    $barcelona_categories_html = '<ul class="list-inline">';
-    if ( $barcelona_post_type == 'post' ) {
-        $barcelona_categories = get_the_category();
-        foreach ( $barcelona_categories as $c ) {
-            $barcelona_categories_html .= '<li><a href="'. esc_url( get_category_link( $c ) ) .'">'. esc_html( $c->name ) .'</a></li>';
-        }
-    }
-    $barcelona_categories_html .= '</ul>';
-
-    $barcelona_author_html = '<a href="'. get_author_posts_url( $post->post_author ) .'" rel="author">'. get_the_author_meta( 'display_name', $post->post_author ) .'</a>';
-    
-    $barcelona_meta = array(
-        'date' => array( 'clock-o', esc_html( get_the_date() ) ),
-        'author' => array( 'user', $barcelona_author_html , get_author_posts_url( $post->post_author ) ),
-//        'views' => array( 'eye', esc_html( barcelona_get_post_views() ) ),
-        'score' => array( 'star', $backfeed_contribution_score, '', '<div class="backfeed-tooltip-title">Article Quality</div><p>Indicates the community-determined quality of this article. New articles will start at 0 and naturally drift towards their mean value as time goes by.</p>' ),
-//        'likes' => array( 'thumbs-up', '<span class="post_vote_up_val">'. esc_html( barcelona_get_post_vote( $post->ID ) ) .'</span>' ),
-        'engagedrep' => array( 'users', $backfeed_engaged_reputation, '', '<div class="backfeed-tooltip-title">Reputation Invested</div><p>Indicates community engagement in ranking this article. The higher this score, the more reputed members participated in evaluating the quality of this article.</p>' ),
-        'comments' => array( 'comments', intval( get_comments_number() ) ),
-        'categories' => array( 'bars', $barcelona_categories_html )
-    );
-
-//    $barcelona_post_meta_choices = barcelona_get_option( 'post_meta_choices' );
-    $barcelona_post_meta_choices = ["date", "author", "score", "engagedrep", "comments"];
-
-    if ( ! is_array( $barcelona_post_meta_choices ) ) {
-        $barcelona_post_meta_choices = array();
-    }
-
-    foreach ( $barcelona_meta as $k => $v ) {
-        if ( ! in_array( $k, $barcelona_post_meta_choices ) ) {
-            unset( $barcelona_meta[ $k ] );
-        }
-    }
-
-    $barcelona_post_meta = '';
-    if ( ! empty( $barcelona_meta ) ) {
-        $barcelona_post_meta = '<ul class="post-meta">';
-        foreach ( $barcelona_meta as $k => $v ) {
-            $barcelona_post_meta_class = 'post-' . sanitize_html_class($k);
-            if (isset($v[3])) $barcelona_post_meta_class .= ' backfeed-tooltip';
-            $barcelona_post_meta .= '<li class="'.$barcelona_post_meta_class.'">';
-
-            if (isset($v[2]) && $v[2]) $barcelona_post_meta .= '<a href="'. esc_url_raw($v[2]) .'">';
-            if (isset($v[3])) $barcelona_post_meta .= '<div class="backfeed-tooltip-content">'. $v[3] .'</div>';
-            $barcelona_post_meta .= '<span class="fa fa-'.sanitize_html_class($v[0]).'"></span>';
-            $barcelona_post_meta .= '<span class="post-meta-value">'. $v[1] .'</span>';
-            if (isset($v[2]) && $v[2]) $barcelona_post_meta .= '</a>';
-
-            $barcelona_post_meta .= '</li>';
-        }
-        $barcelona_post_meta .= '</ul>';
-    }
+    // REMOVED ALL POST META LOGIC HERE AND REUSED THE LOGIC FROM backfeed_post_meta
+    $barcelona_post_meta = backfeed_post_meta(["date", "author", "score", "engagedrep", "comments"], false, false);
 
     $barcelona_media_output = '';
     if ( $barcelona_post_format == 'gallery' ) {
