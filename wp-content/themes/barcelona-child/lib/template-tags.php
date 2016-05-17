@@ -32,7 +32,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
         }
 
         if ( in_array( 'score', $barcelona_opt ) ) {
-            $barcelona_html .= '<li class="backfeed-tooltip"><div class="backfeed-tooltip-content"><div class="backfeed-tooltip-title">Article Quality</div><p>Indicates the community-determined quality of this article. New articles will start at 0 and naturally drift towards their mean value as time goes by.</p></div><span class="fa fa-star"></span>'. $backfeed_contribution_score .'</li>';
+            $barcelona_html .= '<li class="post-score backfeed-tooltip"><div class="backfeed-tooltip-content"><div class="backfeed-tooltip-title">Article Quality</div><p>Indicates the community-determined quality of this article. New articles will start at 0 and naturally drift towards their mean value as time goes by.</p></div><span class="fa fa-star"></span><span class="post-meta-value">'. $backfeed_contribution_score .'</span></li>';
         }
 
         if ( in_array( 'views', $barcelona_opt ) ) {
@@ -40,7 +40,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
         }
 
         if ( in_array( 'engagedrep', $barcelona_opt ) ) {
-            $barcelona_html .= '<li class="backfeed-tooltip"><div class="backfeed-tooltip-content"><div class="backfeed-tooltip-title">Reputation Invested</div><p>Indicates community engagement in ranking this article. The higher this score, the more reputed members participated in evaluating the quality of this article.</p></div><span class="fa fa-users"></span>'. $backfeed_engaged_reputation .'</li>';
+            $barcelona_html .= '<li class="post-engagedrep backfeed-tooltip"><div class="backfeed-tooltip-content"><div class="backfeed-tooltip-title">Reputation Invested</div><p>Indicates community engagement in ranking this article. The higher this score, the more reputed members participated in evaluating the quality of this article.</p></div><span class="fa fa-users"></span><span class="post-meta-value">'. $backfeed_engaged_reputation .'</span></li>';
         }
 
         if ( in_array( 'likes', $barcelona_opt ) ) {
@@ -116,7 +116,7 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
 
     // Post meta
     // REMOVED ALL POST META LOGIC HERE AND REUSED THE LOGIC FROM backfeed_post_meta
-    $barcelona_post_meta = backfeed_post_meta(["date", "author", "score", "engagedrep", "comments"], false, false);
+    $barcelona_post_meta = backfeed_post_meta(["date", "author", "score", "engagedrep"], false, false);
 
     $barcelona_media_output = '';
     if ( $barcelona_post_format == 'gallery' ) {

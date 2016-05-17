@@ -122,7 +122,7 @@ foreach ( $barcelona_posts_payload as $barcelona_posts ):
 				/*if ( isset( $barcelona_mod_post_meta ) ) {
 					barcelona_post_meta( $barcelona_mod_post_meta, false );
 				}*/
-				backfeed_post_meta(["date", "author", "score", "engagedrep", "comments"], false);
+				backfeed_post_meta(["date", "author", "score", "engagedrep"], false);
 				?>
 
 			</div><!-- .post-details -->
