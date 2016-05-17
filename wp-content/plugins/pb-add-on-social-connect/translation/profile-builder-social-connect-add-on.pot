@@ -1,0 +1,278 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: profile-builder-social-connect-add-on\n"
+"POT-Creation-Date: 2016-05-12 11:50+0200\n"
+"PO-Revision-Date: 2016-05-12 11:52+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.7\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;_n;_x\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: index.php:177 index.php:178 index.php:278 index.php:282
+msgid "Social Connect"
+msgstr ""
+
+#: index.php:196
+msgid "Display on the Following Forms"
+msgstr ""
+
+#: index.php:197
+msgid "Facebook Login"
+msgstr ""
+
+#: index.php:198
+msgid "Facebook App ID"
+msgstr ""
+
+#: index.php:199
+msgid "Google+ Login"
+msgstr ""
+
+#: index.php:200
+msgid "Google+ Client ID"
+msgstr ""
+
+#: index.php:201
+msgid "Twitter Login"
+msgstr ""
+
+#: index.php:202
+msgid "Twitter API Key"
+msgstr ""
+
+#: index.php:203
+msgid "Twitter API Secret"
+msgstr ""
+
+#: index.php:204
+msgid "Buttons Order"
+msgstr ""
+
+#: index.php:204
+msgid "Drag and drop the dots to re-order."
+msgstr ""
+
+#: index.php:205
+msgid "Buttons Re-Order"
+msgstr ""
+
+#: index.php:205
+msgid "Save the buttons order from the buttons order checkboxes"
+msgstr ""
+
+#: index.php:206
+msgid "Buttons Location"
+msgstr ""
+
+#: index.php:206
+msgid "Only for Profile Builder Register and Edit Profile forms."
+msgstr ""
+
+#: index.php:207
+msgid "Buttons Style"
+msgstr ""
+
+#: index.php:208
+msgid "Heading Before Buttons (Login/Register)"
+msgstr ""
+
+#: index.php:208 index.php:209
+msgid "Empty field will remove the heading."
+msgstr ""
+
+#: index.php:209
+msgid "Heading Before Buttons (Edit Profile)"
+msgstr ""
+
+#: index.php:210
+msgid "Facebook Button Text (Login/Register)"
+msgstr ""
+
+#: index.php:211
+msgid "Google+ Button Text (Login/Register)"
+msgstr ""
+
+#: index.php:212
+msgid "Twitter Button Text (Login/Register)"
+msgstr ""
+
+#: index.php:213
+msgid "Facebook Button Text (Edit Profile)"
+msgstr ""
+
+#: index.php:214
+msgid "Google+ Button Text (Edit Profile)"
+msgstr ""
+
+#: index.php:215
+msgid "Twitter Button Text (Edit Profile)"
+msgstr ""
+
+#: index.php:216
+msgid "Unlink Accounts (Edit Profile)"
+msgstr ""
+
+#: index.php:216
+msgid ""
+"This option will display linked social platforms to users accounts and will "
+"allow to easily unlink them in Edit Profile page."
+msgstr ""
+
+#: index.php:217
+msgid "Default Social Connect CSS in the Front-end"
+msgstr ""
+
+#: index.php:223
+msgid "Settings"
+msgstr ""
+
+#: index.php:237
+msgid "Help"
+msgstr ""
+
+#: index.php:305
+msgid "Display Social Connect buttons:"
+msgstr ""
+
+#: index.php:308
+msgid "Yes"
+msgstr ""
+
+#: index.php:309
+msgid "No"
+msgstr ""
+
+#: index.php:354
+msgid "You have successfully unlinked your profile."
+msgstr ""
+
+#: index.php:364
+msgid ""
+"An account with this email address already exists.<br> Do you want to "
+"connect it?"
+msgstr ""
+
+#: index.php:365
+msgid "Please enter your website account password"
+msgstr ""
+
+#: index.php:366
+msgid "Please enter a new email"
+msgstr ""
+
+#: index.php:367
+msgid "You have successfully linked your profile."
+msgstr ""
+
+#: index.php:368
+msgid "Something went wrong. Please try again later!"
+msgstr ""
+
+#: index.php:369
+msgid ""
+"Before you can access your account you need to confirm your email address. "
+"Please check your inbox and click the activation link."
+msgstr ""
+
+#: index.php:370
+msgid ""
+"<strong>ERROR</strong>: You need to confirm your email address before you "
+"can log in."
+msgstr ""
+
+#: index.php:371
+msgid ""
+"Before you can access your account an administrator has to approve it. You "
+"will be notified via email."
+msgstr ""
+
+#: index.php:372
+msgid ""
+"<strong>ERROR</strong>: Your account has to be confirmed by an administrator "
+"before you can log in."
+msgstr ""
+
+#: index.php:378
+msgid "Please enter your Facebook email"
+msgstr ""
+
+#: index.php:379
+msgid "Please enter your Facebook email!"
+msgstr ""
+
+#: index.php:391
+msgid "Waiting for Twitter..."
+msgstr ""
+
+#: index.php:392
+msgid "Please enter your Twitter email"
+msgstr ""
+
+#: index.php:393
+msgid "Please enter your Twitter email!"
+msgstr ""
+
+#: index.php:584
+msgid "Profile Builder not active!"
+msgstr ""
+
+#: index.php:716
+msgid "General Settings"
+msgstr ""
+
+#: index.php:720
+msgid "Application Settings"
+msgstr ""
+
+#: index.php:724
+msgid "Appearance Settings"
+msgstr ""
+
+#: index.php:783
+msgid "Unlink"
+msgstr ""
+
+#: index.php:790
+msgid "Your account is linked with:"
+msgstr ""
+
+#: facebook/facebook.php:32
+msgid "Link with Facebook"
+msgstr ""
+
+#: facebook/facebook.php:38
+msgid "Sign in with Facebook"
+msgstr ""
+
+#: google/google.php:39
+msgid "Link with Google+"
+msgstr ""
+
+#: google/google.php:45
+msgid "Sign in with Google+"
+msgstr ""
+
+#: twitter/twitter.php:52
+msgid "Connection with twitter Failed"
+msgstr ""
+
+#: twitter/twitter.php:57
+msgid "Error Receiving Request Token"
+msgstr ""
+
+#: twitter/twitter.php:108
+msgid "Something went wrong. Please try again later."
+msgstr ""
+
+#: twitter/twitter.php:141
+msgid "Link with Twitter"
+msgstr ""
+
+#: twitter/twitter.php:147
+msgid "Sign in with Twitter"
+msgstr ""
