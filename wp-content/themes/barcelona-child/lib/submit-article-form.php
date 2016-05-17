@@ -5,7 +5,7 @@ add_filter('gform_rich_text_editor_options', function($editor_settings) {
 });
 
 add_filter( 'gform_submit_button_1', function($button_input, $form) {
-    return '<button id="gform_submit_button_1" class="gform_button button token-fee-button" tabindex="9" onclick="if(window[\'gf_submitting_1\']){return false;}  if( !jQuery(\'#gform_1\')[0].checkValidity || jQuery(\'#gform_1\')[0].checkValidity()){window[\'gf_submitting_1\']=true;}" onkeypress="if(window[\'gf_submitting_1\']){return false;}  if( !jQuery(\'#gform_1\')[0].checkValidity || jQuery(\'#gform_1\')[0].checkValidity()){window[\'gf_submitting_1\']=true;}"><span>Submit</span><span></span><span>1 Token</span></button>';
+    return '<button id="gform_submit_button_1" class="gform_button button token-fee-button" tabindex="9" onclick="if(window[\'gf_submitting_1\']){return false;}  if( !jQuery(\'#gform_1\')[0].checkValidity || jQuery(\'#gform_1\')[0].checkValidity()){window[\'gf_submitting_1\']=true;}" onkeypress="if(window[\'gf_submitting_1\']){return false;}  if( !jQuery(\'#gform_1\')[0].checkValidity || jQuery(\'#gform_1\')[0].checkValidity()){window[\'gf_submitting_1\']=true;}"><span>Submit</span><span></span><span>10 Tokens</span></button>';
 }, 10, 2 );
 
 // Number of tokens owned by logged in agent, are added to the Submit Article form, so that the form could be hidden
