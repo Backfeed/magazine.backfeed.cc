@@ -78,3 +78,26 @@ add_filter('wp_nav_menu_items', function($items, $args) {
 	}
 	return $items;
 }, 10, 2);
+
+// Just added autofocus
+add_filter('get_search_form', function() {
+
+	static $barcelona_search_i = 1;
+
+	$form = '<form class="search-form" method="get" action="' . esc_url( home_url( '/' ) ) . '">
+				 <div class="search-form-inner"><div class="barcelona-sc-close"><span class="barcelona-ic">&times;</span><span class="barcelona-text">'. esc_html__( 'Close', 'barcelona' ) .'</span></div>
+				 	<div class="input-group">
+				        <span class="input-group-addon" id="searchAddon'. intval( $barcelona_search_i ) .'"><span class="fa fa-search"></span></span>
+		                <input type="text" name="s" class="form-control search-field" autofocus autocomplete="off" placeholder="'. esc_attr_x( 'Search&hellip;', 'placeholder', 'barcelona' ) .'" title="' . esc_attr_x( 'Search for:', 'label', 'barcelona' ) . '" value="'. esc_attr( get_search_query() ) .'" aria-describedby="searchAddon'. intval( $barcelona_search_i ) .'" />
+		                <span class="input-group-btn">
+		                    <button type="submit" class="btn"><span class="btn-search-text">'. esc_attr_x( 'Search', 'submit button', 'barcelona' ) .'</span><span class="btn-search-icon"><span class="fa fa-search"></span></span></button>
+		                </span>
+	                </div>
+                </div>
+            </form>';
+
+	$barcelona_search_i++;
+
+	return $form;
+
+}, 11);
