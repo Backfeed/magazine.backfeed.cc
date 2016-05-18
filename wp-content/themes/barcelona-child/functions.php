@@ -24,6 +24,10 @@ add_action('after_setup_theme', function() {
 		wp_dequeue_style( 'barcelona-font' );
 		wp_enqueue_style( 'backfeed-font', '//fonts.googleapis.com/css?family=Montserrat:300,400,700' );
 
+		wp_deregister_script( 'underscore' );
+		wp_register_script( 'underscore', '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js', [], '1.8.3' );
+		wp_enqueue_script( 'underscore' );
+
 		wp_deregister_script( 'jquery' );
 		wp_register_script( 'jquery', '//ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js', [], '2.2.3' );
 		wp_enqueue_script( 'jquery' );
