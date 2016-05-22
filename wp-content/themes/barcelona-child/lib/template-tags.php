@@ -5,10 +5,9 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
 
     global $post;
 
-    // TODO: Remove duplication of this code block
     if (function_exists('Backfeed\get_contribution')) {
         $contribution = Backfeed\get_contribution($post->ID);
-        $backfeed_contribution_score = round($contribution->stats->score * 100, 2).'/100';
+        $backfeed_contribution_quality = round($contribution->stats->quality * 100, 2).'/100';
         $backfeed_engaged_reputation = round($contribution->stats->engaged_reputation * 100, 2).'%';
     } else {
         barcelona_post_meta($barcelona_opt, $barcelona_sep, $echo);
@@ -31,8 +30,8 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
             $barcelona_html .= '<li class="post-date"><span class="fa fa-clock-o"></span>'. esc_html( get_the_time( BARCELONA_DATE_FORMAT ) ) .'</li>';
         }
 
-        if ( in_array( 'score', $barcelona_opt ) ) {
-            $barcelona_html .= '<li class="post-score backfeed-tooltip"><div class="backfeed-tooltip-content"><div class="backfeed-tooltip-title">Article Quality</div><p>Indicates the community-determined quality of this article. New articles will start at 0 and naturally drift towards their mean value as time goes by.</p></div><span class="fa fa-star"></span><span class="post-meta-value">'. $backfeed_contribution_score .'</span></li>';
+        if ( in_array( 'quality', $barcelona_opt ) ) {
+            $barcelona_html .= '<li class="post-score backfeed-tooltip"><div class="backfeed-tooltip-content down"><div class="backfeed-tooltip-title">Article Quality</div><p>Indicates the community-determined quality of this article. New articles will start at 0 and naturally drift towards their mean value as time goes by.</p></div><span class="fa fa-star"></span><span class="post-meta-value">'. $backfeed_contribution_quality .'</span></li>';
         }
 
         if ( in_array( 'views', $barcelona_opt ) ) {
@@ -40,7 +39,7 @@ function backfeed_post_meta( $barcelona_opt, $barcelona_sep=TRUE, $echo=TRUE ) {
         }
 
         if ( in_array( 'engagedrep', $barcelona_opt ) ) {
-            $barcelona_html .= '<li class="post-engagedrep backfeed-tooltip"><div class="backfeed-tooltip-content"><div class="backfeed-tooltip-title">Reputation Invested</div><p>Indicates community engagement in ranking this article. The higher this score, the more reputed members participated in evaluating the quality of this article.</p></div><span class="fa fa-users"></span><span class="post-meta-value">'. $backfeed_engaged_reputation .'</span></li>';
+            $barcelona_html .= '<li class="post-engagedrep backfeed-tooltip"><div class="backfeed-tooltip-content down"><div class="backfeed-tooltip-title">Reputation Invested</div><p>Indicates community engagement in ranking this article. The higher this score, the more reputed members participated in evaluating the quality of this article.</p></div><span class="fa fa-users"></span><span class="post-meta-value">'. $backfeed_engaged_reputation .'</span></li>';
         }
 
         if ( in_array( 'likes', $barcelona_opt ) ) {
@@ -116,7 +115,7 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
 
     // Post meta
     // REMOVED ALL POST META LOGIC HERE AND REUSED THE LOGIC FROM backfeed_post_meta
-    $barcelona_post_meta = backfeed_post_meta(["date", "author", "score", "engagedrep"], false, false);
+    $barcelona_post_meta = backfeed_post_meta(["date", "author", "quality", "engagedrep"], false, false);
 
     $barcelona_media_output = '';
     if ( $barcelona_post_format == 'gallery' ) {
@@ -207,10 +206,8 @@ function backfeed_featured_img( $barcelona_fimg_id=NULL ) {
 
                 <div class="featured-image">
                     <div class="fimg-inner">
-                        <div class="vm-wrapper">
-                            <div class="vm-middle">
-                                <?php echo ( $barcelona_display == 'title' ? '' : $barcelona_media_output ) . $barcelona_post_title ."\n". $barcelona_post_meta; ?>
-                            </div>
+                        <div class="vm-middle">
+                            <?php echo ( $barcelona_display == 'title' ? '' : $barcelona_media_output ) . $barcelona_post_title ."\n". $barcelona_post_meta; ?>
                         </div>
                     </div>
                 </div>

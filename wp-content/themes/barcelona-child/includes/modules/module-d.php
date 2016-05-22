@@ -43,7 +43,7 @@ while ($barcelona_q->have_posts()): $barcelona_q->the_post(); ?>
 				<?=esc_html(barcelona_get_excerpt(20))?>
 			</p>
 
-			<?php backfeed_post_meta(["date", "author", "score", "engagedrep"], false); ?>
+			<?php backfeed_post_meta(["date", "author", "quality", "engagedrep"], false); ?>
 
 		</div>
 		<!-- .post-details -->

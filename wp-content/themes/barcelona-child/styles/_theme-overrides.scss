@@ -96,6 +96,10 @@ body:not(.barcelona-fimg-cl) .sidebar-right .post-content .barcelona-sc-accordio
   padding-top: 300px;
 }
 
+.post-summary .post-meta {
+  z-index: 3;
+}
+
 .post-summary .post-image > a img {
   height: 212px;
   object-fit: cover;
